@@ -1,6 +1,9 @@
 package internal
 
-import "errors"
+import (
+	"errors"
+	"net/http"
+)
 
 type ProblemDetails struct {
 	Type     string `json:"type"`
@@ -28,22 +31,62 @@ func NewProblemDetails(t string, title string, status int, detail string, instan
 
 func (pd *ProblemDetails) validate() error {
 	if pd.Type == "" || len(pd.Type) > 100 {
+		NewLogger(
+			http.StatusBadRequest,
+			"O tipo deve ser não vazio e ter no máximo 100 caracteres",
+			"NewProblemDetails",
+			"Entities",
+			"Error",
+		)
+
 		return errors.New("type deve ser não vazio e ter no máximo 100 caracteres")
 	}
 
 	if pd.Title == "" || len(pd.Title) > 100 {
+		NewLogger(
+			http.StatusBadRequest,
+			"O título deve ser não vazio e ter no máximo 100 caracteres",
+			"NewProblemDetails",
+			"Entities",
+			"Error",
+		)
+
 		return errors.New("title deve ser não vazio e ter no máximo 100 caracteres")
 	}
 
 	if pd.Status < 100 || pd.Status >= 600 {
+		NewLogger(
+			http.StatusBadRequest,
+			"O status deve ser um código HTTP válido",
+			"NewProblemDetails",
+			"Entities",
+			"Error",
+		)
+
 		return errors.New("status deve ser um código HTTP válido")
 	}
 
 	if pd.Detail == "" || len(pd.Detail) > 255 {
+		NewLogger(
+			http.StatusBadRequest,
+			"O detalhe deve ser não vazio e ter no máximo 255 caracteres",
+			"NewProblemDetails",
+			"Entities",
+			"Error",
+		)
+
 		return errors.New("detail deve ser não vazio e ter no máximo 255 caracteres")
 	}
 
 	if len(pd.Instance) > 255 {
+		NewLogger(
+			http.StatusBadRequest,
+			"A instância não deve ter mais do que 255 caracteres",
+			"NewProblemDetails",
+			"Entities",
+			"Error",
+		)
+
 		return errors.New("instance não deve ter mais do que 255 caracteres")
 	}
 
