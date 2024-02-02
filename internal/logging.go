@@ -6,11 +6,11 @@ import (
 )
 
 type Logger struct {
-	Code int
-	Message string
-	From string
-	Layer string
-	TypeLog string
+	Code int `json:"code"`
+	Message string `json:"message"`
+	From string `json:"from"`
+	Layer string `json:"layer"`
+	TypeLog string `json:"type_log"`
 }
 
 func NewLogger(code int, message, from, layer, typeLog string) *slog.Logger {
