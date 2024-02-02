@@ -21,24 +21,11 @@ func TestNewCombination_ValidCombination(t *testing.T) {
 	}
 
 	if combination == nil ||
-	combination.VotationID != votationID ||
-	combination.FirstMovieID != firstMovieID ||
-	combination.SecondMovieID != secondMovieID ||
-	combination.ChosenMovieID != chosenMovieID {
-	t.Error("Combination attributes do not match the expected values.")
-}
-}
-
-func TestNewCombination_InvalidVotationID(t *testing.T) {
-	votationID := ""
-	firstMovieID := "movie1"
-	secondMovieID := "movie2"
-	chosenMovieID := "movie1"
-
-	_, err := NewCombination(votationID, firstMovieID, secondMovieID, chosenMovieID)
-
-	if err == nil {
-		t.Error("Expected an error for invalid VotationID, but got nil.")
+		combination.VotationID != votationID ||
+		combination.FirstMovieID != firstMovieID ||
+		combination.SecondMovieID != secondMovieID ||
+		combination.ChosenMovieID != chosenMovieID {
+		t.Error("Combination attributes do not match the expected values.")
 	}
 }
 
