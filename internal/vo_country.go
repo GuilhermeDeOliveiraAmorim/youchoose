@@ -1,28 +1,4 @@
-package valueobject
-
-import (
-	"net/http"
-
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal"
-)
-
-type Nationality struct {
-	CountryName string `json:"country_name"`
-	Flag        string `json:"flag"`
-}
-
-func NewNationality(countryName, flag string) (*Nationality, []internal.ProblemDetails) {
-	validationErrors := ValidateNationality(countryName)
-
-	if len(validationErrors) > 0 {
-		return nil, validationErrors
-	}
-
-	return &Nationality{
-		CountryName: countryName,
-		Flag:        flag,
-	}, nil
-}
+package internal
 
 type Country struct {
 	Name     string
@@ -31,23 +7,13 @@ type Country struct {
 	Flag     string
 }
 
-func ValidateNationality(country string) []internal.ProblemDetails {
-	var validationErrors []internal.ProblemDetails
-
+func isCountryValid(country string) bool {
 	for _, c := range countries {
 		if c.Name == country {
-			return validationErrors
+			return true
 		}
 	}
-
-	validationErrors = append(validationErrors, internal.ProblemDetails{
-		Type:   "ValidationError",
-		Title:  "País inválido",
-		Status: http.StatusBadRequest,
-		Detail: "Por favor, forneça um país válido.",
-	})
-
-	return validationErrors
+	return false
 }
 
 func NewCountries() []Country {
