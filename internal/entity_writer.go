@@ -4,7 +4,7 @@ import (
 	"net/http"
 )
 
-type Director struct {
+type Writer struct {
 	SharedEntity
 	Name        string      `json:"name"`
 	BirthDate   *BirthDate  `json:"birth_date"`
@@ -12,14 +12,14 @@ type Director struct {
 	ImageID     string      `json:"image_id"`
 }
 
-func NewDirector(name string, birthDate *BirthDate, nationality *Nationality, imageID string) (*Director, []ProblemDetails) {
-	validationErrors := ValidateDirector(name, birthDate, nationality, imageID)
+func NewWriter(name string, birthDate *BirthDate, nationality *Nationality, imageID string) (*Writer, []ProblemDetails) {
+	validationErrors := ValidateWriter(name, birthDate, nationality, imageID)
 
 	if len(validationErrors) > 0 {
 		return nil, validationErrors
 	}
 
-	Director := &Director{
+	actor := &Writer{
 		SharedEntity: *NewSharedEntity(),
 		Name:         name,
 		BirthDate:    birthDate,
@@ -27,54 +27,54 @@ func NewDirector(name string, birthDate *BirthDate, nationality *Nationality, im
 		ImageID:      imageID,
 	}
 
-	return Director, nil
+	return actor, nil
 }
 
-func ValidateDirector(name string, birthDate *BirthDate, nationality *Nationality, imageID string) []ProblemDetails {
+func ValidateWriter(name string, birthDate *BirthDate, nationality *Nationality, imageID string) []ProblemDetails {
 	var validationErrors []ProblemDetails
 
 	if name == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Nome do(a) diretor(a) inválido",
+			Title:  "Nome do(a) escritor(a) inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O nome do(a) diretor(a) não pode estar vazio.",
+			Detail: "O nome do(a) escritor(a) não pode estar vazio.",
 		})
 	}
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Nome do(a) diretor(a) inválido",
+			Title:  "Nome do(a) escritor(a) inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O nome do(a) diretor(a) não pode ter mais do que 100 caracteres.",
+			Detail: "O nome do(a) escritor(a) não pode ter mais do que 100 caracteres.",
 		})
 	}
 
 	if birthDate == nil {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Data de nascimento do(a) diretor(a) inválida",
+			Title:  "Data de nascimento do(a) escritor(a) inválida",
 			Status: http.StatusBadRequest,
-			Detail: "A data de nascimento do(a) diretor(a) não pode ser nula.",
+			Detail: "A data de nascimento do(a) escritor(a) não pode ser nula.",
 		})
 	}
 
 	if nationality == nil {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Nacionalidade do(a) diretor(a) inválida",
+			Title:  "Nacionalidade do(a) escritor(a) inválida",
 			Status: http.StatusBadRequest,
-			Detail: "A nacionalidade do(a) diretor(a) não pode ser nula.",
+			Detail: "A nacionalidade do(a) escritor(a) não pode ser nula.",
 		})
 	}
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "ID de imagem do(a) diretor(a) inválido",
+			Title:  "ID de imagem do(a) escritor(a) inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O ID de imagem do(a) diretor(a) não pode estar vazio.",
+			Detail: "O ID de imagem do(a) escritor(a) não pode estar vazio.",
 		})
 	}
 
