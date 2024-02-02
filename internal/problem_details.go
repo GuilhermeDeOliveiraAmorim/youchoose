@@ -22,14 +22,14 @@ func NewProblemDetails(t string, title string, status int, detail string, instan
 		Instance: instance,
 	}
 
-	if err := pd.validate(); err != nil {
+	if err := pd.Validate(); err != nil {
 		return nil, err
 	}
 
 	return &pd, nil
 }
 
-func (pd *ProblemDetails) validate() error {
+func (pd *ProblemDetails) Validate() error {
 	if pd.Type == "" || len(pd.Type) > 100 {
 		NewLogger(
 			http.StatusBadRequest,
