@@ -36,45 +36,45 @@ func ValidateDirector(name string, birthDate *BirthDate, nationality *Nationalit
 	if name == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Nome do diretor inválido",
+			Title:  "Nome do(a) diretor(a) inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O nome do diretor não pode estar vazio.",
+			Detail: "O nome do(a) diretor(a) não pode estar vazio.",
 		})
 	}
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Nome do diretor inválido",
+			Title:  "Nome do(a) diretor(a) inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O nome do diretor não pode ter mais do que 100 caracteres.",
+			Detail: "O nome do(a) diretor(a) não pode ter mais do que 100 caracteres.",
 		})
 	}
 
 	if birthDate == nil {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Data de nascimento do diretor inválida",
+			Title:  "Data de nascimento do(a) diretor(a) inválida",
 			Status: http.StatusBadRequest,
-			Detail: "A data de nascimento do diretor não pode ser nula.",
+			Detail: "A data de nascimento do(a) diretor(a) não pode ser nula.",
 		})
 	}
 
 	if nationality == nil {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Nacionalidade do diretor inválida",
+			Title:  "Nacionalidade do(a) diretor(a) inválida",
 			Status: http.StatusBadRequest,
-			Detail: "A nacionalidade do diretor não pode ser nula.",
+			Detail: "A nacionalidade do(a) diretor(a) não pode ser nula.",
 		})
 	}
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "ID de imagem do diretor inválido",
+			Title:  "ID de imagem do(a) diretor(a) inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O ID de imagem do diretor não pode estar vazio.",
+			Detail: "O ID de imagem do(a) diretor(a) não pode estar vazio.",
 		})
 	}
 
