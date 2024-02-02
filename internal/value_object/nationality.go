@@ -11,14 +11,11 @@ type Nationality struct {
 	Flag        string `json:"flag"`
 }
 
-func NewNationality(countryName, flag string) (*Nationality, *internal.ProblemDetails) {
-	if !isCountryValid(countryName) {
-		return nil, &internal.ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "País inválido",
-			Status: http.StatusBadRequest,
-			Detail: "Por favor, forneça um país válido.",
-		}
+func NewNationality(countryName, flag string) (*Nationality, []internal.ProblemDetails) {
+	validationErrors := ValidateNationality(countryName)
+
+	if len(validationErrors) > 0 {
+		return nil, validationErrors
 	}
 
 	return &Nationality{
@@ -34,13 +31,23 @@ type Country struct {
 	Flag     string
 }
 
-func isCountryValid(country string) bool {
+func ValidateNationality(country string) []internal.ProblemDetails {
+	var validationErrors []internal.ProblemDetails
+
 	for _, c := range countries {
 		if c.Name == country {
-			return true
+			return validationErrors
 		}
 	}
-	return false
+
+	validationErrors = append(validationErrors, internal.ProblemDetails{
+		Type:   "ValidationError",
+		Title:  "País inválido",
+		Status: http.StatusBadRequest,
+		Detail: "Por favor, forneça um país válido.",
+	})
+
+	return validationErrors
 }
 
 func NewCountries() []Country {

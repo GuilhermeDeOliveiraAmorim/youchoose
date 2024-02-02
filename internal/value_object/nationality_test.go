@@ -37,8 +37,8 @@ func TestNewNationality_InvalidCountry(t *testing.T) {
 	}
 
 	expectedErrorMessage := "Por favor, forneça um país válido."
-	if err.Detail != expectedErrorMessage {
-		t.Errorf("Mensagem de erro esperada: %s, mas obteve: %s", expectedErrorMessage, err.Detail)
+	if err[0].Detail != expectedErrorMessage {
+		t.Errorf("Mensagem de erro esperada: %s, mas obteve: %s", expectedErrorMessage, err[0].Detail)
 	}
 }
 
@@ -52,7 +52,7 @@ func TestNewNationality_InvalidCountry_NilInstance(t *testing.T) {
 	}
 
 	expectedErrorMessage := "Por favor, forneça um país válido."
-	if err == nil || err.Detail != expectedErrorMessage {
+	if err == nil || err[0].Detail != expectedErrorMessage {
 		t.Errorf("Mensagem de erro esperada: %s, mas obteve: %v", expectedErrorMessage, err)
 	}
 }
