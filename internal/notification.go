@@ -16,14 +16,14 @@ func NewNotification(key, value string) (*Notification, error) {
 		Value: value,
 	}
 
-	if err := notification.validate(); err != nil {
+	if err := notification.Validate(); err != nil {
 		return nil, err
 	}
 
 	return notification, nil
 }
 
-func (n *Notification) validate() error {
+func (n *Notification) Validate() error {
 	if len(n.Key) == 0 || len(n.Key) > 50 {
 		NewLogger(
 			http.StatusBadRequest,
