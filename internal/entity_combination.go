@@ -29,16 +29,7 @@ func NewCombination(votationID, firstMovieID, secondMovieID, chosenMovieID strin
 func ValidateCombination(votationID, firstMovieID, secondMovieID, chosenMovieID string) []ProblemDetails {
 	var validationErrors []ProblemDetails
 
-	if votationID == "" {
-		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "ID da votação inválido",
-			Status: http.StatusBadRequest,
-			Detail: "O ID da votação não pode estar vazio.",
-		})
-	}
-
-	if firstMovieID == "" || secondMovieID == "" || chosenMovieID == "" {
+	if firstMovieID == "" || secondMovieID == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "IDs dos filmes na combinação inválidos",
