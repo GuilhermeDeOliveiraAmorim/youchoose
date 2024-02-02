@@ -13,9 +13,11 @@ type BirthDate struct {
 	Year  int `json:"year"`
 }
 
-func NewBirthDate(day, month, year int) (*BirthDate, *internal.ProblemDetails) {
-	if err := validateDate(day, month, year); err != nil {
-		return nil, err
+func NewBirthDate(day, month, year int) (*BirthDate, []internal.ProblemDetails) {
+	validationErrors := ValidateDate(day, month, year)
+
+	if len(validationErrors) > 0 {
+		return nil, validationErrors
 	}
 
 	return &BirthDate{
@@ -25,17 +27,19 @@ func NewBirthDate(day, month, year int) (*BirthDate, *internal.ProblemDetails) {
 	}, nil
 }
 
-func validateDate(day, month, year int) *internal.ProblemDetails {
+func ValidateDate(day, month, year int) []internal.ProblemDetails {
+	var validationErrors []internal.ProblemDetails
+
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 	
 	if date.Day() != day || int(date.Month()) != month || date.Year() != year {
-		return &internal.ProblemDetails{
+		validationErrors = append(validationErrors, internal.ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Data de nascimento inválida",
 			Status: http.StatusBadRequest,
 			Detail: "Por favor, forneça uma data de nascimento válida.",
-		}
+		})
 	}
 
-	return nil
+	return validationErrors
 }

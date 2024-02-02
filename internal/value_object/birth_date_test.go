@@ -12,7 +12,7 @@ func TestNewBirthDate_ValidDate(t *testing.T) {
 	birthDate, err := NewBirthDate(day, month, year)
 
 	if err != nil {
-		t.Fatalf("Erro inesperado ao criar uma data válida: %s", err.Detail)
+		t.Fatalf("Erro inesperado ao criar uma data válida: %s", err[0].Detail)
 	}
 
 	if birthDate == nil {
@@ -45,11 +45,11 @@ func TestNewBirthDate_InvalidDate(t *testing.T) {
 	}
 
 	expectedErrorMessage := "Por favor, forneça uma data de nascimento válida."
-	if err.Detail != expectedErrorMessage {
-		t.Errorf("Mensagem de erro esperada: %s, mas obteve: %s", expectedErrorMessage, err.Detail)
+	if err[0].Detail != expectedErrorMessage {
+		t.Errorf("Mensagem de erro esperada: %s, mas obteve: %s", expectedErrorMessage, err[0].Detail)
 	}
 
-	if err.Status != http.StatusBadRequest {
-		t.Errorf("Status HTTP esperado: %d, mas obteve: %d", http.StatusBadRequest, err.Status)
+	if err[0].Status != http.StatusBadRequest {
+		t.Errorf("Status HTTP esperado: %d, mas obteve: %d", http.StatusBadRequest, err[0].Status)
 	}
 }

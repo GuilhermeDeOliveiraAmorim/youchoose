@@ -12,6 +12,12 @@ type Image struct {
 }
 
 func NewImage(name, imageType string, size int) (*Image, []ProblemDetails) {
+	validationErrors := ValidateImage(name, size)
+
+	if len(validationErrors) > 0 {
+		return nil, validationErrors
+	}
+
 	image := &Image{
 		Name:     name,
 		Type:    imageType,
@@ -19,20 +25,14 @@ func NewImage(name, imageType string, size int) (*Image, []ProblemDetails) {
 		SharedEntity: *NewSharedEntity(),
 	}
 
-	validationErrors := ValidateImage(image)
-
-	if len(validationErrors) > 0 {
-		return nil, validationErrors
-	}
-
 	return image, nil
 }
 
 
-func ValidateImage(image *Image) []ProblemDetails {
+func ValidateImage(name string, size int) []ProblemDetails {
 	var validationErrors []ProblemDetails
 
-	if image.Name == "" {
+	if name == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Nome de imagem inválido",
@@ -41,7 +41,7 @@ func ValidateImage(image *Image) []ProblemDetails {
 		})
 	}
 
-	if image.Size <= 0 || image.Size > 100000 {
+	if size <= 0 || size > 100000 {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Tamanho de imagem inválido",
