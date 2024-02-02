@@ -17,13 +17,11 @@ func NewGenre(name, imageID string) (*Genre, []ProblemDetails) {
 		return nil, validationErrors
 	}
 
-	actor := &Genre{
+	return &Genre{
 		SharedEntity: *NewSharedEntity(),
 		Name:         name,
 		ImageID:      imageID,
-	}
-
-	return actor, nil
+	}, nil
 }
 
 func ValidateGenre(name, imageID string) []ProblemDetails {

@@ -5,10 +5,10 @@ import (
 )
 
 type Image struct {
+	SharedEntity
 	Name     string `json:"name"`
 	Type    string `json:"type"`
 	Size    int    `json:"size"`
-	SharedEntity
 }
 
 func NewImage(name, imageType string, size int) (*Image, []ProblemDetails) {
@@ -18,14 +18,12 @@ func NewImage(name, imageType string, size int) (*Image, []ProblemDetails) {
 		return nil, validationErrors
 	}
 
-	image := &Image{
+	return &Image{
+		SharedEntity: *NewSharedEntity(),
 		Name:     name,
 		Type:    imageType,
 		Size:    size,
-		SharedEntity: *NewSharedEntity(),
-	}
-
-	return image, nil
+	}, nil
 }
 
 
