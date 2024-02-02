@@ -38,43 +38,43 @@ func ValidateActor(name string, birthDate *BirthDate, nationality *Nationality, 
 			Type:   "ValidationError",
 			Title:  "Nome do ator inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O nome do ator não pode estar vazio.",
+			Detail: "O nome do(a) ator(atriz) não pode estar vazio.",
 		})
 	}
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Nome do ator inválido",
+			Title:  "Nome do(a) ator(atriz) inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O nome do ator não pode ter mais do que 100 caracteres.",
+			Detail: "O nome do(a) ator(atriz) não pode ter mais do que 100 caracteres.",
 		})
 	}
 
 	if birthDate == nil {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Data de nascimento do ator inválida",
+			Title:  "Data de nascimento do(a) ator(atriz) inválida",
 			Status: http.StatusBadRequest,
-			Detail: "A data de nascimento do ator não pode ser nula.",
+			Detail: "A data de nascimento do(a) ator(atriz) não pode ser nula.",
 		})
 	}
 
 	if nationality == nil {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "Nacionalidade do ator inválida",
+			Title:  "Nacionalidade do(a) ator(atriz) inválida",
 			Status: http.StatusBadRequest,
-			Detail: "A nacionalidade do ator não pode ser nula.",
+			Detail: "A nacionalidade do(a) ator(atriz) não pode ser nula.",
 		})
 	}
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
-			Title:  "ID de imagem do ator inválido",
+			Title:  "ID de imagem do(a) ator(atriz) inválido",
 			Status: http.StatusBadRequest,
-			Detail: "O ID de imagem do ator não pode estar vazio.",
+			Detail: "O ID de imagem do(a) ator(atriz) não pode estar vazio.",
 		})
 	}
 
