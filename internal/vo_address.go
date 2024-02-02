@@ -1,9 +1,7 @@
-package valueobject
+package internal
 
 import (
 	"net/http"
-
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal"
 )
 
 type Address struct {
@@ -12,7 +10,7 @@ type Address struct {
 	Country string `json:"country"`
 }
 
-func NewAddress(city, state, country string) (*Address, []internal.ProblemDetails) {
+func NewAddress(city, state, country string) (*Address, []ProblemDetails) {
 	validationErrors := ValidateAddress(city, state, country)
 
 	if len(validationErrors) > 0 {
@@ -28,11 +26,11 @@ func NewAddress(city, state, country string) (*Address, []internal.ProblemDetail
 	return address, nil
 }
 
-func ValidateAddress(city, state, country string) []internal.ProblemDetails {
-	var validationErrors []internal.ProblemDetails
+func ValidateAddress(city, state, country string) []ProblemDetails {
+	var validationErrors []ProblemDetails
 
 	if city == "" {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Cidade inválida",
 			Status: http.StatusBadRequest,
@@ -41,7 +39,7 @@ func ValidateAddress(city, state, country string) []internal.ProblemDetails {
 	}
 
 	if state == "" {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Estado inválido",
 			Status: http.StatusBadRequest,
@@ -50,7 +48,7 @@ func ValidateAddress(city, state, country string) []internal.ProblemDetails {
 	}
 
 	if country == "" {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "País inválido",
 			Status: http.StatusBadRequest,
@@ -59,7 +57,7 @@ func ValidateAddress(city, state, country string) []internal.ProblemDetails {
 	}
 
 	if !isCountryValid(country) {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "País inválido",
 			Status: http.StatusBadRequest,
