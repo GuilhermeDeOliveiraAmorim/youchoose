@@ -1,10 +1,8 @@
-package valueobject
+package internal
 
 import (
 	"net/http"
 	"time"
-
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal"
 )
 
 type BirthDate struct {
@@ -13,7 +11,7 @@ type BirthDate struct {
 	Year  int `json:"year"`
 }
 
-func NewBirthDate(day, month, year int) (*BirthDate, []internal.ProblemDetails) {
+func NewBirthDate(day, month, year int) (*BirthDate, []ProblemDetails) {
 	validationErrors := ValidateDate(day, month, year)
 
 	if len(validationErrors) > 0 {
@@ -27,13 +25,13 @@ func NewBirthDate(day, month, year int) (*BirthDate, []internal.ProblemDetails) 
 	}, nil
 }
 
-func ValidateDate(day, month, year int) []internal.ProblemDetails {
-	var validationErrors []internal.ProblemDetails
+func ValidateDate(day, month, year int) []ProblemDetails {
+	var validationErrors []ProblemDetails
 
 	date := time.Date(year, time.Month(month), day, 0, 0, 0, 0, time.UTC)
 	
 	if date.Day() != day || int(date.Month()) != month || date.Year() != year {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Data de nascimento inválida",
 			Status: http.StatusBadRequest,

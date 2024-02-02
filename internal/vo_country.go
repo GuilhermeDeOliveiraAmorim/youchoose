@@ -1,4 +1,4 @@
-package valueobject
+package internal
 
 type Country struct {
 	Name     string

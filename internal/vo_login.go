@@ -1,4 +1,4 @@
-package valueobject
+package internal
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -18,7 +17,7 @@ type Login struct {
 	PassSalt     []byte
 }
 
-func NewLogin(email, password string) (*Login, []internal.ProblemDetails) {
+func NewLogin(email, password string) (*Login, []ProblemDetails) {
 	validationErrors, emailSalt, passSalt := ValidateLogin(email, password)
 
 	if len(validationErrors) > 0 {
@@ -33,11 +32,11 @@ func NewLogin(email, password string) (*Login, []internal.ProblemDetails) {
 	}, nil
 }
 
-func ValidateLogin(email, password string) ([]internal.ProblemDetails, []byte, []byte) {
-	var validationErrors []internal.ProblemDetails
+func ValidateLogin(email, password string) ([]ProblemDetails, []byte, []byte) {
+	var validationErrors []ProblemDetails
 
 	if !isValidEmail(email) {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "E-mail inválido",
 			Status: http.StatusBadRequest,
@@ -46,7 +45,7 @@ func ValidateLogin(email, password string) ([]internal.ProblemDetails, []byte, [
 	}
 
 	if !isValidPassword(password) {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Senha inválida",
 			Status: http.StatusBadRequest,
@@ -56,7 +55,7 @@ func ValidateLogin(email, password string) ([]internal.ProblemDetails, []byte, [
 
 	emailSalt, err := generateSalt()
 	if err != nil {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao gerar salt",
 			Status: http.StatusBadRequest,
@@ -66,7 +65,7 @@ func ValidateLogin(email, password string) ([]internal.ProblemDetails, []byte, [
 
 	passSalt, err := generateSalt()
 	if err != nil {
-		validationErrors = append(validationErrors, internal.ProblemDetails{
+		validationErrors = append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao gerar salt",
 			Status: http.StatusBadRequest,
@@ -112,11 +111,11 @@ func hasSpecialCharacter(password string) bool {
 	return strings.ContainsAny(password, specialCharacters)
 }
 
-func (l *Login) EncryptEmail(ctx context.Context) ([]byte, []internal.ProblemDetails) {
+func (l *Login) EncryptEmail(ctx context.Context) ([]byte, []ProblemDetails) {
 	select {
 	case <-ctx.Done():
-		var validationErrors []internal.ProblemDetails
-		return nil, append(validationErrors, internal.ProblemDetails{
+		var validationErrors []ProblemDetails
+		return nil, append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao encriptar e-mail",
 			Status: http.StatusBadRequest,
@@ -128,11 +127,11 @@ func (l *Login) EncryptEmail(ctx context.Context) ([]byte, []internal.ProblemDet
 	return hashPassword(ctx, l.Email, l.EmailSalt)
 }
 
-func (l *Login) EncryptPassword(ctx context.Context) ([]byte, []internal.ProblemDetails) {
+func (l *Login) EncryptPassword(ctx context.Context) ([]byte, []ProblemDetails) {
 	select {
 	case <-ctx.Done():
-		var validationErrors []internal.ProblemDetails
-		return nil, append(validationErrors, internal.ProblemDetails{
+		var validationErrors []ProblemDetails
+		return nil, append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao encriptar password",
 			Status: http.StatusBadRequest,
@@ -144,11 +143,11 @@ func (l *Login) EncryptPassword(ctx context.Context) ([]byte, []internal.Problem
 	return hashPassword(ctx, l.Password, l.PassSalt)
 }
 
-func (l *Login) DecryptEmail(ctx context.Context, encryptedEmail []byte) (string, context.Context, []internal.ProblemDetails) {
+func (l *Login) DecryptEmail(ctx context.Context, encryptedEmail []byte) (string, context.Context, []ProblemDetails) {
 	select {
 	case <-ctx.Done():
-		var validationErrors []internal.ProblemDetails
-		return "", ctx, append(validationErrors, internal.ProblemDetails{
+		var validationErrors []ProblemDetails
+		return "", ctx, append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao decriptar e-mail",
 			Status: http.StatusBadRequest,
@@ -160,11 +159,11 @@ func (l *Login) DecryptEmail(ctx context.Context, encryptedEmail []byte) (string
 	return compareAndDecrypt(ctx, l.Email, encryptedEmail, l.EmailSalt)
 }
 
-func (l *Login) DecryptPassword(ctx context.Context, encryptedPassword []byte) (string, context.Context, []internal.ProblemDetails) {
+func (l *Login) DecryptPassword(ctx context.Context, encryptedPassword []byte) (string, context.Context, []ProblemDetails) {
 	select {
 	case <-ctx.Done():
-		var validationErrors []internal.ProblemDetails
-		return "", ctx, append(validationErrors, internal.ProblemDetails{
+		var validationErrors []ProblemDetails
+		return "", ctx, append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao decriptar password",
 			Status: http.StatusBadRequest,
@@ -176,12 +175,12 @@ func (l *Login) DecryptPassword(ctx context.Context, encryptedPassword []byte) (
 	return compareAndDecrypt(ctx, l.Password, encryptedPassword, l.PassSalt)
 }
 
-func generateSalt() ([]byte, []internal.ProblemDetails) {
-	var validationErrors []internal.ProblemDetails
+func generateSalt() ([]byte, []ProblemDetails) {
+	var validationErrors []ProblemDetails
 	salt := make([]byte, 16)
 	_, err := rand.Read(salt)
 	if err != nil {
-		return nil, append(validationErrors, internal.ProblemDetails{
+		return nil, append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao gerar salt",
 			Status: http.StatusBadRequest,
@@ -191,11 +190,11 @@ func generateSalt() ([]byte, []internal.ProblemDetails) {
 	return salt, nil
 }
 
-func hashPassword(_ context.Context, input string, salt []byte) ([]byte, []internal.ProblemDetails) {
-	var validationErrors []internal.ProblemDetails
+func hashPassword(_ context.Context, input string, salt []byte) ([]byte, []ProblemDetails) {
+	var validationErrors []ProblemDetails
 	hash, err := bcrypt.GenerateFromPassword([]byte(input+string(salt)), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, append(validationErrors, internal.ProblemDetails{
+		return nil, append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao gerar hash",
 			Status: http.StatusBadRequest,
@@ -205,11 +204,11 @@ func hashPassword(_ context.Context, input string, salt []byte) ([]byte, []inter
 	return hash, nil
 }
 
-func compareAndDecrypt(ctx context.Context, input string, encrypted []byte, salt []byte) (string, context.Context, []internal.ProblemDetails) {
-	var validationErrors []internal.ProblemDetails
+func compareAndDecrypt(ctx context.Context, input string, encrypted []byte, salt []byte) (string, context.Context, []ProblemDetails) {
+	var validationErrors []ProblemDetails
 	err := bcrypt.CompareHashAndPassword(encrypted, []byte(input+string(salt)))
 	if err != nil {
-		return "", ctx, append(validationErrors, internal.ProblemDetails{
+		return "", ctx, append(validationErrors, ProblemDetails{
 			Type:   "ValidationError",
 			Title:  "Erro ao comparar e decriptar",
 			Status: http.StatusBadRequest,
