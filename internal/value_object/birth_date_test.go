@@ -30,7 +30,6 @@ func TestNewBirthDate_ValidDate(t *testing.T) {
 }
 
 func TestNewBirthDate_InvalidDate(t *testing.T) {
-	// Data inválida (dia 32)
 	day, month, year := 32, 12, 2000
 
 	birthDate, err := NewBirthDate(day, month, year)
