@@ -11,10 +11,10 @@ import (
 )
 
 type Login struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	EmailSalt    []byte
-	PassSalt     []byte
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	EmailSalt []byte
+	PassSalt  []byte
 }
 
 func NewLogin(email, password string) (*Login, []ProblemDetails) {
@@ -25,10 +25,10 @@ func NewLogin(email, password string) (*Login, []ProblemDetails) {
 	}
 
 	return &Login{
-		Email:    email,
-		Password: password,
+		Email:     email,
+		Password:  password,
 		EmailSalt: emailSalt,
-		PassSalt: passSalt,
+		PassSalt:  passSalt,
 	}, nil
 }
 
@@ -37,39 +37,43 @@ func ValidateLogin(email, password string) ([]ProblemDetails, []byte, []byte) {
 
 	if !isValidEmail(email) {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "E-mail inválido",
-			Status: http.StatusBadRequest,
-			Detail: "Por favor, forneça um endereço de e-mail válido.",
+			Type:     "ValidationError",
+			Title:    "E-mail inválido",
+			Status:   http.StatusBadRequest,
+			Detail:   "Por favor, forneça um endereço de e-mail válido.",
+			Instance: RFC400,
 		})
 	}
 
 	if !isValidPassword(password) {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Senha inválida",
-			Status: http.StatusBadRequest,
-			Detail: "A senha deve ter pelo menos 6 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um numeral e um caracter especial.",
+			Type:     "ValidationError",
+			Title:    "Senha inválida",
+			Status:   http.StatusBadRequest,
+			Detail:   "A senha deve ter pelo menos 6 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um numeral e um caracter especial.",
+			Instance: RFC400,
 		})
 	}
 
 	emailSalt, err := generateSalt()
 	if err != nil {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao gerar salt",
-			Status: http.StatusBadRequest,
-			Detail: "Ocorreu um erro ao gerar salt para o e-mail.",
+			Type:     "ValidationError",
+			Title:    "Erro ao gerar salt",
+			Status:   http.StatusBadRequest,
+			Detail:   "Ocorreu um erro ao gerar salt para o e-mail.",
+			Instance: RFC400,
 		})
 	}
 
 	passSalt, err := generateSalt()
 	if err != nil {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao gerar salt",
-			Status: http.StatusBadRequest,
-			Detail: "Ocorreu um erro ao gerar salt para a senha.",
+			Type:     "ValidationError",
+			Title:    "Erro ao gerar salt",
+			Status:   http.StatusBadRequest,
+			Detail:   "Ocorreu um erro ao gerar salt para a senha.",
+			Instance: RFC400,
 		})
 	}
 
@@ -116,10 +120,11 @@ func (l *Login) EncryptEmail(ctx context.Context) ([]byte, []ProblemDetails) {
 	case <-ctx.Done():
 		var validationErrors []ProblemDetails
 		return nil, append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao encriptar e-mail",
-			Status: http.StatusBadRequest,
-			Detail: ctx.Err().Error(),
+			Type:     "ValidationError",
+			Title:    "Erro ao encriptar e-mail",
+			Status:   http.StatusBadRequest,
+			Detail:   ctx.Err().Error(),
+			Instance: RFC400,
 		})
 	default:
 	}
@@ -132,10 +137,11 @@ func (l *Login) EncryptPassword(ctx context.Context) ([]byte, []ProblemDetails) 
 	case <-ctx.Done():
 		var validationErrors []ProblemDetails
 		return nil, append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao encriptar password",
-			Status: http.StatusBadRequest,
-			Detail: ctx.Err().Error(),
+			Type:     "ValidationError",
+			Title:    "Erro ao encriptar password",
+			Status:   http.StatusBadRequest,
+			Detail:   ctx.Err().Error(),
+			Instance: RFC400,
 		})
 	default:
 	}
@@ -148,10 +154,11 @@ func (l *Login) DecryptEmail(ctx context.Context, encryptedEmail []byte) (string
 	case <-ctx.Done():
 		var validationErrors []ProblemDetails
 		return "", ctx, append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao decriptar e-mail",
-			Status: http.StatusBadRequest,
-			Detail: ctx.Err().Error(),
+			Type:     "ValidationError",
+			Title:    "Erro ao decriptar e-mail",
+			Status:   http.StatusBadRequest,
+			Detail:   ctx.Err().Error(),
+			Instance: RFC400,
 		})
 	default:
 	}
@@ -164,10 +171,11 @@ func (l *Login) DecryptPassword(ctx context.Context, encryptedPassword []byte) (
 	case <-ctx.Done():
 		var validationErrors []ProblemDetails
 		return "", ctx, append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao decriptar password",
-			Status: http.StatusBadRequest,
-			Detail: ctx.Err().Error(),
+			Type:     "ValidationError",
+			Title:    "Erro ao decriptar password",
+			Status:   http.StatusBadRequest,
+			Detail:   ctx.Err().Error(),
+			Instance: RFC400,
 		})
 	default:
 	}
@@ -181,10 +189,11 @@ func generateSalt() ([]byte, []ProblemDetails) {
 	_, err := rand.Read(salt)
 	if err != nil {
 		return nil, append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao gerar salt",
-			Status: http.StatusBadRequest,
-			Detail: "Ocorreu um erro ao gerar salt",
+			Type:     "ValidationError",
+			Title:    "Erro ao gerar salt",
+			Status:   http.StatusBadRequest,
+			Detail:   "Ocorreu um erro ao gerar salt",
+			Instance: RFC400,
 		})
 	}
 	return salt, nil
@@ -195,10 +204,11 @@ func hashPassword(_ context.Context, input string, salt []byte) ([]byte, []Probl
 	hash, err := bcrypt.GenerateFromPassword([]byte(input+string(salt)), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao gerar hash",
-			Status: http.StatusBadRequest,
-			Detail: "Ocorreu um erro ao gerar hash para a senha.",
+			Type:     "ValidationError",
+			Title:    "Erro ao gerar hash",
+			Status:   http.StatusBadRequest,
+			Detail:   "Ocorreu um erro ao gerar hash para a senha.",
+			Instance: RFC400,
 		})
 	}
 	return hash, nil
@@ -209,10 +219,11 @@ func compareAndDecrypt(ctx context.Context, input string, encrypted []byte, salt
 	err := bcrypt.CompareHashAndPassword(encrypted, []byte(input+string(salt)))
 	if err != nil {
 		return "", ctx, append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Erro ao comparar e decriptar",
-			Status: http.StatusBadRequest,
-			Detail: "Ocorreu um erro ao comparar senha e hash para decriptar.",
+			Type:     "ValidationError",
+			Title:    "Erro ao comparar e decriptar",
+			Status:   http.StatusBadRequest,
+			Detail:   "Ocorreu um erro ao comparar senha e hash para decriptar.",
+			Instance: RFC400,
 		})
 	}
 	return input, ctx, nil
