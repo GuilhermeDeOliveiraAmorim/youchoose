@@ -99,6 +99,7 @@ func ValidateList(title, description, chooserID string) []ProblemDetails {
 			Title:  "Título da lista inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O título da lista não pode estar vazio e deve ter no máximo 100 caracteres.",
+			Instance: RFC400,
 		})
 	}
 
@@ -108,6 +109,7 @@ func ValidateList(title, description, chooserID string) []ProblemDetails {
 			Title:  "Descrição da lista inválida",
 			Status: http.StatusBadRequest,
 			Detail: "A descrição da lista não pode estar vazia e deve ter no máximo 150 caracteres.",
+			Instance: RFC400,
 		})
 	}
 

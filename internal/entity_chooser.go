@@ -42,6 +42,7 @@ func ValidateChooser(name string, login *Login, address *Address, birthDate *Bir
 			Title:  "Nome do Chooser inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O nome do Chooser não pode estar vazio.",
+			Instance: RFC400,
 		})
 	}
 
@@ -51,6 +52,7 @@ func ValidateChooser(name string, login *Login, address *Address, birthDate *Bir
 			Title:  "Nome do Chooser inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O nome do Chooser não pode ter mais do que 100 caracteres.",
+			Instance: RFC400,
 		})
 	}
 
@@ -60,6 +62,7 @@ func ValidateChooser(name string, login *Login, address *Address, birthDate *Bir
 			Title:  "Login do Chooser inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O login do Chooser não pode ser nulo.",
+			Instance: RFC400,
 		})
 	}
 
@@ -69,6 +72,7 @@ func ValidateChooser(name string, login *Login, address *Address, birthDate *Bir
 			Title:  "Endereço do Chooser inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O endereço do Chooser não pode ser nulo.",
+			Instance: RFC400,
 		})
 	}
 
@@ -78,6 +82,7 @@ func ValidateChooser(name string, login *Login, address *Address, birthDate *Bir
 			Title:  "Data de nascimento do Chooser inválida",
 			Status: http.StatusBadRequest,
 			Detail: "A data de nascimento do Chooser não pode ser nula.",
+			Instance: RFC400,
 		})
 	}
 
@@ -87,6 +92,7 @@ func ValidateChooser(name string, login *Login, address *Address, birthDate *Bir
 			Title:  "ID de imagem do Chooser inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O ID de imagem do Chooser não pode estar vazio.",
+			Instance: RFC400,
 		})
 	}
 
@@ -102,6 +108,7 @@ func (c *Chooser) ChangeLogin(ctx context.Context, newLogin *Login) []ProblemDet
 			Title:  "Erro ao alterar o login do Chooser",
 			Status: http.StatusBadRequest,
 			Detail: ctx.Err().Error(),
+			Instance: RFC400,
 		})
 	default:
 	}
@@ -119,6 +126,7 @@ func (c *Chooser) ChangeAddress(ctx context.Context, newAddress *Address) []Prob
 			Title:  "Erro ao alterar o endereço do Chooser",
 			Status: http.StatusBadRequest,
 			Detail: ctx.Err().Error(),
+			Instance: RFC400,
 		})
 	default:
 	}
@@ -136,6 +144,7 @@ func (c *Chooser) ChangeImageID(ctx context.Context, newImageID string) []Proble
 			Title:  "Erro ao alterar o ID de imagem do Chooser",
 			Status: http.StatusBadRequest,
 			Detail: ctx.Err().Error(),
+			Instance: RFC400,
 		})
 	default:
 	}

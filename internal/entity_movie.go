@@ -45,6 +45,7 @@ func ValidateMovie(title string, nationality Nationality, genres []Genre, direct
 			Title:  "Título do filme inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O título do filme não pode estar vazio e deve ter no máximo 255 caracteres.",
+			Instance: RFC400,
 		})
 	}
 
