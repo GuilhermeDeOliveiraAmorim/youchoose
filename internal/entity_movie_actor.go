@@ -2,11 +2,11 @@ package internal
 
 type MovieActor struct {
 	SharedEntity
-	MovieID int `json:"movie_id"`
-	ActorID int `json:"actor_id"`
+	MovieID string `json:"movie_id"`
+	ActorID string `json:"actor_id"`
 }
 
-func NewMovieActor(movieID, actorID int) *MovieActor {
+func NewMovieActor(movieID, actorID string) *MovieActor {
 	return &MovieActor{
 		SharedEntity: *NewSharedEntity(),
 		MovieID:      movieID,
