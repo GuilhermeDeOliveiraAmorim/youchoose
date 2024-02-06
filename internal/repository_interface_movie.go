@@ -1,8 +1,8 @@
 package internal
 
 type MovieRepositoryInterface interface {
-	Create(movie Movie) error
-	Update(movie Movie) error
+	Create(movie *Movie) error
+	Update(movie *Movie) error
 	GetByID(movieID string) (Movie, error)
 	GetAll() ([]Movie, error)
 	GetByActorID(actorID string) ([]Movie, error)
