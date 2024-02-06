@@ -6,10 +6,10 @@ import (
 
 type Writer struct {
 	SharedEntity
-	Name        string      `json:"name"`
-	BirthDate   *BirthDate  `json:"birth_date"`
+	Name        string       `json:"name"`
+	BirthDate   *BirthDate   `json:"birth_date"`
 	Nationality *Nationality `json:"nationality"`
-	ImageID     string      `json:"image_id"`
+	ImageID     string       `json:"image_id"`
 }
 
 func NewWriter(name string, birthDate *BirthDate, nationality *Nationality, imageID string) (*Writer, []ProblemDetails) {
@@ -35,46 +35,51 @@ func ValidateWriter(name string, birthDate *BirthDate, nationality *Nationality,
 
 	if name == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Nome do(a) escritor(a) inválido",
-			Status: http.StatusBadRequest,
-			Detail: "O nome do(a) escritor(a) não pode estar vazio.",
+			Type:     "ValidationError",
+			Title:    "Nome do(a) escritor(a) inválido",
+			Status:   http.StatusBadRequest,
+			Detail:   "O nome do(a) escritor(a) não pode estar vazio.",
+			Instance: RFC400,
 		})
 	}
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Nome do(a) escritor(a) inválido",
-			Status: http.StatusBadRequest,
-			Detail: "O nome do(a) escritor(a) não pode ter mais do que 100 caracteres.",
+			Type:     "ValidationError",
+			Title:    "Nome do(a) escritor(a) inválido",
+			Status:   http.StatusBadRequest,
+			Detail:   "O nome do(a) escritor(a) não pode ter mais do que 100 caracteres.",
+			Instance: RFC400,
 		})
 	}
 
 	if birthDate == nil {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Data de nascimento do(a) escritor(a) inválida",
-			Status: http.StatusBadRequest,
-			Detail: "A data de nascimento do(a) escritor(a) não pode ser nula.",
+			Type:     "ValidationError",
+			Title:    "Data de nascimento do(a) escritor(a) inválida",
+			Status:   http.StatusBadRequest,
+			Detail:   "A data de nascimento do(a) escritor(a) não pode ser nula.",
+			Instance: RFC400,
 		})
 	}
 
 	if nationality == nil {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "Nacionalidade do(a) escritor(a) inválida",
-			Status: http.StatusBadRequest,
-			Detail: "A nacionalidade do(a) escritor(a) não pode ser nula.",
+			Type:     "ValidationError",
+			Title:    "Nacionalidade do(a) escritor(a) inválida",
+			Status:   http.StatusBadRequest,
+			Detail:   "A nacionalidade do(a) escritor(a) não pode ser nula.",
+			Instance: RFC400,
 		})
 	}
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, ProblemDetails{
-			Type:   "ValidationError",
-			Title:  "ID de imagem do(a) escritor(a) inválido",
-			Status: http.StatusBadRequest,
-			Detail: "O ID de imagem do(a) escritor(a) não pode estar vazio.",
+			Type:     "ValidationError",
+			Title:    "ID de imagem do(a) escritor(a) inválido",
+			Status:   http.StatusBadRequest,
+			Detail:   "O ID de imagem do(a) escritor(a) não pode estar vazio.",
+			Instance: RFC400,
 		})
 	}
 

@@ -69,7 +69,7 @@ func TestVotation_Vote(t *testing.T) {
 
 	votation.Vote(chosenCombination)
 
-	if votation.ChosenCombination != chosenCombination {
+	if (votation.ChosenCombination.VotationID != chosenCombination.VotationID) || (votation.ChosenCombination.FirstMovieID != chosenCombination.FirstMovieID) || (votation.ChosenCombination.SecondMovieID != chosenCombination.SecondMovieID) {
 		t.Error("Expected votation to have the chosen combination.")
 	}
 }
