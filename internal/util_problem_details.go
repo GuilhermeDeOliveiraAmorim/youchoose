@@ -31,7 +31,7 @@ func NewProblemDetails(t string, title string, status int, detail string, instan
 
 func (pd *ProblemDetails) Validate() error {
 	if pd.Type == "" || len(pd.Type) > 100 {
-		NewLogger(
+		NewLoggerError(
 			http.StatusBadRequest,
 			"O tipo deve ser não vazio e ter no máximo 100 caracteres",
 			"NewProblemDetails",
@@ -43,7 +43,7 @@ func (pd *ProblemDetails) Validate() error {
 	}
 
 	if pd.Title == "" || len(pd.Title) > 100 {
-		NewLogger(
+		NewLoggerError(
 			http.StatusBadRequest,
 			"O título deve ser não vazio e ter no máximo 100 caracteres",
 			"NewProblemDetails",
@@ -55,7 +55,7 @@ func (pd *ProblemDetails) Validate() error {
 	}
 
 	if pd.Status < 100 || pd.Status >= 600 {
-		NewLogger(
+		NewLoggerError(
 			http.StatusBadRequest,
 			"O status deve ser um código HTTP válido",
 			"NewProblemDetails",
@@ -67,7 +67,7 @@ func (pd *ProblemDetails) Validate() error {
 	}
 
 	if pd.Detail == "" || len(pd.Detail) > 255 {
-		NewLogger(
+		NewLoggerError(
 			http.StatusBadRequest,
 			"O detalhe deve ser não vazio e ter no máximo 255 caracteres",
 			"NewProblemDetails",
@@ -79,7 +79,7 @@ func (pd *ProblemDetails) Validate() error {
 	}
 
 	if len(pd.Instance) > 255 {
-		NewLogger(
+		NewLoggerError(
 			http.StatusBadRequest,
 			"A instância não deve ter mais do que 255 caracteres",
 			"NewProblemDetails",

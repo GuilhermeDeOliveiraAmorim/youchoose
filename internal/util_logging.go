@@ -13,11 +13,41 @@ type Logger struct {
 	TypeLog string `json:"type_log"`
 }
 
-func NewLogger(code int, message, from, layer, typeLog string) *slog.Logger {
+func NewLoggerError(code int, message, from, layer, typeLog string) *slog.Logger {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	logger.Error(
 		"ERROR",
+		"code:", code,
+		"message:", message,
+		"from:", from,
+		"layer:", layer,
+		"type:", typeLog,
+	)
+
+	return logger
+}
+
+func NewLoggerInfo(code int, message, from, layer, typeLog string) *slog.Logger {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	logger.Info(
+		"INFO",
+		"code:", code,
+		"message:", message,
+		"from:", from,
+		"layer:", layer,
+		"type:", typeLog,
+	)
+
+	return logger
+}
+
+func NewLoggerWarning(code int, message, from, layer, typeLog string) *slog.Logger {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+
+	logger.Warn(
+		"WARNING",
 		"code:", code,
 		"message:", message,
 		"from:", from,
