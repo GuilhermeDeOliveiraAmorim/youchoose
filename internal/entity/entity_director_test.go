@@ -3,7 +3,7 @@ package entity
 import (
 	"testing"
 
-	valueobject "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/value_object"
+	valueobject "youchoose/internal/value_object"
 )
 
 func TestNewDirector(t *testing.T) {

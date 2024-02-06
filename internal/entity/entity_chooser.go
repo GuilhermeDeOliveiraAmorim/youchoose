@@ -4,17 +4,18 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
-	valueobject "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/value_object"
+	"youchoose/internal/util"
+
+	valueobject "youchoose/internal/value_object"
 )
 
 type Chooser struct {
 	SharedEntity
-	Name      string     `json:"name"`
+	Name      string                 `json:"name"`
 	Login     *valueobject.Login     `json:"login"`
 	Address   *valueobject.Address   `json:"address"`
 	BirthDate *valueobject.BirthDate `json:"birth_date"`
-	ImageID   string     `json:"image_id"`
+	ImageID   string                 `json:"image_id"`
 }
 
 func NewChooser(name string, login *valueobject.Login, address *valueobject.Address, birthDate *valueobject.BirthDate, imageID string) (*Chooser, []util.ProblemDetails) {

@@ -3,8 +3,9 @@ package entity
 import (
 	"net/http"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
-	valueobject "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/value_object"
+	"youchoose/internal/util"
+
+	valueobject "youchoose/internal/value_object"
 )
 
 type Writer struct {

@@ -7,7 +7,8 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
+	"youchoose/internal/util"
+
 	"golang.org/x/crypto/bcrypt"
 )
 

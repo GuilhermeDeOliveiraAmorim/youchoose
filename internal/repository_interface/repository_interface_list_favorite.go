@@ -1,6 +1,6 @@
 package repositoryinterface
 
-import "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/entity"
+import "youchoose/internal/entity"
 
 type ListFavoriteRepositoryInterface interface {
 	Create(listFavorite *entity.ListFavorite) error

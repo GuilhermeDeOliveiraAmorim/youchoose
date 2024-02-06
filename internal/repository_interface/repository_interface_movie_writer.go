@@ -1,6 +1,6 @@
 package repositoryinterface
 
-import "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/entity"
+import "youchoose/internal/entity"
 
 type MovieWriterRepositoryInterface interface {
 	Create(movieWriter *entity.MovieWriter) error

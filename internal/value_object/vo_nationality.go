@@ -3,7 +3,7 @@ package valueobject
 import (
 	"net/http"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
+	"youchoose/internal/util"
 )
 
 type Nationality struct {

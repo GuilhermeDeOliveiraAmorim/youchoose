@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	valueobject "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/value_object"
+	valueobject "youchoose/internal/value_object"
 )
 
 func TestNewMovie(t *testing.T) {

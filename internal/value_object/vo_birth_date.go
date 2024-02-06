@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
+	"youchoose/internal/util"
 )
 
 type BirthDate struct {
