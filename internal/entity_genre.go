@@ -33,6 +33,7 @@ func ValidateGenre(name, imageID string) []ProblemDetails {
 			Title:  "Nome do gênero inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O nome do gênero não pode estar vazio.",
+			Instance: RFC400,
 		})
 	}
 
@@ -42,6 +43,7 @@ func ValidateGenre(name, imageID string) []ProblemDetails {
 			Title:  "Nome do gênero inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O nome do gênero não pode ter mais do que 100 caracteres.",
+			Instance: RFC400,
 		})
 	}
 
@@ -51,6 +53,7 @@ func ValidateGenre(name, imageID string) []ProblemDetails {
 			Title:  "ID de imagem do gênero inválido",
 			Status: http.StatusBadRequest,
 			Detail: "O ID de imagem do gênero não pode estar vazio.",
+			Instance: RFC400,
 		})
 	}
 
