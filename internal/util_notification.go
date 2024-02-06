@@ -25,7 +25,7 @@ func NewNotification(key, value string) (*Notification, error) {
 
 func (n *Notification) Validate() error {
 	if len(n.Key) == 0 || len(n.Key) > 50 {
-		NewLogger(
+		NewLoggerError(
 			http.StatusBadRequest,
 			"A chave da notificação deve ter entre 1 e 50 caracteres",
 			"NewProblemDetails",
@@ -37,7 +37,7 @@ func (n *Notification) Validate() error {
 	}
 
 	if len(n.Value) > 255 {
-		NewLogger(
+		NewLoggerError(
 			http.StatusBadRequest,
 			"O valor da notificação não pode ter mais do que 255 caracteres",
 			"NewProblemDetails",

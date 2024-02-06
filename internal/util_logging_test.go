@@ -21,7 +21,7 @@ func TestNewLogger(t *testing.T) {
 	from := "Origem"
 	layer := "Camada"
 	typeLog := "TipoLog"
-	NewLogger(code, message, from, layer, typeLog)
+	NewLoggerError(code, message, from, layer, typeLog)
 	
 	w.Close()
 	output, _ := readAll(r)

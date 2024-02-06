@@ -3,6 +3,7 @@ package internal
 import "net/http"
 
 type Combination struct {
+	SharedEntity
 	VotationID    string `json:"votation_id"`
 	FirstMovieID  string `json:"first_movie_id"`
 	SecondMovieID string `json:"second_movie_id"`
@@ -17,6 +18,7 @@ func NewCombination(votationID, firstMovieID, secondMovieID, chosenMovieID strin
 	}
 
 	combination := &Combination{
+		SharedEntity: *NewSharedEntity(),
 		VotationID:    votationID,
 		FirstMovieID:  firstMovieID,
 		SecondMovieID: secondMovieID,
@@ -35,6 +37,7 @@ func ValidateCombination(votationID, firstMovieID, secondMovieID, chosenMovieID 
 			Title:  "IDs dos filmes na combinação inválidos",
 			Status: http.StatusBadRequest,
 			Detail: "Os IDs dos filmes na combinação não podem estar vazios.",
+			Instance: RFC400,
 		})
 	}
 
