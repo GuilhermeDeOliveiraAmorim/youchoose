@@ -5,5 +5,6 @@ type CombinationRepositoryInterface interface {
 	Update(combination *Combination) error
 	GetByID(combinationID string) (Combination, error)
 	GetAll() ([]Combination, error)
+	GetAllByVotationID(votationID string) ([]Combination, error)
 	Deactivate(combinationID string) error
 }
