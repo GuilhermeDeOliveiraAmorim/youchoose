@@ -3,21 +3,22 @@ package entity
 import (
 	"net/http"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
-	valueobject "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/value_object"
+	"youchoose/internal/util"
+
+	valueobject "youchoose/internal/value_object"
 )
 
 type Movie struct {
 	SharedEntity
-	Title       string      `json:"title"`
+	Title       string                  `json:"title"`
 	Nationality valueobject.Nationality `json:"nationality"`
-	Genres      []Genre     `json:"genres"`
-	Directors   []Director  `json:"directors"`
-	Actors      []Actor     `json:"actors"`
-	Writers     []Writer    `json:"writers"`
-	ReleaseYear int         `json:"release_year"`
-	ImageID     string      `json:"image_id"`
-	Votes       int         `json:"votes"`
+	Genres      []Genre                 `json:"genres"`
+	Directors   []Director              `json:"directors"`
+	Actors      []Actor                 `json:"actors"`
+	Writers     []Writer                `json:"writers"`
+	ReleaseYear int                     `json:"release_year"`
+	ImageID     string                  `json:"image_id"`
+	Votes       int                     `json:"votes"`
 }
 
 func NewMovie(title string, nationality valueobject.Nationality, genres []Genre, directors []Director, actors []Actor, writers []Writer, releaseYear int, imageID string) (*Movie, []util.ProblemDetails) {

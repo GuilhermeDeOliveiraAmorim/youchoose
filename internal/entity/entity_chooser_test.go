@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	valueobject "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/value_object"
+	valueobject "youchoose/internal/value_object"
 )
 
 func TestNewChooser(t *testing.T) {

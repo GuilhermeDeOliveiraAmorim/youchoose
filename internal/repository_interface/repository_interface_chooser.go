@@ -1,6 +1,6 @@
 package repositoryinterface
 
-import "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/entity"
+import "youchoose/internal/entity"
 
 type ChooserRepositoryInterface interface {
 	Create(chooser *entity.Chooser) error

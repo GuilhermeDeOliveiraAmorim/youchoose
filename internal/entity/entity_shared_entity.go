@@ -3,16 +3,17 @@ package entity
 import (
 	"time"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
+	"youchoose/internal/util"
+
 	"github.com/google/uuid"
 )
 
 type SharedEntity struct {
-	ID            string           `json:"id"`
-	Active        bool             `json:"active"`
-	CreatedAt     time.Time        `json:"created_at"`
-	UpdatedAt     time.Time        `json:"updated_at"`
-	DeactivatedAt time.Time        `json:"deactivated_at"`
+	ID            string                `json:"id"`
+	Active        bool                  `json:"active"`
+	CreatedAt     time.Time             `json:"created_at"`
+	UpdatedAt     time.Time             `json:"updated_at"`
+	DeactivatedAt time.Time             `json:"deactivated_at"`
 	Notifications []util.Notification   `json:"notifications"`
 	Errors        []util.ProblemDetails `json:"errors"`
 }

@@ -1,6 +1,6 @@
 package repositoryinterface
 
-import "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/entity"
+import "youchoose/internal/entity"
 
 type ImageRepositoryInterface interface {
 	Create(image *entity.Image) error

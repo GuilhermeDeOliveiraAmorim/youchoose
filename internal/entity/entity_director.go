@@ -3,16 +3,17 @@ package entity
 import (
 	"net/http"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
-	valueobject "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/value_object"
+	"youchoose/internal/util"
+
+	valueobject "youchoose/internal/value_object"
 )
 
 type Director struct {
 	SharedEntity
-	Name        string       `json:"name"`
+	Name        string                   `json:"name"`
 	BirthDate   *valueobject.BirthDate   `json:"birth_date"`
 	Nationality *valueobject.Nationality `json:"nationality"`
-	ImageID     string       `json:"image_id"`
+	ImageID     string                   `json:"image_id"`
 }
 
 func NewDirector(name string, birthDate *valueobject.BirthDate, nationality *valueobject.Nationality, imageID string) (*Director, []util.ProblemDetails) {

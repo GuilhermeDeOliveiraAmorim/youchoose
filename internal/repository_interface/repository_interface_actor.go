@@ -1,6 +1,7 @@
 package repositoryinterface
 
-import "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/entity"
+import "youchoose/internal/entity"
+
 
 type ActorRepositoryInterface interface {
 	Create(actor *entity.Actor) error

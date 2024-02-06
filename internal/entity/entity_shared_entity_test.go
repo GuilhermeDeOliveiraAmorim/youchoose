@@ -3,7 +3,7 @@ package entity
 import (
 	"testing"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
+	"youchoose/internal/util"
 )
 
 func TestNewSharedEntity(t *testing.T) {

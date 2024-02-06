@@ -1,4 +1,4 @@
-module github.com/GuilhermeDeOliveiraAmorim/youchoose
+module youchoose
 
 go 1.21.5
 

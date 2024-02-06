@@ -3,16 +3,16 @@ package entity
 import (
 	"net/http"
 
-	"github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/util"
-	valueobject "github.com/GuilhermeDeOliveiraAmorim/youchoose/internal/value_object"
+	"youchoose/internal/util"
+	valueobject "youchoose/internal/value_object"
 )
 
 type Actor struct {
 	SharedEntity
-	Name        string       `json:"name"`
+	Name        string                   `json:"name"`
 	BirthDate   *valueobject.BirthDate   `json:"birth_date"`
 	Nationality *valueobject.Nationality `json:"nationality"`
-	ImageID     string       `json:"image_id"`
+	ImageID     string                   `json:"image_id"`
 }
 
 func NewActor(name string, birthDate *valueobject.BirthDate, nationality *valueobject.Nationality, imageID string) (*Actor, []util.ProblemDetails) {
