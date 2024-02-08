@@ -230,3 +230,7 @@ func compareAndDecrypt(ctx context.Context, input string, encrypted []byte, salt
 	}
 	return input, ctx, nil
 }
+
+func (lo *Login) Equals(other *Login) bool {
+	return lo.Email == other.Email && lo.Password == other.Password
+}
