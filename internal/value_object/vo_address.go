@@ -73,3 +73,7 @@ func ValidateAddress(city, state, country string) []util.ProblemDetails {
 
 	return validationErrors
 }
+
+func (ad *Address) Equals(other *Address) bool {
+	return ad.City == other.City && ad.Country == other.Country && ad.State == other.State
+}

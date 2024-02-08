@@ -94,3 +94,12 @@ func TestEncryptAndDecryptPassword(t *testing.T) {
 		t.Errorf("Senha decriptada diferente do esperado. Esperado: %s, Obtido: %s", password, decryptedPassword)
 	}
 }
+
+func TestLogin_Equals(t *testing.T) {
+	login1, _ := NewLogin("meuemail@bol.com.br", "As1@a7")
+	login2, _ := NewLogin("meuemail@bol.com.br", "As1@a7")
+	
+	if got := login1.Equals(login2); got != true {
+		t.Errorf("Login.Equals() = %v, want %v", got, login1.Equals(login2))
+	}
+}
