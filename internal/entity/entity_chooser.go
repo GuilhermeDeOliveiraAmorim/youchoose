@@ -60,36 +60,6 @@ func ValidateChooser(name string, login *valueobject.Login, address *valueobject
 		})
 	}
 
-	if login == nil {
-		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
-			Title:    "Login do Chooser inválido",
-			Status:   http.StatusBadRequest,
-			Detail:   "O login do Chooser não pode ser nulo.",
-			Instance: util.RFC400,
-		})
-	}
-
-	if address == nil {
-		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
-			Title:    "Endereço do Chooser inválido",
-			Status:   http.StatusBadRequest,
-			Detail:   "O endereço do Chooser não pode ser nulo.",
-			Instance: util.RFC400,
-		})
-	}
-
-	if birthDate == nil {
-		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
-			Title:    "Data de nascimento do Chooser inválida",
-			Status:   http.StatusBadRequest,
-			Detail:   "A data de nascimento do Chooser não pode ser nula.",
-			Instance: util.RFC400,
-		})
-	}
-
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     "ValidationError",
