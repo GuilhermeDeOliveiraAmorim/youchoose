@@ -13,7 +13,7 @@ type Logger struct {
 	TypeLog string `json:"type_log"`
 }
 
-func NewLoggerError(code int, message, from, layer, typeLog string) *slog.Logger {
+func NewLoggerError(code int, message, from, layer, typeLog string) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	logger.Error(
@@ -24,11 +24,9 @@ func NewLoggerError(code int, message, from, layer, typeLog string) *slog.Logger
 		"layer:", layer,
 		"type:", typeLog,
 	)
-
-	return logger
 }
 
-func NewLoggerInfo(code int, message, from, layer, typeLog string) *slog.Logger {
+func NewLoggerInfo(code int, message, from, layer, typeLog string) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	logger.Info(
@@ -39,11 +37,9 @@ func NewLoggerInfo(code int, message, from, layer, typeLog string) *slog.Logger 
 		"layer:", layer,
 		"type:", typeLog,
 	)
-
-	return logger
 }
 
-func NewLoggerWarning(code int, message, from, layer, typeLog string) *slog.Logger {
+func NewLoggerWarning(code int, message, from, layer, typeLog string) {
 	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 
 	logger.Warn(
@@ -54,6 +50,4 @@ func NewLoggerWarning(code int, message, from, layer, typeLog string) *slog.Logg
 		"layer:", layer,
 		"type:", typeLog,
 	)
-
-	return logger
 }
