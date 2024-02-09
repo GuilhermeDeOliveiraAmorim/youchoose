@@ -8,6 +8,7 @@ type ChooserRepositoryInterface interface {
 	GetByID(chooserID string) (entity.Chooser, error)
 	GetByEmail(chooserEmail string) (entity.Chooser, error)
 	ChooserAlreadyExists(chooserEmail string) (bool, error)
+	DoesTheChooserExist(chooserID string) (bool, entity.Chooser, error)
 	GetAll() ([]entity.Chooser, error)
 	Deactivate(chooserID string) error
 	GetLists(chooserID string) error

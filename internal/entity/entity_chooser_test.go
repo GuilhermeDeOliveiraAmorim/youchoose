@@ -5,6 +5,8 @@ import (
 	"testing"
 
 	valueobject "youchoose/internal/value_object"
+
+	"github.com/google/uuid"
 )
 
 func TestNewChooser(t *testing.T) {
@@ -12,7 +14,7 @@ func TestNewChooser(t *testing.T) {
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
 	address := &valueobject.Address{City: "City", State: "State", Country: "Country"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
-	imageID := "123"
+	imageID := uuid.New().String()
 
 	chooser, err := NewChooser(name, login, address, birthDate, imageID)
 

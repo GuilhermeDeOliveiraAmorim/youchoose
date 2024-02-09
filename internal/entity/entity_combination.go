@@ -37,7 +37,7 @@ func ValidateCombination(votationID, firstMovieID, secondMovieID, chosenMovieID 
 
 	if firstMovieID == "" || secondMovieID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "IDs dos filmes na combinação inválidos",
 			Status:   http.StatusBadRequest,
 			Detail:   "Os IDs dos filmes na combinação não podem estar vazios.",

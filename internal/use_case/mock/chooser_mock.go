@@ -77,6 +77,22 @@ func (mr *MockChooserRepositoryInterfaceMockRecorder) Deactivate(chooserID inter
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockChooserRepositoryInterface)(nil).Deactivate), chooserID)
 }
 
+// DoesTheChooserExist mocks base method.
+func (m *MockChooserRepositoryInterface) DoesTheChooserExist(chooserID string) (bool, entity.Chooser, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DoesTheChooserExist", chooserID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(entity.Chooser)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// DoesTheChooserExist indicates an expected call of DoesTheChooserExist.
+func (mr *MockChooserRepositoryInterfaceMockRecorder) DoesTheChooserExist(chooserID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DoesTheChooserExist", reflect.TypeOf((*MockChooserRepositoryInterface)(nil).DoesTheChooserExist), chooserID)
+}
+
 // GetAll mocks base method.
 func (m *MockChooserRepositoryInterface) GetAll() ([]entity.Chooser, error) {
 	m.ctrl.T.Helper()

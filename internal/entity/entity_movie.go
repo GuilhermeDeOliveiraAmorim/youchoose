@@ -47,7 +47,7 @@ func ValidateMovie(title string, nationality valueobject.Nationality, genres []G
 
 	if title == "" || len(title) > 255 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "Título do filme inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O título do filme não pode estar vazio e deve ter no máximo 255 caracteres.",
