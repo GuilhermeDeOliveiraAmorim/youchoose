@@ -6,6 +6,8 @@ import (
 	repositoryinterface "youchoose/internal/repository_interface"
 	"youchoose/internal/util"
 	valueobject "youchoose/internal/value_object"
+
+	"github.com/google/uuid"
 )
 
 type UpdateChooserInputDTO struct {
@@ -90,7 +92,7 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 		userThatExists.ChangeBirthDate(ctx, newBirthdate)
 	}
 
-	if input.ImageID == "" {
+	if uuid.Validate(input.ImageID) != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Validation Error",
 			Title:    "Erro ao alterar o ID de imagem do Chooser",
