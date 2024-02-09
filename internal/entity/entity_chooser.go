@@ -7,6 +7,8 @@ import (
 	"youchoose/internal/util"
 
 	valueobject "youchoose/internal/value_object"
+
+	"github.com/google/uuid"
 )
 
 type Chooser struct {
@@ -19,7 +21,7 @@ type Chooser struct {
 }
 
 func NewChooser(name string, login *valueobject.Login, address *valueobject.Address, birthDate *valueobject.BirthDate, imageID string) (*Chooser, []util.ProblemDetails) {
-	validationErrors := ValidateChooser(name, login, address, birthDate, imageID)
+	validationErrors := ValidateChooser(name, imageID)
 
 	if len(validationErrors) > 0 {
 		return nil, validationErrors
@@ -37,7 +39,7 @@ func NewChooser(name string, login *valueobject.Login, address *valueobject.Addr
 	return chooser, nil
 }
 
-func ValidateChooser(name string, login *valueobject.Login, address *valueobject.Address, birthDate *valueobject.BirthDate, imageID string) []util.ProblemDetails {
+func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 	var validationErrors []util.ProblemDetails
 
 	if name == "" {
@@ -60,7 +62,7 @@ func ValidateChooser(name string, login *valueobject.Login, address *valueobject
 		})
 	}
 
-	if imageID == "" {
+	if uuid.Validate(imageID) != nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     "Validation Error",
 			Title:    "ID de imagem do Chooser inválido",
@@ -142,5 +144,23 @@ func (c *Chooser) ChangeImageID(ctx context.Context, newImageID string) []util.P
 	}
 
 	c.ImageID = newImageID
+	return nil
+}
+
+func (c *Chooser) ChangeName(ctx context.Context, newName string) []util.ProblemDetails {
+	select {
+	case <-ctx.Done():
+		var validationErrors []util.ProblemDetails
+		return append(validationErrors, util.ProblemDetails{
+			Type:     "Validation Error",
+			Title:    "Erro ao alterar o nome do Chooser",
+			Status:   http.StatusBadRequest,
+			Detail:   ctx.Err().Error(),
+			Instance: util.RFC400,
+		})
+	default:
+	}
+
+	c.Name = newName
 	return nil
 }
