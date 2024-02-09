@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"context"
 	"net/http"
 	"youchoose/internal/entity"
 	repositoryinterface "youchoose/internal/repository_interface"
@@ -24,7 +25,6 @@ type CreateChooserInputDTO struct {
 type CreateChooserOutputDTO struct {
 	ID      string `json:"id"`
 	Name    string `json:"name"`
-	Email   string `json:"email"`
 	City    string `json:"city"`
 	State   string `json:"state"`
 	Country string `json:"country"`
@@ -49,8 +49,18 @@ func NewCreateChooserUseCase(
 func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChooserOutputDTO, []util.ProblemDetails) {
 	problemsDetails := []util.ProblemDetails{}
 
-	_, error := cc.ChooserRepository.GetByEmail(input.Email)
-	if error == nil {
+	chooserAlreadyExists, chooserAlreadyExistsError := cc.ChooserRepository.ChooserAlreadyExists(input.Email)
+	if chooserAlreadyExistsError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Internal Server Error",
+			Title:    "Erro ao resgatar um chooser através do e-mail",
+			Status:   http.StatusInternalServerError,
+			Detail:   chooserAlreadyExistsError.Error(),
+			Instance: util.RFC500,
+		})
+
+		return CreateChooserOutputDTO{}, problemsDetails
+	} else if chooserAlreadyExists {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "ValidationError",
 			Title:    "E-mail já está em uso",
@@ -82,17 +92,29 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 		problemsDetails = append(problemsDetails, newChooserProblems...)
 	}
 
+	ctx := context.Background()
+
+	_, encryptPasswordProblems := newChooser.Login.EncryptPassword(ctx)
+	if len(encryptPasswordProblems) > 0 {
+		problemsDetails = append(problemsDetails, encryptPasswordProblems...)
+	}
+
+	_, encryptEmailProblems := newChooser.Login.EncryptEmail(ctx)
+	if len(encryptEmailProblems) > 0 {
+		problemsDetails = append(problemsDetails, encryptEmailProblems...)
+	}
+
 	if len(problemsDetails) > 0 {
 		return CreateChooserOutputDTO{}, problemsDetails
 	}
 
-	error = cc.ChooserRepository.Create(newChooser)
-	if error != nil {
+	chooserCreateError := cc.ChooserRepository.Create(newChooser)
+	if chooserCreateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
 			Title:    "Erro ao persistir um chooser",
 			Status:   http.StatusInternalServerError,
-			Detail:   error.Error(),
+			Detail:   chooserCreateError.Error(),
 			Instance: util.RFC500,
 		})
 	}
@@ -100,7 +122,6 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 	output := CreateChooserOutputDTO{
 		ID:      newChooser.ID,
 		Name:    newChooser.Name,
-		Email:   newChooser.Login.Email,
 		City:    newChooser.Address.City,
 		State:   newChooser.Address.State,
 		Country: newChooser.Address.Country,
