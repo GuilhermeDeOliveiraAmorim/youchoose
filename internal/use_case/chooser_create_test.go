@@ -38,10 +38,10 @@ func TestCreateChooser(t *testing.T) {
 		ImageID:  uuid.New().String(),
 	}
 
-	output, problemsDetails := createChooserUseCase.Execute(input)
+	output, problemDetailsOutputDTO := createChooserUseCase.Execute(input)
 
-	if len(problemsDetails) > 0 {
-		t.Errorf("Unexpected problems during chooser creation: %v", problemsDetails)
+	if len(problemDetailsOutputDTO.ProblemDetails) > 0 {
+		t.Errorf("Unexpected problems during chooser creation: %v", len(problemDetailsOutputDTO.ProblemDetails))
 	}
 
 	if output.ID == "" {
