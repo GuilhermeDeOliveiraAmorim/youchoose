@@ -64,7 +64,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 		}
 	} else if chooserAlreadyExists {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "E-mail já está em uso",
 			Status:   http.StatusConflict,
 			Detail:   "O e-mail fornecido já está sendo utilizado por outro chooser.",

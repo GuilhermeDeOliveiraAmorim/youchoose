@@ -33,7 +33,7 @@ func ValidateAddress(city, state, country string) []util.ProblemDetails {
 
 	if city == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "Cidade inválida",
 			Status:   http.StatusBadRequest,
 			Detail:   "A cidade não pode estar vazia.",
@@ -43,7 +43,7 @@ func ValidateAddress(city, state, country string) []util.ProblemDetails {
 
 	if state == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "Estado inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O estado não pode estar vazio.",
@@ -53,7 +53,7 @@ func ValidateAddress(city, state, country string) []util.ProblemDetails {
 
 	if country == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "País inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O país não pode estar vazio.",
@@ -63,7 +63,7 @@ func ValidateAddress(city, state, country string) []util.ProblemDetails {
 
 	if !isCountryValid(country) {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "País inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "Por favor, forneça um país válido.",

@@ -65,7 +65,7 @@ func TestAddNotification(t *testing.T) {
 func TestAddError(t *testing.T) {
 	sharedEntity := NewSharedEntity()
 	sharedEntity.AddError(util.ProblemDetails{
-		Type:   "ValidationError",
+		Type:   "Validation Error",
 		Title:  "Erro de validação",
 		Status: 400,
 		Detail: "Campos obrigatórios não preenchidos",
@@ -89,7 +89,7 @@ func TestClearNotifications(t *testing.T) {
 func TestClearErrors(t *testing.T) {
 	sharedEntity := NewSharedEntity()
 	sharedEntity.AddError(util.ProblemDetails{
-		Type:   "ValidationError",
+		Type:   "Validation Error",
 		Title:  "Erro de validação",
 		Status: 400,
 		Detail: "Campos obrigatórios não preenchidos",
