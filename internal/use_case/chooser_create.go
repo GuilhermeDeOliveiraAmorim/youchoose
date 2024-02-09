@@ -46,7 +46,7 @@ func NewCreateChooserUseCase(
 	}
 }
 
-func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChooserOutputDTO, []util.ProblemDetails) {
+func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChooserOutputDTO, util.ProblemDetailsOutputDTO) {
 	problemsDetails := []util.ProblemDetails{}
 
 	chooserAlreadyExists, chooserAlreadyExistsError := cc.ChooserRepository.ChooserAlreadyExists(input.Email)
@@ -59,7 +59,9 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 			Instance: util.RFC500,
 		})
 
-		return CreateChooserOutputDTO{}, problemsDetails
+		return CreateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	} else if chooserAlreadyExists {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "ValidationError",
@@ -69,7 +71,9 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 			Instance: util.RFC409,
 		})
 
-		return CreateChooserOutputDTO{}, problemsDetails
+		return CreateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
 	newLogin, newLoginProblems := valueobject.NewLogin(input.Email, input.Password)
@@ -105,7 +109,9 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 	}
 
 	if len(problemsDetails) > 0 {
-		return CreateChooserOutputDTO{}, problemsDetails
+		return CreateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
 	chooserCreateError := cc.ChooserRepository.Create(newChooser)
@@ -131,5 +137,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 		ImageID: newChooser.ImageID,
 	}
 
-	return output, problemsDetails
+	return output, util.ProblemDetailsOutputDTO{
+		ProblemDetails: problemsDetails,
+	}
 }
