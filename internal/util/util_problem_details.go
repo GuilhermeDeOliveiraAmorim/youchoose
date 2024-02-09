@@ -5,6 +5,10 @@ import (
 	"net/http"
 )
 
+type ProblemDetailsOutputDTO struct {
+	ProblemDetails []ProblemDetails `json:"problem_details"`
+}
+
 type ProblemDetails struct {
 	Type     string `json:"type"`
 	Title    string `json:"title"`
