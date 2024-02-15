@@ -50,7 +50,7 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 	chooserID := existingUser.ID
 
 	mockRepository.EXPECT().
-		DoesTheChooserExist(chooserID).
+		GetByID(chooserID).
 		Return(true, *existingUser, nil).
 		Times(1)
 
@@ -113,7 +113,7 @@ func TestUpdateChooserUseCase_Execute_NotFound(t *testing.T) {
 		ID: chooserID,
 	}
 
-	mockRepository.EXPECT().DoesTheChooserExist(input.ID).Return(false, entity.Chooser{}, nil)
+	mockRepository.EXPECT().GetByID(input.ID).Return(false, entity.Chooser{}, nil)
 
 	output, problems := updateChooserUseCase.Execute(input)
 
@@ -144,7 +144,7 @@ func TestUpdateChooserUseCase_Execute_InternalServerError(t *testing.T) {
 		ID: chooserID,
 	}
 
-	mockRepository.EXPECT().DoesTheChooserExist(input.ID).Return(false, entity.Chooser{}, errors.New("database error"))
+	mockRepository.EXPECT().GetByID(input.ID).Return(false, entity.Chooser{}, errors.New("database error"))
 
 	output, problems := updateChooserUseCase.Execute(input)
 
@@ -156,7 +156,7 @@ func TestUpdateChooserUseCase_Execute_InternalServerError(t *testing.T) {
 			Title:    "Erro ao buscar um chooser",
 			Status:   http.StatusInternalServerError,
 			Detail:   "database error",
-			Instance: util.RFC500,
+			Instance: util.RFC503,
 		},
 	}
 	assert.Equal(t, expectedProblems, problems.ProblemDetails)

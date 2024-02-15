@@ -48,7 +48,7 @@ func NewUpdateChooserUseCase(
 func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChooserOutputDTO, util.ProblemDetailsOutputDTO) {
 	problemsDetails := []util.ProblemDetails{}
 
-	doesTheChooserExist, userThatExists, doesTheChooserExistError := uc.ChooserRepository.DoesTheChooserExist(input.ID)
+	doesTheChooserExist, userThatExists, doesTheChooserExistError := uc.ChooserRepository.GetByID(input.ID)
 
 	if doesTheChooserExistError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -56,7 +56,7 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 			Title:    "Erro ao buscar um chooser",
 			Status:   http.StatusInternalServerError,
 			Detail:   doesTheChooserExistError.Error(),
-			Instance: util.RFC500,
+			Instance: util.RFC503,
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, doesTheChooserExistError.Error(), "UpdateChooserUseCase", "Use Cases", "Internal Server Error")
@@ -124,7 +124,7 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 			Title:    "Erro ao persistir um chooser",
 			Status:   http.StatusInternalServerError,
 			Detail:   chooserUpdatedError.Error(),
-			Instance: util.RFC500,
+			Instance: util.RFC503,
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, chooserUpdatedError.Error(), "UpdateChooserUseCase", "Use Cases", "Internal Server Error")
