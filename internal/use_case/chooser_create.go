@@ -59,6 +59,8 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 			Instance: util.RFC500,
 		})
 
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar um chooser através do e-mail", "CreateChooserUseCase", "Use Cases", "Internal Server Error")
+
 		return CreateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
@@ -123,6 +125,8 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 			Detail:   chooserCreateError.Error(),
 			Instance: util.RFC500,
 		})
+
+		util.NewLoggerError(http.StatusInternalServerError, chooserCreateError.Error(), "CreateChooserUseCase", "Use Cases", "Internal Server Error")
 	}
 
 	output := CreateChooserOutputDTO{

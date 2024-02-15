@@ -63,8 +63,6 @@ func (cc *GetChoosersUseCase) Execute(input GetChoosersInputDTO) (GetChoosersOut
 			Instance: util.RFC404,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Nenhum chooser foi encontrado", "GetChoosersUseCase", "Use Cases", "Not Found")
-
 		return GetChoosersOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
