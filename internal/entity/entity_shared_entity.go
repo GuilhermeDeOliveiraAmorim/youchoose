@@ -19,12 +19,14 @@ type SharedEntity struct {
 }
 
 func NewSharedEntity() *SharedEntity {
+	timeNow := time.Now()
+
 	return &SharedEntity{
 		ID:            uuid.New().String(),
 		Active:        true,
-		CreatedAt:     time.Now(),
-		UpdatedAt:     time.Now(),
-		DeactivatedAt: time.Now(),
+		CreatedAt:     timeNow,
+		UpdatedAt:     timeNow,
+		DeactivatedAt: timeNow,
 	}
 }
 

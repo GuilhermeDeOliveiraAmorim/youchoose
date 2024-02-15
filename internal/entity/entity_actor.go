@@ -38,7 +38,7 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "Nome do ator inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O nome do ator não pode estar vazio.",
@@ -48,7 +48,7 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "Nome do ator inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O nome do ator não pode ter mais do que 100 caracteres.",
@@ -58,7 +58,7 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 
 	if birthDate == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "Data de nascimento do ator inválida",
 			Status:   http.StatusBadRequest,
 			Detail:   "A data de nascimento do ator não pode ser nula.",
@@ -68,7 +68,7 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 
 	if nationality == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "Nacionalidade do ator inválida",
 			Status:   http.StatusBadRequest,
 			Detail:   "A nacionalidade do ator não pode ser nula.",
@@ -78,7 +78,7 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "ValidationError",
+			Type:     "Validation Error",
 			Title:    "ID de imagem do ator inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O ID de imagem do ator não pode estar vazio.",

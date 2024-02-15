@@ -81,3 +81,12 @@ func TestNewAddress_InvalidCountry_ReturnsValidationError(t *testing.T) {
 		t.Errorf("Expected validation error with detail '%s', but got: %v", expectedErrorMsg, err)
 	}
 }
+
+func TestAddress_Equals(t *testing.T) {
+	address1, _ := NewAddress("Aracaju", "Sergipe", "Brasil")
+	address2, _ := NewAddress("Aracaju", "Sergipe", "Brasil")
+	
+	if got := address1.Equals(address2); got != true {
+		t.Errorf("Address.Equals() = %v, want %v", got, address1.Equals(address2))
+	}
+}
