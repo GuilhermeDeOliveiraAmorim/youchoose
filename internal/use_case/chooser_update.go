@@ -59,6 +59,8 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 			Instance: util.RFC500,
 		})
 
+		util.NewLoggerError(http.StatusInternalServerError, doesTheChooserExistError.Error(), "UpdateChooserUseCase", "Use Cases", "Internal Server Error")
+
 		return UpdateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
@@ -124,6 +126,8 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 			Detail:   chooserUpdatedError.Error(),
 			Instance: util.RFC500,
 		})
+
+		util.NewLoggerError(http.StatusInternalServerError, chooserUpdatedError.Error(), "UpdateChooserUseCase", "Use Cases", "Internal Server Error")
 	}
 
 	output := UpdateChooserOutputDTO{
