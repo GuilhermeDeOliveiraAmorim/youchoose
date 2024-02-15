@@ -59,5 +59,5 @@ func TestGetChoosersUseCase_Execute(t *testing.T) {
 
 	assert.Empty(t, output.Choosers)
 	assert.NotEmpty(t, problemDetails.ProblemDetails)
-	assert.Equal(t, util.RFC500, problemDetails.ProblemDetails[0].Instance)
+	assert.Equal(t, util.RFC503, problemDetails.ProblemDetails[0].Instance)
 }

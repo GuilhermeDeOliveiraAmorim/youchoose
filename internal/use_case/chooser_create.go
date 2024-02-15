@@ -56,7 +56,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 			Title:    "Erro ao resgatar um chooser através do e-mail",
 			Status:   http.StatusInternalServerError,
 			Detail:   chooserAlreadyExistsError.Error(),
-			Instance: util.RFC500,
+			Instance: util.RFC503,
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar um chooser através do e-mail", "CreateChooserUseCase", "Use Cases", "Internal Server Error")
@@ -123,7 +123,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 			Title:    "Erro ao persistir um chooser",
 			Status:   http.StatusInternalServerError,
 			Detail:   chooserCreateError.Error(),
-			Instance: util.RFC500,
+			Instance: util.RFC503,
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, chooserCreateError.Error(), "CreateChooserUseCase", "Use Cases", "Internal Server Error")

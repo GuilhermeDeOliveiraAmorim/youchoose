@@ -46,7 +46,7 @@ func (cc *GetChoosersUseCase) Execute(input GetChoosersInputDTO) (GetChoosersOut
 			Title:    "Erro ao resgatar todos os choosers",
 			Status:   http.StatusInternalServerError,
 			Detail:   allChoosersError.Error(),
-			Instance: util.RFC500,
+			Instance: util.RFC503,
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, allChoosersError.Error(), "GetChoosersUseCase", "Use Cases", "Internal Server Error")
