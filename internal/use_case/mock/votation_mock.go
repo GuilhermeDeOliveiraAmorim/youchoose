@@ -121,3 +121,18 @@ func (mr *MockVotationRepositoryInterfaceMockRecorder) Update(votation interface
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Update", reflect.TypeOf((*MockVotationRepositoryInterface)(nil).Update), votation)
 }
+
+// VotationAlreadyExists mocks base method.
+func (m *MockVotationRepositoryInterface) VotationAlreadyExists(chooserID, listID, firstMovieID, secondMovieID, chosenMovieID string) (bool, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "VotationAlreadyExists", chooserID, listID, firstMovieID, secondMovieID, chosenMovieID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// VotationAlreadyExists indicates an expected call of VotationAlreadyExists.
+func (mr *MockVotationRepositoryInterfaceMockRecorder) VotationAlreadyExists(chooserID, listID, firstMovieID, secondMovieID, chosenMovieID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "VotationAlreadyExists", reflect.TypeOf((*MockVotationRepositoryInterface)(nil).VotationAlreadyExists), chooserID, listID, firstMovieID, secondMovieID, chosenMovieID)
+}
