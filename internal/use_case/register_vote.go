@@ -100,6 +100,35 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 		}
 	}
 
+	doesTheVotationExist, doesTheVotationExistError := rv.VotationRepository.VotationAlreadyExists(input.ChooserID, input.ListID, input.FirstMovieID, input.SecondMovieID, input.ChosenMovieID)
+	if doesTheVotationExistError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Internal Server Error",
+			Title:    "Erro ao resgatar lista de ID " + input.ListID,
+			Status:   http.StatusInternalServerError,
+			Detail:   doesTheVotationExistError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, doesTheVotationExistError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
+
+		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	} else if doesTheVotationExist {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Already Exists",
+			Title:    "Votação já existe",
+			Status:   http.StatusConflict,
+			Detail:   "A votação já foi registrada anteriormente",
+			Instance: util.RFC409,
+		})
+
+		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
 	newVotation, newVotationError := entity.NewVotation(input.ChooserID, input.ListID, input.FirstMovieID, input.SecondMovieID, input.ChosenMovieID)
 	if newVotationError != nil {
 		problemsDetails = append(problemsDetails, newVotationError...)
