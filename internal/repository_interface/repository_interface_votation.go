@@ -8,5 +8,6 @@ type VotationRepositoryInterface interface {
 	GetByID(votationID string) (bool, entity.Votation, error)
 	GetAll() ([]entity.Votation, error)
 	GetAllByListIDAndChooserID(listID, chooserID string) ([]entity.Votation, error)
+	VotationAlreadyExists(chooserID string, listID string, firstMovieID string, secondMovieID string, chosenMovieID string) (bool, error)
 	Deactivate(votationID string) error
 }
