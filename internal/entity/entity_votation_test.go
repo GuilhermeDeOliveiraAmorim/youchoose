@@ -1,122 +1,46 @@
 package entity
 
 import (
+	"net/http"
 	"testing"
+	"youchoose/internal/util"
+
+	"github.com/stretchr/testify/assert"
 )
 
-func TestVotation_StartVotation(t *testing.T) {
-	combinations := []Combination{
-		{VotationID: "1", FirstMovieID: "A", SecondMovieID: "B"},
-		{VotationID: "1", FirstMovieID: "C", SecondMovieID: "D"},
-	}
+func TestNewVotation_ValidInput(t *testing.T) {
+	chooserID := "chooser_id"
+	listID := "list_id"
+	firstMovieID := "first_movie_id"
+	secondMovieID := "second_movie_id"
+	chosenMovieID := "chosen_movie_id"
 
-	votation := NewVotation("chooserID", "listID", combinations)
+	votation, validationErrors := NewVotation(chooserID, listID, firstMovieID, secondMovieID, chosenMovieID)
 
-	if votation.StartTime.IsZero() {
-		t.Error("Expected non-zero start time after starting the votation.")
-	}
-
-	if votation.Status != INPROGRESS {
-		t.Error("Expected votation status to be 'In progress' after starting.")
-	}
+	assert.Nil(t, validationErrors)
+	assert.NotNil(t, votation)
+	assert.Equal(t, chooserID, votation.ChooserID)
+	assert.Equal(t, listID, votation.ListID)
+	assert.Equal(t, firstMovieID, votation.FirstMovieID)
+	assert.Equal(t, secondMovieID, votation.SecondMovieID)
+	assert.Equal(t, chosenMovieID, votation.ChosenMovieID)
 }
 
-func TestVotation_EndVotation(t *testing.T) {
-	combinations := []Combination{
-		{VotationID: "1", FirstMovieID: "A", SecondMovieID: "B"},
-		{VotationID: "1", FirstMovieID: "C", SecondMovieID: "D"},
-	}
+func TestNewVotation_InvalidInput(t *testing.T) {
+	chooserID := ""
+	listID := "list_id"
+	firstMovieID := "first_movie_id"
+	secondMovieID := "second_movie_id"
+	chosenMovieID := "chosen_movie_id"
 
-	votation := NewVotation("chooserID", "listID", combinations)
-	votation.EndVotation()
+	votation, validationErrors := NewVotation(chooserID, listID, firstMovieID, secondMovieID, chosenMovieID)
 
-	if votation.EndTime.IsZero() {
-		t.Error("Expected non-zero end time after ending the votation.")
-	}
-
-	if votation.Status != FINISHED {
-		t.Error("Expected votation status to be 'Finished' after ending.")
-	}
-}
-
-func TestVotation_IsVotationInProgress(t *testing.T) {
-	combinations := []Combination{
-		{VotationID: "1", FirstMovieID: "A", SecondMovieID: "B"},
-		{VotationID: "1", FirstMovieID: "C", SecondMovieID: "D"},
-	}
-
-	votation := NewVotation("chooserID", "listID", combinations)
-
-	if !votation.IsVotationInProgress() {
-		t.Error("Expected votation to be in progress.")
-	}
-
-	votation.EndVotation()
-
-	if votation.IsVotationInProgress() {
-		t.Error("Expected votation to be finished after ending.")
-	}
-}
-
-func TestVotation_Vote(t *testing.T) {
-	combinations := []Combination{
-		{VotationID: "1", FirstMovieID: "A", SecondMovieID: "B"},
-		{VotationID: "1", FirstMovieID: "C", SecondMovieID: "D"},
-	}
-
-	votation := NewVotation("chooserID", "listID", combinations)
-	chosenCombination := Combination{VotationID: "1", FirstMovieID: "A", SecondMovieID: "B", ChosenMovieID: "A"}
-
-	votation.Vote(chosenCombination)
-
-	if (votation.ChosenCombination.VotationID != chosenCombination.VotationID) || (votation.ChosenCombination.FirstMovieID != chosenCombination.FirstMovieID) || (votation.ChosenCombination.SecondMovieID != chosenCombination.SecondMovieID) {
-		t.Error("Expected votation to have the chosen combination.")
-	}
-}
-
-func TestVotation_GetAvailableCombinations(t *testing.T) {
-	combinations := []Combination{
-		{VotationID: "1", FirstMovieID: "A", SecondMovieID: "B"},
-		{VotationID: "1", FirstMovieID: "C", SecondMovieID: "D"},
-	}
-
-	votation := NewVotation("chooserID", "listID", combinations)
-
-	availableCombinations := votation.GetAvailableCombinations()
-
-	if len(availableCombinations) != len(combinations) {
-		t.Error("Expected all combinations to be available.")
-	}
-}
-
-func TestVotation_GetVotedCombinations(t *testing.T) {
-	combinations := []Combination{
-		{VotationID: "1", FirstMovieID: "A", SecondMovieID: "B", ChosenMovieID: "A"},
-		{VotationID: "1", FirstMovieID: "C", SecondMovieID: "D", ChosenMovieID: "D"},
-		{VotationID: "1", FirstMovieID: "E", SecondMovieID: "F"},
-	}
-
-	votation := NewVotation("chooserID", "listID", combinations)
-
-	votedCombinations := votation.GetVotedCombinations()
-
-	if len(votedCombinations) != 2 {
-		t.Error("Expected two voted combinations.")
-	}
-}
-
-func TestVotation_GetUnvotedCombinations(t *testing.T) {
-	combinations := []Combination{
-		{VotationID: "1", FirstMovieID: "A", SecondMovieID: "B", ChosenMovieID: "A"},
-		{VotationID: "1", FirstMovieID: "C", SecondMovieID: "D", ChosenMovieID: "D"},
-		{VotationID: "1", FirstMovieID: "E", SecondMovieID: "F"},
-	}
-
-	votation := NewVotation("chooserID", "listID", combinations)
-
-	unvotedCombinations := votation.GetUnvotedCombinations()
-
-	if len(unvotedCombinations) != 1 {
-		t.Error("Expected one unvoted combination.")
-	}
+	assert.Nil(t, votation)
+	assert.NotNil(t, validationErrors)
+	assert.Len(t, validationErrors, 1)
+	assert.Equal(t, "Validation Error", validationErrors[0].Type)
+	assert.Equal(t, "Existe um ou mais IDs inválidos", validationErrors[0].Title)
+	assert.Equal(t, http.StatusBadRequest, validationErrors[0].Status)
+	assert.Equal(t, "Para registrar uma votação os IDs não podem estar vazios.", validationErrors[0].Detail)
+	assert.Equal(t, util.RFC400, validationErrors[0].Instance)
 }

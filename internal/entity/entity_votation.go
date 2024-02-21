@@ -1,80 +1,48 @@
 package entity
 
 import (
-	"time"
-)
-
-const (
-	INPROGRESS = "In progress"
-	FINISHED   = "Finished"
+	"net/http"
+	"youchoose/internal/util"
 )
 
 type Votation struct {
 	SharedEntity
-	ChooserID         string        `json:"chooser_id"`
-	ListID            string        `json:"list_id"`
-	Status            string        `json:"status"`
-	Combinations      []Combination `json:"combinations"`
-	StartTime         time.Time     `json:"start_time"`
-	EndTime           time.Time     `json:"end_time"`
-	ChosenCombination Combination   `json:"chosen_combination"`
+	ChooserID     string `json:"chooser_id"`
+	ListID        string `json:"list_id"`
+	FirstMovieID  string `json:"first_movie_id"`
+	SecondMovieID string `json:"second_movie_id"`
+	ChosenMovieID string `json:"chosen_movie_id"`
 }
 
-func NewVotation(chooserID, listID string, combinations []Combination) *Votation {
+func NewVotation(chooserID, listID, firstMovieID, secondMovieID, chosenMovieID string) (*Votation, []util.ProblemDetails) {
+	validationErrors := ValidateVotation(chooserID, listID, firstMovieID, secondMovieID, chosenMovieID)
+
+	if len(validationErrors) > 0 {
+		return nil, validationErrors
+	}
+
 	return &Votation{
-		SharedEntity:      *NewSharedEntity(),
-		ChooserID:         chooserID,
-		ListID:            listID,
-		Status:            INPROGRESS,
-		Combinations:      combinations,
-		StartTime:         time.Now(),
-		EndTime:           time.Now(),
-		ChosenCombination: Combination{},
-	}
+		SharedEntity:  *NewSharedEntity(),
+		ChooserID:     chooserID,
+		ListID:        listID,
+		FirstMovieID:  firstMovieID,
+		SecondMovieID: secondMovieID,
+		ChosenMovieID: chosenMovieID,
+	}, nil
 }
 
-func (v *Votation) StartVotation() {
-	v.StartTime = time.Now()
-	v.Status = INPROGRESS
-}
+func ValidateVotation(chooserID, listID, firstMovieID, secondMovieID, chosenMovieID string) []util.ProblemDetails {
+	var validationErrors []util.ProblemDetails
 
-func (v *Votation) EndVotation() {
-	v.EndTime = time.Now()
-	v.Status = FINISHED
-}
-
-func (v *Votation) IsVotationInProgress() bool {
-	return v.Status == INPROGRESS
-}
-
-func (v *Votation) Vote(combination Combination) {
-	v.ChosenCombination = combination
-}
-
-func (v *Votation) GetAvailableCombinations() []Combination {
-	return v.Combinations
-}
-
-func (v *Votation) GetVotedCombinations() []Combination {
-	var votedCombinations []Combination
-
-	for _, combination := range v.Combinations {
-		if combination.ChosenMovieID != "" {
-			votedCombinations = append(votedCombinations, combination)
-		}
+	if chooserID == "" || listID == "" || firstMovieID == "" || secondMovieID == "" || chosenMovieID == "" {
+		validationErrors = append(validationErrors, util.ProblemDetails{
+			Type:     "Validation Error",
+			Title:    "Existe um ou mais IDs inválidos",
+			Status:   http.StatusBadRequest,
+			Detail:   "Para registrar uma votação os IDs não podem estar vazios.",
+			Instance: util.RFC400,
+		})
 	}
 
-	return votedCombinations
-}
-
-func (v *Votation) GetUnvotedCombinations() []Combination {
-	var unvotedCombinations []Combination
-
-	for _, combination := range v.Combinations {
-		if combination.ChosenMovieID == "" {
-			unvotedCombinations = append(unvotedCombinations, combination)
-		}
-	}
-
-	return unvotedCombinations
+	return validationErrors
 }
