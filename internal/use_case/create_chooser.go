@@ -116,17 +116,17 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 		}
 	}
 
-	chooserCreateError := cc.ChooserRepository.Create(newChooser)
-	if chooserCreateError != nil {
+	chooserCreationError := cc.ChooserRepository.Create(newChooser)
+	if chooserCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
 			Title:    "Erro ao persistir um chooser",
 			Status:   http.StatusInternalServerError,
-			Detail:   chooserCreateError.Error(),
+			Detail:   chooserCreationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, chooserCreateError.Error(), "CreateChooserUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, chooserCreationError.Error(), "CreateChooserUseCase", "Use Cases", "Internal Server Error")
 	}
 
 	output := CreateChooserOutputDTO{

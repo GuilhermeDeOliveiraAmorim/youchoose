@@ -124,11 +124,12 @@ func (mr *MockChooserRepositoryInterfaceMockRecorder) GetByID(chooserID interfac
 }
 
 // GetLists mocks base method.
-func (m *MockChooserRepositoryInterface) GetLists(chooserID string) error {
+func (m *MockChooserRepositoryInterface) GetLists(chooserID string) ([]entity.List, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetLists", chooserID)
-	ret0, _ := ret[0].(error)
-	return ret0
+	ret0, _ := ret[0].([]entity.List)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
 }
 
 // GetLists indicates an expected call of GetLists.
