@@ -39,9 +39,9 @@ func TestRegisterVoteUseCase_Success(t *testing.T) {
 		SecondMovieID: uuid.New().String(),
 		ChosenMovieID: uuid.New().String(),
 	}
-
 	mockChooserRepo.EXPECT().GetByID(input.ChooserID).Return(true, *chooser, nil)
 	mockListRepo.EXPECT().GetByID(input.ListID).Return(true, *list, nil)
+	mockVotationRepo.EXPECT().VotationAlreadyExists(input.ChooserID, input.ListID, input.FirstMovieID, input.SecondMovieID, input.ChosenMovieID).Return(false, nil)
 	mockVotationRepo.EXPECT().Create(gomock.Any()).Return(nil)
 
 	output, problemDetails := registerVoteUC.Execute(input)
