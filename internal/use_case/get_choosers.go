@@ -58,7 +58,7 @@ func (cc *GetChoosersUseCase) Execute(input GetChoosersInputDTO) (GetChoosersOut
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Not Found",
 			Title:    "Choosers não encontrados",
-			Status:   http.StatusInternalServerError,
+			Status:   http.StatusNotFound,
 			Detail:   "Nenhum chooser foi encontrado",
 			Instance: util.RFC404,
 		})
