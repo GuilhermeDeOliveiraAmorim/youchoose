@@ -89,12 +89,12 @@ func TestCreateListUseCase_Execute(t *testing.T) {
 	mockListMovieRepo.EXPECT().Create(gomock.Any()).Return(nil)
 	mockListRepo.EXPECT().GetAllMoviesByListID(gomock.Any()).Return(movies, nil)
 
-	file1, myError := os.Open("image.jpeg")
+	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
 	if myError != nil {
 		t.Errorf("Erro ao file1: %v", myError)
 	}
 
-	file2, myError := os.Open("image.jpeg")
+	file2, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
 	if myError != nil {
 		t.Errorf("Erro ao criar file2: %v", myError)
 	}
