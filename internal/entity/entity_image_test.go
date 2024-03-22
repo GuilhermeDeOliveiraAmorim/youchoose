@@ -7,7 +7,7 @@ import (
 func TestNewImageValid(t *testing.T) {
 	name := "example.jpg"
 	imageType := "jpeg"
-	size := 50000
+	size := int64(50000)
 
 	image, err := NewImage(name, imageType, size)
 
@@ -23,7 +23,7 @@ func TestNewImageValid(t *testing.T) {
 func TestNewImageInvalidName(t *testing.T) {
 	name := ""
 	imageType := "jpeg"
-	size := 50000
+	size := int64(50000)
 
 	image, err := NewImage(name, imageType, size)
 
@@ -43,7 +43,7 @@ func TestNewImageInvalidName(t *testing.T) {
 func TestNewImageInvalidSize(t *testing.T) {
 	name := "example.jpg"
 	imageType := "jpeg"
-	size := 200000
+	size := int64(200000)
 
 	image, err := NewImage(name, imageType, size)
 

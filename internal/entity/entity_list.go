@@ -8,16 +8,16 @@ import (
 
 type List struct {
 	SharedEntity
-	ProfileImageID string  `json:"profile_image_id"`
-	CoverImageID   string  `json:"cover_image_id"`
 	Title          string  `json:"title"`
 	Description    string  `json:"description"`
-	Movies         []Movie `json:"movies"`
 	ChooserID      string  `json:"chooser_id"`
+	ProfileImageID string  `json:"profile_image_id"`
+	CoverImageID   string  `json:"cover_image_id"`
+	Movies         []Movie `json:"movies"`
 	Votes          int     `json:"votes"`
 }
 
-func NewList(profileImageID, coverImageID, title, description, chooserID string) (*List, []util.ProblemDetails) {
+func NewList(title, description, profileImageID, coverImageID, chooserID string) (*List, []util.ProblemDetails) {
 	validationErrors := ValidateList(title, description, chooserID)
 
 	if len(validationErrors) > 0 {

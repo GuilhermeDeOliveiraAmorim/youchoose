@@ -8,7 +8,7 @@ import (
 
 func TestNewList(t *testing.T) {
 	// Testando a criação de uma nova lista válida
-	list, err := NewList("profile123", "cover123", "Minha Lista", "Descrição da Lista", "chooser123")
+	list, err := NewList("Minha Lista", "Descrição da Lista", "Minha Lista", "Descrição da Lista", "chooser123")
 	if err != nil {
 		t.Errorf("Erro ao criar uma nova lista válida: %v", err)
 	}
@@ -19,7 +19,7 @@ func TestNewList(t *testing.T) {
 	}
 
 	// Testando a criação de uma nova lista inválida (título vazio)
-	_, err = NewList("profile123", "cover123", "", "Descrição da Lista", "chooser123")
+	_, err = NewList("", "Descrição da Lista", "profile123", "cover123", "chooser123")
 	if err == nil {
 		t.Error("Criou uma lista com título vazio, mas deveria ter retornado um erro.")
 	}

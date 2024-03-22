@@ -3,7 +3,7 @@ package repositoryinterface
 import "youchoose/internal/entity"
 
 type ListMovieRepositoryInterface interface {
-	Create(listMovie *entity.ListMovie) error
+	Create(listMovies []entity.ListMovie) error
 	Update(listMovie *entity.ListMovie) error
 	GetByID(listMovieID string) (entity.ListMovie, error)
 	GetAll() ([]*entity.ListMovie, error)
