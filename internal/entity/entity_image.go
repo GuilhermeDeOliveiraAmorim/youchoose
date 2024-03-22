@@ -10,10 +10,10 @@ type Image struct {
 	SharedEntity
 	Name string `json:"name"`
 	Type string `json:"type"`
-	Size int    `json:"size"`
+	Size int64  `json:"size"`
 }
 
-func NewImage(name, imageType string, size int) (*Image, []util.ProblemDetails) {
+func NewImage(name, imageType string, size int64) (*Image, []util.ProblemDetails) {
 	validationErrors := ValidateImage(name, size)
 
 	if len(validationErrors) > 0 {
@@ -28,7 +28,7 @@ func NewImage(name, imageType string, size int) (*Image, []util.ProblemDetails) 
 	}, nil
 }
 
-func ValidateImage(name string, size int) []util.ProblemDetails {
+func ValidateImage(name string, size int64) []util.ProblemDetails {
 	var validationErrors []util.ProblemDetails
 
 	if name == "" {
