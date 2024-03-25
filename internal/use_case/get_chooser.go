@@ -64,6 +64,18 @@ func (cc *GetChooserUseCase) Execute(input GetChooserInputDTO) (GetChooserOutput
 		return GetChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
+	} else if !chooser.Active {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Not Found",
+			Title:    "Chooser não encontrado",
+			Status:   http.StatusNotFound,
+			Detail:   "O chooser com o ID " + input.ID + " está desativado",
+			Instance: util.RFC404,
+		})
+
+		return GetChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
 	output := GetChooserOutputDTO{

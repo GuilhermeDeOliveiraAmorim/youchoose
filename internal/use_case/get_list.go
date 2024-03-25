@@ -62,6 +62,18 @@ func (gl *GetListUseCase) Execute(input GetListInputDTO) (GetListOutputDTO, util
 		return GetListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
+	} else if !list.Active {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Not Found",
+			Title:    "Lista não encontrada",
+			Status:   http.StatusNotFound,
+			Detail:   "A lista com o ID " + input.ID + " está desativada",
+			Instance: util.RFC404,
+		})
+
+		return GetListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
 	output := GetListOutputDTO{
