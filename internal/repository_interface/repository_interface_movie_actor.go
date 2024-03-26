@@ -9,5 +9,5 @@ type MovieActorRepositoryInterface interface {
 	GetAll() ([]entity.MovieActor, error)
 	GetAllByMovieID(movieID string) ([]entity.MovieActor, error)
 	GetAllByActorID(actorID string) ([]entity.MovieActor, error)
-	Deactivate(movieActorID string) error
+	Deactivate(movieActor *entity.MovieActor) error
 }

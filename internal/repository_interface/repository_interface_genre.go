@@ -8,5 +8,5 @@ type GenreRepositoryInterface interface {
 	GetByID(genreID string) (entity.Genre, error)
 	GetAll() ([]entity.Genre, error)
 	GetAllByMovieID(movieID string) ([]entity.Genre, error)
-	Deactivate(genreID string) error
+	Deactivate(genre *entity.Genre) error
 }

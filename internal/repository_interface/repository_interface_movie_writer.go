@@ -9,5 +9,5 @@ type MovieWriterRepositoryInterface interface {
 	GetAll() ([]entity.MovieWriter, error)
 	GetAllByMovieID(movieID string) ([]entity.MovieWriter, error)
 	GetAllByWriterID(writerID string) ([]entity.MovieWriter, error)
-	Deactivate(movieWriterID string) error
+	Deactivate(movieWriter *entity.MovieWriter) error
 }

@@ -7,5 +7,5 @@ type ImageRepositoryInterface interface {
 	Update(image *entity.Image) error
 	GetByID(imageID string) (entity.Image, error)
 	GetAll() ([]entity.Image, error)
-	Deactivate(imageID string) error
+	Deactivate(image *entity.Image) error
 }

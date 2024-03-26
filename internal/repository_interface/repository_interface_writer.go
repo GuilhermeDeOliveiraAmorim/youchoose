@@ -7,5 +7,5 @@ type WriterRepositoryInterface interface {
 	Update(writer *entity.Writer) error
 	GetByID(writerID string) (entity.Writer, error)
 	GetAll() ([]entity.Writer, error)
-	Deactivate(writerID string) error
+	Deactivate(writer *entity.Writer) error
 }
