@@ -49,17 +49,17 @@ func (mr *MockImageRepositoryInterfaceMockRecorder) Create(image interface{}) *g
 }
 
 // Deactivate mocks base method.
-func (m *MockImageRepositoryInterface) Deactivate(imageID string) error {
+func (m *MockImageRepositoryInterface) Deactivate(image *entity.Image) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Deactivate", imageID)
+	ret := m.ctrl.Call(m, "Deactivate", image)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Deactivate indicates an expected call of Deactivate.
-func (mr *MockImageRepositoryInterfaceMockRecorder) Deactivate(imageID interface{}) *gomock.Call {
+func (mr *MockImageRepositoryInterfaceMockRecorder) Deactivate(image interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockImageRepositoryInterface)(nil).Deactivate), imageID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockImageRepositoryInterface)(nil).Deactivate), image)
 }
 
 // GetAll mocks base method.
