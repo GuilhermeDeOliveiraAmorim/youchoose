@@ -72,7 +72,9 @@ func (cc *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (Deactiva
 		}
 	}
 
-	listDeactivateError := cc.ListRepository.Deactivate(list.ID)
+	list.Deactivate()
+
+	listDeactivateError := cc.ListRepository.Deactivate(&list)
 	if listDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",

@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"testing"
+	"time"
 	"youchoose/internal/entity"
 	"youchoose/internal/use_case/mock"
 	"youchoose/internal/util"
@@ -19,9 +20,15 @@ func TestDeactivateListUseCase_Execute(t *testing.T) {
 	deactivateListUseCase := NewDeactivateListUseCase(mockRepository)
 
 	newList, _ := entity.NewList("Nome 1", "Descrição", uuid.NewString(), uuid.NewString(), uuid.NewString())
+	time := time.Now()
 
 	mockRepository.EXPECT().GetByID(newList.ID).Return(true, *newList, nil)
-	mockRepository.EXPECT().Deactivate(newList.ID).Return(nil)
+
+	mockRepository.EXPECT().Deactivate(gomock.Any()).Do(func(c *entity.List) {
+		assert.False(t, c.Active)
+		assert.NotEqual(t, c.DeactivatedAt, time)
+		assert.NotEqual(t, c.UpdatedAt, time)
+	}).Return(nil)
 
 	input := DeactivateListInputDTO{ID: newList.ID}
 	output, problemDetails := deactivateListUseCase.Execute(input)
