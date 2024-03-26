@@ -49,17 +49,17 @@ func (mr *MockListFavoriteRepositoryInterfaceMockRecorder) Create(listFavorite i
 }
 
 // Deactivate mocks base method.
-func (m *MockListFavoriteRepositoryInterface) Deactivate(listFavoriteID string) error {
+func (m *MockListFavoriteRepositoryInterface) Deactivate(listFavorite *entity.ListFavorite) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Deactivate", listFavoriteID)
+	ret := m.ctrl.Call(m, "Deactivate", listFavorite)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Deactivate indicates an expected call of Deactivate.
-func (mr *MockListFavoriteRepositoryInterfaceMockRecorder) Deactivate(listFavoriteID interface{}) *gomock.Call {
+func (mr *MockListFavoriteRepositoryInterfaceMockRecorder) Deactivate(listFavorite interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockListFavoriteRepositoryInterface)(nil).Deactivate), listFavoriteID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockListFavoriteRepositoryInterface)(nil).Deactivate), listFavorite)
 }
 
 // GetAll mocks base method.
@@ -93,12 +93,13 @@ func (mr *MockListFavoriteRepositoryInterfaceMockRecorder) GetAllByListID(listID
 }
 
 // GetByID mocks base method.
-func (m *MockListFavoriteRepositoryInterface) GetByID(listFavoriteID string) (entity.ListFavorite, error) {
+func (m *MockListFavoriteRepositoryInterface) GetByID(listFavoriteID string) (bool, entity.ListFavorite, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", listFavoriteID)
-	ret0, _ := ret[0].(entity.ListFavorite)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(entity.ListFavorite)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetByID indicates an expected call of GetByID.

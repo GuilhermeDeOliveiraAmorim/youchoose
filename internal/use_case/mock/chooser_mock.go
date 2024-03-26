@@ -64,17 +64,17 @@ func (mr *MockChooserRepositoryInterfaceMockRecorder) Create(chooser interface{}
 }
 
 // Deactivate mocks base method.
-func (m *MockChooserRepositoryInterface) Deactivate(chooserID string) error {
+func (m *MockChooserRepositoryInterface) Deactivate(chooser *entity.Chooser) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Deactivate", chooserID)
+	ret := m.ctrl.Call(m, "Deactivate", chooser)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Deactivate indicates an expected call of Deactivate.
-func (mr *MockChooserRepositoryInterfaceMockRecorder) Deactivate(chooserID interface{}) *gomock.Call {
+func (mr *MockChooserRepositoryInterfaceMockRecorder) Deactivate(chooser interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockChooserRepositoryInterface)(nil).Deactivate), chooserID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockChooserRepositoryInterface)(nil).Deactivate), chooser)
 }
 
 // GetAll mocks base method.

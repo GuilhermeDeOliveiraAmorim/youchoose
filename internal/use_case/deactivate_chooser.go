@@ -72,7 +72,9 @@ func (cc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (De
 		}
 	}
 
-	chooserDeactivateError := cc.ChooserRepository.Deactivate(chooser.ID)
+	chooser.Deactivate()
+
+	chooserDeactivateError := cc.ChooserRepository.Deactivate(&chooser)
 	if chooserDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",

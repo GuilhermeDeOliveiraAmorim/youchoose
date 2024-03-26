@@ -8,5 +8,5 @@ type ListMovieRepositoryInterface interface {
 	GetByID(listMovieID string) (entity.ListMovie, error)
 	GetAll() ([]*entity.ListMovie, error)
 	GetAllByListID(listID string) ([]entity.ListMovie, error)
-	Deactivate(listMovieID string) error
+	Deactivate(listMovie *entity.ListMovie) error
 }

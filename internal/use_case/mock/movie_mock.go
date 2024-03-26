@@ -49,17 +49,17 @@ func (mr *MockMovieRepositoryInterfaceMockRecorder) Create(movie interface{}) *g
 }
 
 // Deactivate mocks base method.
-func (m *MockMovieRepositoryInterface) Deactivate(movieID string) error {
+func (m *MockMovieRepositoryInterface) Deactivate(movie *entity.Movie) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Deactivate", movieID)
+	ret := m.ctrl.Call(m, "Deactivate", movie)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Deactivate indicates an expected call of Deactivate.
-func (mr *MockMovieRepositoryInterfaceMockRecorder) Deactivate(movieID interface{}) *gomock.Call {
+func (mr *MockMovieRepositoryInterfaceMockRecorder) Deactivate(movie interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockMovieRepositoryInterface)(nil).Deactivate), movieID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockMovieRepositoryInterface)(nil).Deactivate), movie)
 }
 
 // DoTheseMoviesExist mocks base method.

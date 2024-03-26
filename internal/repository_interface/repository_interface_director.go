@@ -7,5 +7,5 @@ type DirectorRepositoryInterface interface {
 	Update(director *entity.Director) error
 	GetByID(directorID string) (entity.Director, error)
 	GetAll() ([]entity.Director, error)
-	Deactivate(directorID string) error
+	Deactivate(director *entity.Director) error
 }
