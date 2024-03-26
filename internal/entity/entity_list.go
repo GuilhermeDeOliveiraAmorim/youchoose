@@ -52,6 +52,10 @@ func (l *List) ChangeTitle(title string) {
 	l.Title = title
 }
 
+func (l *List) ChangeDescription(description string) {
+	l.Description = description
+}
+
 func (l *List) AddMovies(movies []Movie) {
 	l.Movies = append(l.Movies, movies...)
 }
@@ -90,6 +94,36 @@ func (l *List) GetAvailableMoviesCombinations() [][]Movie {
 	}
 
 	return combinations
+}
+
+func (l *List) UpdateMovies(newMovies []Movie) ([]Movie, []Movie) {
+	currentMoviesMap := make(map[string]Movie)
+	newMoviesMap := make(map[string]Movie)
+
+	for _, movie := range l.Movies {
+		currentMoviesMap[movie.ID] = movie
+	}
+
+	for _, newMovie := range newMovies {
+		newMoviesMap[newMovie.ID] = newMovie
+	}
+
+	var moviesToDelete []Movie
+	var moviesToAdd []Movie
+
+	for _, movie := range l.Movies {
+		if _, ok := newMoviesMap[movie.ID]; !ok {
+			moviesToDelete = append(moviesToDelete, movie)
+		}
+	}
+
+	for _, newMovie := range newMovies {
+		if _, ok := currentMoviesMap[newMovie.ID]; !ok {
+			moviesToAdd = append(moviesToAdd, newMovie)
+		}
+	}
+
+	return moviesToDelete, moviesToAdd
 }
 
 func ValidateList(title, description, chooserID string) []util.ProblemDetails {
