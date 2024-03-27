@@ -11,6 +11,6 @@ type MovieRepositoryInterface interface {
 	GetByDirectorID(directorID string) ([]entity.Movie, error)
 	GetByGenreID(genreID string) ([]entity.Movie, error)
 	GetByWriterID(writerID string) ([]entity.Movie, error)
-	DoTheseMoviesExist(movieIDs []string) (bool, error)
+	DoTheseMoviesExist(movieIDs []string) (bool, []entity.Movie, error)
 	Deactivate(movie *entity.Movie) error
 }
