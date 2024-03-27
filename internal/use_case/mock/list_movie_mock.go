@@ -35,7 +35,7 @@ func (m *MockListMovieRepositoryInterface) EXPECT() *MockListMovieRepositoryInte
 }
 
 // Create mocks base method.
-func (m *MockListMovieRepositoryInterface) Create(listMovies []entity.ListMovie) error {
+func (m *MockListMovieRepositoryInterface) Create(listMovies *[]entity.ListMovie) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Create", listMovies)
 	ret0, _ := ret[0].(error)
@@ -60,6 +60,20 @@ func (m *MockListMovieRepositoryInterface) Deactivate(listMovie *entity.ListMovi
 func (mr *MockListMovieRepositoryInterfaceMockRecorder) Deactivate(listMovie interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockListMovieRepositoryInterface)(nil).Deactivate), listMovie)
+}
+
+// DeactivateAll mocks base method.
+func (m *MockListMovieRepositoryInterface) DeactivateAll(movies *[]entity.Movie) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeactivateAll", movies)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeactivateAll indicates an expected call of DeactivateAll.
+func (mr *MockListMovieRepositoryInterfaceMockRecorder) DeactivateAll(movies interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeactivateAll", reflect.TypeOf((*MockListMovieRepositoryInterface)(nil).DeactivateAll), movies)
 }
 
 // GetAll mocks base method.
