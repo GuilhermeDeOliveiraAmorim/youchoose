@@ -86,6 +86,35 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 		}
 	}
 
+	doTheseMoviesExist, _, manyMoviesError := cl.MovieRepository.DoTheseMoviesExist(input.Movies)
+	if manyMoviesError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Internal Server Error",
+			Title:    "Erro ao resgatar os filmes pelos ids",
+			Status:   http.StatusInternalServerError,
+			Detail:   manyMoviesError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os filmes pelos ids", "CreateListUseCase", "Use Cases", "Internal Server Error")
+
+		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	} else if !doTheseMoviesExist {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Validation Error",
+			Title:    "Um ou mais filmes não encontrados",
+			Status:   http.StatusConflict,
+			Detail:   "Um ou mais ids dos filmes não retornou resultado",
+			Instance: util.RFC409,
+		})
+
+		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
 	_, profileImageName, profileImageExtension, profileImageSize, profileImageError := service.MoveFile(input.ProfileImageFile, input.ProfileImageHandler)
 	if profileImageError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -152,35 +181,6 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 		}
 	}
 
-	doTheseMoviesExist, manyMoviesError := cl.MovieRepository.DoTheseMoviesExist(input.Movies)
-	if manyMoviesError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar os filmes pelos ids",
-			Status:   http.StatusInternalServerError,
-			Detail:   manyMoviesError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os filmes pelos ids", "CreateListUseCase", "Use Cases", "Internal Server Error")
-
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doTheseMoviesExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Um ou mais filmes não encontrados",
-			Status:   http.StatusConflict,
-			Detail:   "Um ou mais ids dos filmes não retornou resultado",
-			Instance: util.RFC409,
-		})
-
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
 	profileImageCreationError := cl.ImageRepository.Create(newProfileImageName)
 	if profileImageCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -232,7 +232,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 		}
 	}
 
-	listMoviesCreationError := cl.ListMovieRepository.Create(listMovies)
+	listMoviesCreationError := cl.ListMovieRepository.Create(&listMovies)
 	if listMoviesCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
