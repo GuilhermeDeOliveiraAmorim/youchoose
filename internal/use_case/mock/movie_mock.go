@@ -63,12 +63,13 @@ func (mr *MockMovieRepositoryInterfaceMockRecorder) Deactivate(movie interface{}
 }
 
 // DoTheseMoviesExist mocks base method.
-func (m *MockMovieRepositoryInterface) DoTheseMoviesExist(movieIDs []string) (bool, error) {
+func (m *MockMovieRepositoryInterface) DoTheseMoviesExist(movieIDs []string) (bool, []entity.Movie, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DoTheseMoviesExist", movieIDs)
 	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret1, _ := ret[1].([]entity.Movie)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // DoTheseMoviesExist indicates an expected call of DoTheseMoviesExist.
