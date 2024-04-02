@@ -85,7 +85,7 @@ func TestCreateListUseCase_Execute(t *testing.T) {
 	mockChooserRepo.EXPECT().GetByID(gomock.Any()).Return(true, *chooser, nil)
 	mockListRepo.EXPECT().Create(gomock.Any()).Return(nil)
 	mockImageRepo.EXPECT().Create(gomock.Any()).Return(nil).Times(2)
-	mockMovieRepo.EXPECT().DoTheseMoviesExist(gomock.Any()).Return(true, nil)
+	mockMovieRepo.EXPECT().DoTheseMoviesExist(gomock.Any()).Return(true, movies, nil)
 	mockListMovieRepo.EXPECT().Create(gomock.Any()).Return(nil)
 	mockListRepo.EXPECT().GetAllMoviesByListID(gomock.Any()).Return(movies, nil)
 
