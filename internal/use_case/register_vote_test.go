@@ -35,21 +35,11 @@ func TestRegisterVoteUseCase_Success(t *testing.T) {
 
 	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	tomHardy, _ := entity.NewActor("Tom Hardy", birthDate, nationality, "tom_hardy_image")
+	movie_1, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
-	ellenPage, _ := entity.NewActor("Ellen Page", birthDate, nationality, "ellen_page_image")
+	movie_2, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
-	nolan, _ := entity.NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
-
-	nolanWriter, _ := entity.NewWriter("Christopher Nolan", birthDate, nationality, "nolan_image")
-
-	sciFi, _ := entity.NewGenre("Sci-Fi", "image_id_genre")
-
-	movie_1, _ := entity.NewMovie("Inception", *nationality, []entity.Genre{*sciFi}, []entity.Director{*nolan}, []entity.Actor{*tomHardy, *ellenPage}, []entity.Writer{*nolanWriter}, 2010, "image123")
-
-	movie_2, _ := entity.NewMovie("Inception", *nationality, []entity.Genre{*sciFi}, []entity.Director{*nolan}, []entity.Actor{*tomHardy, *ellenPage}, []entity.Writer{*nolanWriter}, 2010, "image123")
-
-	movie_3, _ := entity.NewMovie("Inception", *nationality, []entity.Genre{*sciFi}, []entity.Director{*nolan}, []entity.Actor{*tomHardy, *ellenPage}, []entity.Writer{*nolanWriter}, 2010, "image123")
+	movie_3, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
 	var movieIDs []string
 	var movies []entity.Movie
@@ -134,13 +124,7 @@ func TestRegisterVoteUseCase_ListNotFound(t *testing.T) {
 
 	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	actor, _ := entity.NewActor("Tom Hardy", birthDate, nationality, "tom_hardy_image")
-
-	genre, _ := entity.NewGenre("Ação", "image_id_genre")
-
-	director, _ := entity.NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
-
-	movie1, _ := entity.NewMovie("Inception", *nationality, []entity.Genre{*genre}, []entity.Director{*director}, []entity.Actor{*actor}, []entity.Writer{}, 2010, "image123")
+	movie1, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
 	list.AddMovies([]entity.Movie{*movie1})
 
@@ -185,21 +169,11 @@ func TestRegisterVoteUseCase_VotationAlreadyExists(t *testing.T) {
 
 	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	tomHardy, _ := entity.NewActor("Tom Hardy", birthDate, nationality, "tom_hardy_image")
+	movie_1, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
-	ellenPage, _ := entity.NewActor("Ellen Page", birthDate, nationality, "ellen_page_image")
+	movie_2, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
-	nolan, _ := entity.NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
-
-	nolanWriter, _ := entity.NewWriter("Christopher Nolan", birthDate, nationality, "nolan_image")
-
-	sciFi, _ := entity.NewGenre("Sci-Fi", "image_id_genre")
-
-	movie_1, _ := entity.NewMovie("Inception", *nationality, []entity.Genre{*sciFi}, []entity.Director{*nolan}, []entity.Actor{*tomHardy, *ellenPage}, []entity.Writer{*nolanWriter}, 2010, "image123")
-
-	movie_2, _ := entity.NewMovie("Inception", *nationality, []entity.Genre{*sciFi}, []entity.Director{*nolan}, []entity.Actor{*tomHardy, *ellenPage}, []entity.Writer{*nolanWriter}, 2010, "image123")
-
-	movie_3, _ := entity.NewMovie("Inception", *nationality, []entity.Genre{*sciFi}, []entity.Director{*nolan}, []entity.Actor{*tomHardy, *ellenPage}, []entity.Writer{*nolanWriter}, 2010, "image123")
+	movie_3, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
 	var movieIDs []string
 	var movies []entity.Movie
