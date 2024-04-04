@@ -13,17 +13,17 @@ type Movie struct {
 	SharedEntity
 	Title       string                  `json:"title"`
 	Nationality valueobject.Nationality `json:"nationality"`
+	ReleaseYear int                     `json:"release_year"`
+	ImageID     string                  `json:"image_id"`
+	Votes       int                     `json:"votes"`
 	Genres      []Genre                 `json:"genres"`
 	Directors   []Director              `json:"directors"`
 	Actors      []Actor                 `json:"actors"`
 	Writers     []Writer                `json:"writers"`
-	ReleaseYear int                     `json:"release_year"`
-	ImageID     string                  `json:"image_id"`
-	Votes       int                     `json:"votes"`
 }
 
-func NewMovie(title string, nationality valueobject.Nationality, genres []Genre, directors []Director, actors []Actor, writers []Writer, releaseYear int, imageID string) (*Movie, []util.ProblemDetails) {
-	validationErrors := ValidateMovie(title, nationality, genres, directors, actors, writers, releaseYear, imageID)
+func NewMovie(title string, nationality valueobject.Nationality, releaseYear int, imageID string) (*Movie, []util.ProblemDetails) {
+	validationErrors := ValidateMovie(title, nationality, releaseYear, imageID)
 
 	if len(validationErrors) > 0 {
 		return nil, validationErrors
@@ -33,17 +33,13 @@ func NewMovie(title string, nationality valueobject.Nationality, genres []Genre,
 		SharedEntity: *NewSharedEntity(),
 		Title:        title,
 		Nationality:  nationality,
-		Genres:       genres,
-		Directors:    directors,
-		Actors:       actors,
-		Writers:      writers,
 		ReleaseYear:  releaseYear,
 		ImageID:      imageID,
 		Votes:        0,
 	}, nil
 }
 
-func ValidateMovie(title string, nationality valueobject.Nationality, genres []Genre, directors []Director, actors []Actor, writers []Writer, releaseYear int, imageID string) []util.ProblemDetails {
+func ValidateMovie(title string, nationality valueobject.Nationality, releaseYear int, imageID string) []util.ProblemDetails {
 	var validationErrors []util.ProblemDetails
 
 	if title == "" || len(title) > 255 {
