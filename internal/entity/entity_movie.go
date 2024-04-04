@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/http"
+	"time"
 
 	"youchoose/internal/util"
 
@@ -59,22 +60,27 @@ func ValidateMovie(title string, nationality valueobject.Nationality, genres []G
 }
 
 func (m *Movie) IncrementVotes() {
+	m.UpdatedAt = time.Now()
 	m.Votes++
 }
 
 func (m *Movie) AddActors(newActors []Actor) {
+	m.UpdatedAt = time.Now()
 	m.Actors = append(m.Actors, newActors...)
 }
 
 func (m *Movie) AddWriters(newWriters []Writer) {
+	m.UpdatedAt = time.Now()
 	m.Writers = append(m.Writers, newWriters...)
 }
 
 func (m *Movie) AddDirectors(newDirectors []Director) {
+	m.UpdatedAt = time.Now()
 	m.Directors = append(m.Directors, newDirectors...)
 }
 
 func (m *Movie) AddGenres(newGenres []Genre) {
+	m.UpdatedAt = time.Now()
 	m.Genres = append(m.Genres, newGenres...)
 }
 
@@ -96,6 +102,7 @@ func (m *Movie) RemoveActors(actorsToRemove []Actor) {
 	}
 
 	if len(updatedActors) > 0 {
+		m.UpdatedAt = time.Now()
 		m.Actors = updatedActors
 	}
 }
@@ -118,6 +125,7 @@ func (m *Movie) RemoveWriters(writersToRemove []Writer) {
 	}
 
 	if len(updatedWriters) > 0 {
+		m.UpdatedAt = time.Now()
 		m.Writers = updatedWriters
 	}
 }
@@ -140,6 +148,7 @@ func (m *Movie) RemoveDirectors(directorsToRemove []Director) {
 	}
 
 	if len(updatedDirectors) > 0 {
+		m.UpdatedAt = time.Now()
 		m.Directors = updatedDirectors
 	}
 }
@@ -162,6 +171,7 @@ func (m *Movie) RemoveGenres(genresToRemove []Genre) {
 	}
 
 	if len(updatedGenres) > 0 {
+		m.UpdatedAt = time.Now()
 		m.Genres = updatedGenres
 	}
 }
