@@ -4,6 +4,7 @@ import "youchoose/internal/entity"
 
 type MovieActorRepositoryInterface interface {
 	Create(movieActor *entity.MovieActor) error
+	CreateMany(movieActors *[]entity.MovieActor) error
 	Update(movieActor *entity.MovieActor) error
 	GetByID(movieActorID string) (entity.MovieActor, error)
 	GetAll() ([]entity.MovieActor, error)
