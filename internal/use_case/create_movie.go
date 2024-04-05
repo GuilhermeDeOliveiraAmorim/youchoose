@@ -81,17 +81,17 @@ type CreateMovieOutputDTO struct {
 }
 
 type CreateMovieUseCase struct {
-	ChooserRepository       repositoryinterface.ChooserRepositoryInterface
-	MovieRepository         repositoryinterface.MovieRepositoryInterface
-	ImageRepository         repositoryinterface.ImageRepositoryInterface
-	GenreRepository         repositoryinterface.GenreRepositoryInterface
-	DirectorRepository      repositoryinterface.DirectorRepositoryInterface
 	ActorRepository         repositoryinterface.ActorRepositoryInterface
-	WriterRepository        repositoryinterface.WriterRepositoryInterface
-	MovieGenreRepository    repositoryinterface.MovieGenreRepositoryInterface
-	MovieDirectorRepository repositoryinterface.MovieDirectorRepositoryInterface
+	ChooserRepository       repositoryinterface.ChooserRepositoryInterface
+	DirectorRepository      repositoryinterface.DirectorRepositoryInterface
+	GenreRepository         repositoryinterface.GenreRepositoryInterface
+	ImageRepository         repositoryinterface.ImageRepositoryInterface
 	MovieActorRepository    repositoryinterface.MovieActorRepositoryInterface
+	MovieDirectorRepository repositoryinterface.MovieDirectorRepositoryInterface
+	MovieGenreRepository    repositoryinterface.MovieGenreRepositoryInterface
+	MovieRepository         repositoryinterface.MovieRepositoryInterface
 	MovieWriterRepository   repositoryinterface.MovieWriterRepositoryInterface
+	WriterRepository        repositoryinterface.WriterRepositoryInterface
 }
 
 func NewCreateMovieUseCase(
