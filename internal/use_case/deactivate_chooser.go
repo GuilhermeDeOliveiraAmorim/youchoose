@@ -58,9 +58,23 @@ func (cc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (De
 		return DeactivateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
+	} else if !chooser.Active {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Conflict",
+			Title:    "Chooser já está desativado",
+			Status:   http.StatusConflict,
+			Detail:   "O chooser com o ID " + input.ID + " já está desativado",
+			Instance: util.RFC409,
+		})
+
+		return DeactivateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
-	chooserDeactivateError := cc.ChooserRepository.Deactivate(chooser.ID)
+	chooser.Deactivate()
+
+	chooserDeactivateError := cc.ChooserRepository.Deactivate(&chooser)
 	if chooserDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",

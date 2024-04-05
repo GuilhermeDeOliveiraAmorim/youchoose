@@ -7,127 +7,68 @@ import (
 )
 
 func TestNewList(t *testing.T) {
-	// Testando a criação de uma nova lista válida
-	list, err := NewList("profile123", "cover123", "Minha Lista", "Descrição da Lista", "chooser123")
+	list, err := NewList("Minha Lista", "Descrição da Lista", "Minha Lista", "Descrição da Lista", "chooser123")
 	if err != nil {
 		t.Errorf("Erro ao criar uma nova lista válida: %v", err)
 	}
 
-	// Verificando se a lista foi criada corretamente
 	if list.Title != "Minha Lista" || list.Description != "Descrição da Lista" || list.ChooserID != "chooser123" {
 		t.Errorf("A lista não foi criada corretamente. Detalhes da lista: %v", list)
 	}
 
-	// Testando a criação de uma nova lista inválida (título vazio)
-	_, err = NewList("profile123", "cover123", "", "Descrição da Lista", "chooser123")
+	_, err = NewList("", "Descrição da Lista", "profile123", "cover123", "chooser123")
 	if err == nil {
 		t.Error("Criou uma lista com título vazio, mas deveria ter retornado um erro.")
 	}
 }
 
 func TestList_AddMovies(t *testing.T) {
-	// Criando instância para BirthDate
-	birthDate, _ := valueobject.NewBirthDate(10, 5, 2010)
-
-	// Criando instância para Nationality
 	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	// Criando instância para ator
-	actor, _ := NewActor("Tom Hardy", birthDate, nationality, "tom_hardy_image")
+	movie, _ := NewMovie("Inception", *nationality, 2010, "image123")
 
-	// Criando instância para gênero
-	genre, _ := NewGenre("Ação", "image_id_genre")
-
-	// Criando instância para diretor
-	director, _ := NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
-
-	// Criando instância para filme
-	movie, _ := NewMovie("Inception", *nationality, []Genre{*genre}, []Director{*director}, []Actor{*actor}, []Writer{}, 2010, "image123")
-
-	// Criando instância para lista
 	list, _ := NewList("profile123", "cover123", "Minha Lista", "Descrição da Lista", "chooser123")
 
-	// Adicionando filme à lista
 	list.AddMovies([]Movie{*movie})
 
-	// Verificando se o filme foi adicionado corretamente
 	if len(list.Movies) != 1 || list.Movies[0].Title != "Inception" {
 		t.Errorf("Erro ao adicionar filme à lista. Detalhes da lista: %v", list)
 	}
 }
 
 func TestList_RemoveMovies(t *testing.T) {
-	// Criando instância para BirthDate
-	birthDate, _ := valueobject.NewBirthDate(10, 5, 1990)
-
-	// Criando instância para Nationality
 	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	// Criando instância para ator
-	actor, _ := NewActor("Tom Hardy", birthDate, nationality, "tom_hardy_image")
+	movie1, _ := NewMovie("Inception", *nationality, 2010, "image123")
 
-	// Criando instância para gênero
-	genre, _ := NewGenre("Ação", "image_id_genre")
+	movie2, _ := NewMovie("Interstellar", *nationality, 2014, "image456")
 
-	// Criando instância para diretor
-	director, _ := NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
-
-	// Criando instância para filme
-	movie1, _ := NewMovie("Inception", *nationality, []Genre{*genre}, []Director{*director}, []Actor{*actor}, []Writer{}, 2010, "image123")
-
-	// Criando instância para filme
-	movie2, _ := NewMovie("Interstellar", *nationality, []Genre{*genre}, []Director{*director}, []Actor{*actor}, []Writer{}, 2014, "image456")
-
-	// Criando instância para lista
 	list, _ := NewList("profile123", "cover123", "Minha Lista", "Descrição da Lista", "chooser123")
 
-	// Adicionando filmes à lista
 	list.AddMovies([]Movie{*movie1, *movie2})
 
-	// Removendo filme da lista
 	list.RemoveMovies([]Movie{*movie1})
 
-	// Verificando se o filme foi removido corretamente
 	if len(list.Movies) != 1 || list.Movies[0].Title != "Interstellar" {
 		t.Errorf("Erro ao remover filme da lista. Detalhes da lista: %v", list)
 	}
 }
 
 func TestList_GetAvailableMoviesCombinations(t *testing.T) {
-	// Criando instância para BirthDate
-	birthDate, _ := valueobject.NewBirthDate(15, 5, 1990)
-
-	// Criando instância para Nationality
 	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	// Criando instância para ator
-	actor, _ := NewActor("Tom Hardy", birthDate, nationality, "tom_hardy_image")
+	movie1, _ := NewMovie("Inception", *nationality, 2010, "image123")
 
-	// Criando instância para gênero
-	genre, _ := NewGenre("Ação", "image_id_genre")
+	movie2, _ := NewMovie("Interstellar", *nationality, 2014, "image456")
 
-	// Criando instância para diretor
-	director, _ := NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
+	movie3, _ := NewMovie("The Dark Knight", *nationality, 2008, "image789")
 
-	// Criando instância para filme
-	movie1, _ := NewMovie("Inception", *nationality, []Genre{*genre}, []Director{*director}, []Actor{*actor}, []Writer{}, 2010, "image123")
-
-	// Criando instância para filme
-	movie2, _ := NewMovie("Interstellar", *nationality, []Genre{*genre}, []Director{*director}, []Actor{*actor}, []Writer{}, 2014, "image456")
-
-	// Criando instância para filme
-	movie3, _ := NewMovie("The Dark Knight", *nationality, []Genre{*genre}, []Director{*director}, []Actor{*actor}, []Writer{}, 2008, "image789")
-
-	// Criando instância para lista
 	list, _ := NewList("profile123", "cover123", "Minha Lista", "Descrição da Lista", "chooser123")
 
-	// Adicionando filmes à lista
 	list.AddMovies([]Movie{*movie1, *movie2, *movie3})
 
-	// Obtendo combinações de filmes
 	combinations := list.GetAvailableMoviesCombinations()
 
-	// Verificando se as combinações foram geradas corretamente
 	if len(combinations) != 3 {
 		t.Errorf("Erro ao obter combinações de filmes. Número incorreto de combinações.")
 	}

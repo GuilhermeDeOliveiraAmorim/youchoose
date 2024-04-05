@@ -8,16 +8,16 @@ import (
 
 type List struct {
 	SharedEntity
-	ProfileImageID string  `json:"profile_image_id"`
-	CoverImageID   string  `json:"cover_image_id"`
 	Title          string  `json:"title"`
 	Description    string  `json:"description"`
-	Movies         []Movie `json:"movies"`
 	ChooserID      string  `json:"chooser_id"`
+	ProfileImageID string  `json:"profile_image_id"`
+	CoverImageID   string  `json:"cover_image_id"`
+	Movies         []Movie `json:"movies"`
 	Votes          int     `json:"votes"`
 }
 
-func NewList(profileImageID, coverImageID, title, description, chooserID string) (*List, []util.ProblemDetails) {
+func NewList(title, description, profileImageID, coverImageID, chooserID string) (*List, []util.ProblemDetails) {
 	validationErrors := ValidateList(title, description, chooserID)
 
 	if len(validationErrors) > 0 {
@@ -50,6 +50,10 @@ func (l *List) ChangeCoverImageID(coverImageID string) {
 
 func (l *List) ChangeTitle(title string) {
 	l.Title = title
+}
+
+func (l *List) ChangeDescription(description string) {
+	l.Description = description
 }
 
 func (l *List) AddMovies(movies []Movie) {
@@ -90,6 +94,36 @@ func (l *List) GetAvailableMoviesCombinations() [][]Movie {
 	}
 
 	return combinations
+}
+
+func (l *List) UpdateMovies(newMovies []Movie) ([]Movie, []Movie) {
+	currentMoviesMap := make(map[string]Movie)
+	newMoviesMap := make(map[string]Movie)
+
+	for _, movie := range l.Movies {
+		currentMoviesMap[movie.ID] = movie
+	}
+
+	for _, newMovie := range newMovies {
+		newMoviesMap[newMovie.ID] = newMovie
+	}
+
+	var moviesToDelete []Movie
+	var moviesToAdd []Movie
+
+	for _, movie := range l.Movies {
+		if _, ok := newMoviesMap[movie.ID]; !ok {
+			moviesToDelete = append(moviesToDelete, movie)
+		}
+	}
+
+	for _, newMovie := range newMovies {
+		if _, ok := currentMoviesMap[newMovie.ID]; !ok {
+			moviesToAdd = append(moviesToAdd, newMovie)
+		}
+	}
+
+	return moviesToDelete, moviesToAdd
 }
 
 func ValidateList(title, description, chooserID string) []util.ProblemDetails {

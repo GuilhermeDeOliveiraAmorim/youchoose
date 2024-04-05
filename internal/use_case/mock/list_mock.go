@@ -49,17 +49,17 @@ func (mr *MockListRepositoryInterfaceMockRecorder) Create(list interface{}) *gom
 }
 
 // Deactivate mocks base method.
-func (m *MockListRepositoryInterface) Deactivate(listID string) error {
+func (m *MockListRepositoryInterface) Deactivate(list *entity.List) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Deactivate", listID)
+	ret := m.ctrl.Call(m, "Deactivate", list)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
 // Deactivate indicates an expected call of Deactivate.
-func (mr *MockListRepositoryInterfaceMockRecorder) Deactivate(listID interface{}) *gomock.Call {
+func (mr *MockListRepositoryInterfaceMockRecorder) Deactivate(list interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockListRepositoryInterface)(nil).Deactivate), listID)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockListRepositoryInterface)(nil).Deactivate), list)
 }
 
 // GetAll mocks base method.

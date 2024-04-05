@@ -41,6 +41,7 @@ func TestGetChoosersUseCase_Execute(t *testing.T) {
 
 	assert.Empty(t, problemDetails.ProblemDetails)
 	assert.Equal(t, len(expectedChoosers), len(output.Choosers))
+
 	for i, chooser := range output.Choosers {
 		assert.Equal(t, expectedChoosers[i].ID, chooser.ID)
 		assert.Equal(t, expectedChoosers[i].Name, chooser.Name)

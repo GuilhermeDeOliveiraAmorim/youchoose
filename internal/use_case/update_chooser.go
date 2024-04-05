@@ -49,7 +49,6 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 	problemsDetails := []util.ProblemDetails{}
 
 	doesTheChooserExist, userThatExists, doesTheChooserExistError := uc.ChooserRepository.GetByID(input.ID)
-
 	if doesTheChooserExistError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
@@ -69,6 +68,18 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 			Type:     "Not Found",
 			Title:    "Recurso não encontrado",
 			Status:   http.StatusNotFound,
+			Detail:   "Não foi possível encontrar o chooser de id " + input.ID,
+			Instance: util.RFC404,
+		})
+
+		return UpdateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	} else if !userThatExists.Active {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Not Found",
+			Title:    "Chooser não encontrado",
+			Status:   http.StatusForbidden,
 			Detail:   "Não foi possível encontrar o chooser de id " + input.ID,
 			Instance: util.RFC404,
 		})

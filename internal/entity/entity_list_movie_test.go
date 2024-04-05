@@ -5,8 +5,8 @@ import (
 )
 
 func TestListMovieEquals(t *testing.T) {
-	lm1 := NewListMovie("oaishydf", "pposjddd")
-	lm2 := NewListMovie("oaishydf", "pposjddd")
+	lm1, _ := NewListMovie("oaishydf", "pposjddd")
+	lm2, _ := NewListMovie("oaishydf", "pposjddd")
 
 	if !lm1.Equals(lm2) {
 		t.Errorf("Os ListMovies deveriam ser iguais, mas não são.")
