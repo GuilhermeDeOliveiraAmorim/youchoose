@@ -9,13 +9,13 @@ import (
 func TestNewWriter(t *testing.T) {
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 1990}
 	nationality := &valueobject.Nationality{CountryName: "Country", Flag: "Flag"}
-	actor, err := NewWriter("WriterName", birthDate, nationality, "ImageID")
+	writer, err := NewWriter("WriterName", birthDate, nationality, "ImageID")
 
 	if err != nil {
 		t.Errorf("Erro inesperado ao criar escritor válido: %v", err)
 	}
 
-	if actor == nil {
+	if writer == nil {
 		t.Error("O escritor não deveria ser nulo para um escritor válido")
 	}
 

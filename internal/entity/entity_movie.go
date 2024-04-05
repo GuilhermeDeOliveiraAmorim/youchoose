@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/http"
+	"time"
 
 	"youchoose/internal/util"
 
@@ -12,17 +13,17 @@ type Movie struct {
 	SharedEntity
 	Title       string                  `json:"title"`
 	Nationality valueobject.Nationality `json:"nationality"`
+	ReleaseYear int                     `json:"release_year"`
+	ImageID     string                  `json:"image_id"`
+	Votes       int                     `json:"votes"`
 	Genres      []Genre                 `json:"genres"`
 	Directors   []Director              `json:"directors"`
 	Actors      []Actor                 `json:"actors"`
 	Writers     []Writer                `json:"writers"`
-	ReleaseYear int                     `json:"release_year"`
-	ImageID     string                  `json:"image_id"`
-	Votes       int                     `json:"votes"`
 }
 
-func NewMovie(title string, nationality valueobject.Nationality, genres []Genre, directors []Director, actors []Actor, writers []Writer, releaseYear int, imageID string) (*Movie, []util.ProblemDetails) {
-	validationErrors := ValidateMovie(title, nationality, genres, directors, actors, writers, releaseYear, imageID)
+func NewMovie(title string, nationality valueobject.Nationality, releaseYear int, imageID string) (*Movie, []util.ProblemDetails) {
+	validationErrors := ValidateMovie(title, nationality, releaseYear, imageID)
 
 	if len(validationErrors) > 0 {
 		return nil, validationErrors
@@ -32,17 +33,13 @@ func NewMovie(title string, nationality valueobject.Nationality, genres []Genre,
 		SharedEntity: *NewSharedEntity(),
 		Title:        title,
 		Nationality:  nationality,
-		Genres:       genres,
-		Directors:    directors,
-		Actors:       actors,
-		Writers:      writers,
 		ReleaseYear:  releaseYear,
 		ImageID:      imageID,
 		Votes:        0,
 	}, nil
 }
 
-func ValidateMovie(title string, nationality valueobject.Nationality, genres []Genre, directors []Director, actors []Actor, writers []Writer, releaseYear int, imageID string) []util.ProblemDetails {
+func ValidateMovie(title string, nationality valueobject.Nationality, releaseYear int, imageID string) []util.ProblemDetails {
 	var validationErrors []util.ProblemDetails
 
 	if title == "" || len(title) > 255 {
@@ -59,22 +56,27 @@ func ValidateMovie(title string, nationality valueobject.Nationality, genres []G
 }
 
 func (m *Movie) IncrementVotes() {
+	m.UpdatedAt = time.Now()
 	m.Votes++
 }
 
 func (m *Movie) AddActors(newActors []Actor) {
+	m.UpdatedAt = time.Now()
 	m.Actors = append(m.Actors, newActors...)
 }
 
 func (m *Movie) AddWriters(newWriters []Writer) {
+	m.UpdatedAt = time.Now()
 	m.Writers = append(m.Writers, newWriters...)
 }
 
 func (m *Movie) AddDirectors(newDirectors []Director) {
+	m.UpdatedAt = time.Now()
 	m.Directors = append(m.Directors, newDirectors...)
 }
 
 func (m *Movie) AddGenres(newGenres []Genre) {
+	m.UpdatedAt = time.Now()
 	m.Genres = append(m.Genres, newGenres...)
 }
 
@@ -96,6 +98,7 @@ func (m *Movie) RemoveActors(actorsToRemove []Actor) {
 	}
 
 	if len(updatedActors) > 0 {
+		m.UpdatedAt = time.Now()
 		m.Actors = updatedActors
 	}
 }
@@ -118,6 +121,7 @@ func (m *Movie) RemoveWriters(writersToRemove []Writer) {
 	}
 
 	if len(updatedWriters) > 0 {
+		m.UpdatedAt = time.Now()
 		m.Writers = updatedWriters
 	}
 }
@@ -140,6 +144,7 @@ func (m *Movie) RemoveDirectors(directorsToRemove []Director) {
 	}
 
 	if len(updatedDirectors) > 0 {
+		m.UpdatedAt = time.Now()
 		m.Directors = updatedDirectors
 	}
 }
@@ -162,6 +167,7 @@ func (m *Movie) RemoveGenres(genresToRemove []Genre) {
 	}
 
 	if len(updatedGenres) > 0 {
+		m.UpdatedAt = time.Now()
 		m.Genres = updatedGenres
 	}
 }

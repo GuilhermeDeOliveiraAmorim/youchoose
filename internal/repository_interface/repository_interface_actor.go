@@ -8,4 +8,5 @@ type ActorRepositoryInterface interface {
 	GetByID(actorID string) (entity.Actor, error)
 	GetAll() ([]entity.Actor, error)
 	Deactivate(actor *entity.Actor) error
+	DoTheseActorsExist(actorIDs []string) (bool, []entity.Actor, error)
 }

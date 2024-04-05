@@ -9,13 +9,13 @@ import (
 func TestNewDirector(t *testing.T) {
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 1990}
 	nationality := &valueobject.Nationality{CountryName: "Country", Flag: "Flag"}
-	actor, err := NewDirector("DirectorName", birthDate, nationality, "ImageID")
+	director, err := NewDirector("DirectorName", birthDate, nationality, "ImageID")
 
 	if err != nil {
 		t.Errorf("Erro inesperado ao criar diretor válido: %v", err)
 	}
 
-	if actor == nil {
+	if director == nil {
 		t.Error("O diretor não deveria ser nulo para um diretor válido")
 	}
 

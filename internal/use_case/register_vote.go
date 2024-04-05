@@ -25,17 +25,20 @@ type RegisterVoteUseCase struct {
 	ChooserRepository  repositoryinterface.ChooserRepositoryInterface
 	ListRepository     repositoryinterface.ListRepositoryInterface
 	VotationRepository repositoryinterface.VotationRepositoryInterface
+	MovieRepository    repositoryinterface.MovieRepositoryInterface
 }
 
 func NewRegisterVoteUseCase(
 	ChooserRepository repositoryinterface.ChooserRepositoryInterface,
 	ListRepository repositoryinterface.ListRepositoryInterface,
 	VotationRepository repositoryinterface.VotationRepositoryInterface,
+	MovieRepository repositoryinterface.MovieRepositoryInterface,
 ) *RegisterVoteUseCase {
 	return &RegisterVoteUseCase{
 		ChooserRepository:  ChooserRepository,
 		ListRepository:     ListRepository,
 		VotationRepository: VotationRepository,
+		MovieRepository:    MovieRepository,
 	}
 }
 
@@ -100,6 +103,41 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 		}
 	}
 
+	var moviesIDs []string
+
+	moviesIDs = append(moviesIDs, input.FirstMovieID)
+	moviesIDs = append(moviesIDs, input.SecondMovieID)
+	moviesIDs = append(moviesIDs, input.ChosenMovieID)
+
+	doesTheMoviesExist, movies, doesTheMoviesExistError := rv.MovieRepository.DoTheseMoviesExist(moviesIDs)
+	if doesTheMoviesExistError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Internal Server Error",
+			Title:    "Erro ao resgatar lista de ID " + input.ListID,
+			Status:   http.StatusInternalServerError,
+			Detail:   doesTheMoviesExistError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, doesTheMoviesExistError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
+
+		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	} else if !doesTheMoviesExist {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Validation Error",
+			Title:    "Um ou mais filmes não encontrados",
+			Status:   http.StatusConflict,
+			Detail:   "Um ou mais ids dos filmes não retornou resultado",
+			Instance: util.RFC409,
+		})
+
+		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
 	doesTheVotationExist, doesTheVotationExistError := rv.VotationRepository.VotationAlreadyExists(input.ChooserID, input.ListID, input.FirstMovieID, input.SecondMovieID, input.ChosenMovieID)
 	if doesTheVotationExistError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -132,6 +170,25 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 	newVotation, newVotationError := entity.NewVotation(input.ChooserID, input.ListID, input.FirstMovieID, input.SecondMovieID, input.ChosenMovieID)
 	if newVotationError != nil {
 		problemsDetails = append(problemsDetails, newVotationError...)
+
+		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
+	movies[2].IncrementVotes()
+
+	movieUpdatedError := rv.MovieRepository.Update(&movies[2])
+	if movieUpdatedError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Internal Server Error",
+			Title:    "Erro ao atualizar filme de ID " + movies[2].ID,
+			Status:   http.StatusInternalServerError,
+			Detail:   movieUpdatedError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, movieUpdatedError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
 
 		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

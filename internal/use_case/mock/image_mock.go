@@ -48,6 +48,20 @@ func (mr *MockImageRepositoryInterfaceMockRecorder) Create(image interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockImageRepositoryInterface)(nil).Create), image)
 }
 
+// CreateMany mocks base method.
+func (m *MockImageRepositoryInterface) CreateMany(images *[]entity.Image) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateMany", images)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateMany indicates an expected call of CreateMany.
+func (mr *MockImageRepositoryInterfaceMockRecorder) CreateMany(images interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMany", reflect.TypeOf((*MockImageRepositoryInterface)(nil).CreateMany), images)
+}
+
 // Deactivate mocks base method.
 func (m *MockImageRepositoryInterface) Deactivate(image *entity.Image) error {
 	m.ctrl.T.Helper()

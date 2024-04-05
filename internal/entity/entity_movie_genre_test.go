@@ -3,8 +3,8 @@ package entity
 import "testing"
 
 func TestMovieGenreEquals(t *testing.T) {
-	mg1 := NewMovieGenre("oaishd", "aoishd")
-	mg2 := NewMovieGenre("oaishd", "aoishd")
+	mg1, _ := NewMovieGenre("oaishd", "aoishd")
+	mg2, _ := NewMovieGenre("oaishd", "aoishd")
 
 	if !mg1.Equals(mg2) {
 		t.Errorf("Os MovieGenres deveriam ser iguais, mas não são.")
