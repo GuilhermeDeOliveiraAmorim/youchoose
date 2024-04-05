@@ -36,11 +36,6 @@ func TestCreateListUseCase_Execute(t *testing.T) {
 
 	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
 
-	birthDate, problem := valueobject.NewBirthDate(15, 5, 2010)
-	if problem != nil {
-		fmt.Println(problem)
-	}
-
 	nationality, problem := valueobject.NewNationality("United States", "🇺🇸")
 	if problem != nil {
 		fmt.Println(problem)
