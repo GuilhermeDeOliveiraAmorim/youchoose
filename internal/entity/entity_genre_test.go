@@ -5,13 +5,13 @@ import (
 )
 
 func TestNewGenre(t *testing.T) {
-	actor, err := NewGenre("GenreName", "ImageID")
+	genre, err := NewGenre("GenreName", "ImageID")
 
 	if err != nil {
 		t.Errorf("Erro inesperado ao criar gênero válido: %v", err)
 	}
 
-	if actor == nil {
+	if genre == nil {
 		t.Error("O gênero não deveria ser nulo para um gênero válido")
 	}
 

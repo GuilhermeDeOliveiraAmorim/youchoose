@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"errors"
-	"fmt"
 	"net/http"
 	"testing"
 	"youchoose/internal/entity"
@@ -90,10 +89,6 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 		Year:    1990,
 		ImageID: imageID,
 	}
-
-	fmt.Println(chooserID)
-	fmt.Println(expectedOutput)
-	fmt.Println(output)
 
 	assert.Equal(t, expectedOutput, output)
 

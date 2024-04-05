@@ -5,8 +5,8 @@ import (
 )
 
 func TestMovieDirectorEquals(t *testing.T) {
-	md1 := NewMovieDirector("asdasd", "alksjd")
-	md2 := NewMovieDirector("asdasd", "alksjd")
+	md1, _ := NewMovieDirector("asdasd", "alksjd")
+	md2, _ := NewMovieDirector("asdasd", "alksjd")
 
 	if !md1.Equals(md2) {
 		t.Errorf("Os MovieDirectors deveriam ser iguais, mas não são.")
