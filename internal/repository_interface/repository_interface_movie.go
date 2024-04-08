@@ -5,7 +5,7 @@ import "youchoose/internal/entity"
 type MovieRepositoryInterface interface {
 	Create(movie *entity.Movie) error
 	Update(movie *entity.Movie) error
-	GetByID(movieID string) (entity.Movie, error)
+	GetByID(movieID string) (bool, entity.Movie, error)
 	GetAll() ([]entity.Movie, error)
 	GetByActorID(actorID string) ([]entity.Movie, error)
 	GetByDirectorID(directorID string) ([]entity.Movie, error)

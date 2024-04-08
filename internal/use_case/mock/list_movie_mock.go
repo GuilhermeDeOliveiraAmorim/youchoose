@@ -107,6 +107,22 @@ func (mr *MockListMovieRepositoryInterfaceMockRecorder) GetByID(listMovieID inte
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockListMovieRepositoryInterface)(nil).GetByID), listMovieID)
 }
 
+// GetByListIDAndMovieIDAndChooserID mocks base method.
+func (m *MockListMovieRepositoryInterface) GetByListIDAndMovieIDAndChooserID(listID, movieID, chooserID string) (bool, entity.ListMovie, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByListIDAndMovieIDAndChooserID", listID, movieID, chooserID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(entity.ListMovie)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetByListIDAndMovieIDAndChooserID indicates an expected call of GetByListIDAndMovieIDAndChooserID.
+func (mr *MockListMovieRepositoryInterfaceMockRecorder) GetByListIDAndMovieIDAndChooserID(listID, movieID, chooserID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByListIDAndMovieIDAndChooserID", reflect.TypeOf((*MockListMovieRepositoryInterface)(nil).GetByListIDAndMovieIDAndChooserID), listID, movieID, chooserID)
+}
+
 // Update mocks base method.
 func (m *MockListMovieRepositoryInterface) Update(listMovie *entity.ListMovie) error {
 	m.ctrl.T.Helper()
