@@ -4,15 +4,17 @@ import "youchoose/internal/util"
 
 type ListMovie struct {
 	SharedEntity
-	ListID  string `json:"list_id"`
-	MovieID string `json:"movie_id"`
+	ListID    string `json:"list_id"`
+	MovieID   string `json:"movie_id"`
+	ChooserID string `json:"chooser_id"`
 }
 
-func NewListMovie(listID, movieID string) (*ListMovie, []util.ProblemDetails) {
+func NewListMovie(listID, movieID, chooserID string) (*ListMovie, []util.ProblemDetails) {
 	return &ListMovie{
 		SharedEntity: *NewSharedEntity(),
 		ListID:       listID,
 		MovieID:      movieID,
+		ChooserID:    chooserID,
 	}, nil
 }
 
