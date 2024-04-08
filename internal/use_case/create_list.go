@@ -138,7 +138,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 	var listMovies []entity.ListMovie
 
 	for _, movieID := range input.Movies {
-		newListMovie, newListMovieProblems := entity.NewListMovie(newList.ID, movieID)
+		newListMovie, newListMovieProblems := entity.NewListMovie(newList.ID, movieID, input.ChooserID)
 		if len(newListMovieProblems) > 0 {
 			problemsDetails = append(problemsDetails, newListMovieProblems...)
 		}
