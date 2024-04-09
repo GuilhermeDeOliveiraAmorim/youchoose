@@ -301,7 +301,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 	var listMoviesToAdd []entity.ListMovie
 
 	for _, movieToAdd := range moviesToAdd {
-		newListMovie, newListMovieError := entity.NewListMovie(listThatExists.ID, movieToAdd.ID)
+		newListMovie, newListMovieError := entity.NewListMovie(listThatExists.ID, movieToAdd.ID, chooser.ID)
 		if newListMovieError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     "Validation Error",
