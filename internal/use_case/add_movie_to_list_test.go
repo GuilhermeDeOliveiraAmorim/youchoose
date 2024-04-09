@@ -35,42 +35,12 @@ func TestAddMovieToList_Success(t *testing.T) {
 
 	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
 
-	birthDate, problem := valueobject.NewBirthDate(15, 5, 2010)
-	if problem != nil {
-		fmt.Println(problem)
-	}
-
 	nationality, problem := valueobject.NewNationality("United States", "🇺🇸")
 	if problem != nil {
 		fmt.Println(problem)
 	}
 
-	tomHardy, problem := entity.NewActor("Tom Hardy", birthDate, nationality, "tom_hardy_image")
-	if problem != nil {
-		fmt.Println(problem)
-	}
-
-	ellenPage, problem := entity.NewActor("Ellen Page", birthDate, nationality, "ellen_page_image")
-	if problem != nil {
-		fmt.Println(problem)
-	}
-
-	nolan, problem := entity.NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
-	if problem != nil {
-		fmt.Println(problem)
-	}
-
-	nolanWriter, problem := entity.NewWriter("Christopher Nolan", birthDate, nationality, "nolan_image")
-	if problem != nil {
-		fmt.Println(problem)
-	}
-
-	sciFi, problem := entity.NewGenre("Sci-Fi", "image_id_genre")
-	if problem != nil {
-		fmt.Println(problem)
-	}
-
-	movie, problem := entity.NewMovie("Inception", *nationality, []entity.Genre{*sciFi}, []entity.Director{*nolan}, []entity.Actor{*tomHardy, *ellenPage}, []entity.Writer{*nolanWriter}, 2010, "image123")
+	movie, problem := entity.NewMovie("Inception", *nationality, 2010, "image123")
 	if problem != nil {
 		t.Errorf("Erro ao criar um novo filme válido: %v", problem)
 	}
@@ -92,7 +62,7 @@ func TestAddMovieToList_Success(t *testing.T) {
 	}
 
 	output, problemsDetails := usecase.Execute(input)
-	
+
 	if len(problemsDetails.ProblemDetails) > 0 {
 		t.Errorf("ProblemDetails: %+v", problemsDetails.ProblemDetails)
 	}
