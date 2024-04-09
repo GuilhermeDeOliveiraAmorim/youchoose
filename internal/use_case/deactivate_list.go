@@ -7,35 +7,80 @@ import (
 )
 
 type DeactivateListInputDTO struct {
-	ID string `json:"id"`
+	ChooserID string `json:"chooser_id"`
+	ListID    string `json:"list_id"`
 }
 
 type DeactivateListOutputDTO struct {
-	ID        string `json:"id"`
+	ListID    string `json:"list_id"`
 	Message   string `json:"message"`
 	IsSuccess bool   `json:"success"`
 }
 
 type DeactivateListUseCase struct {
-	ListRepository repositoryinterface.ListRepositoryInterface
+	ChooserRepository repositoryinterface.ChooserRepositoryInterface
+	ListRepository    repositoryinterface.ListRepositoryInterface
 }
 
 func NewDeactivateListUseCase(
+	ChooserRepository repositoryinterface.ChooserRepositoryInterface,
 	ListRepository repositoryinterface.ListRepositoryInterface,
 ) *DeactivateListUseCase {
 	return &DeactivateListUseCase{
-		ListRepository: ListRepository,
+		ChooserRepository: ChooserRepository,
+		ListRepository:    ListRepository,
 	}
 }
 
-func (cc *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (DeactivateListOutputDTO, util.ProblemDetailsOutputDTO) {
+func (dl *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (DeactivateListOutputDTO, util.ProblemDetailsOutputDTO) {
 	problemsDetails := []util.ProblemDetails{}
 
-	doesTheListExist, list, getListError := cc.ListRepository.GetByID(input.ID)
+	doesTheChooserExist, chooser, getChooserError := dl.ChooserRepository.GetByID(input.ChooserID)
+	if getChooserError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Internal Server Error",
+			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
+			Status:   http.StatusInternalServerError,
+			Detail:   getChooserError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "DeactivateListUseCase", "Use Cases", "Internal Server Error")
+
+		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	} else if !doesTheChooserExist {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Not Found",
+			Title:    "Chooser não encontrado",
+			Status:   http.StatusNotFound,
+			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
+			Instance: util.RFC404,
+		})
+
+		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	} else if !chooser.Active {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Not Found",
+			Title:    "Chooser não encontrado",
+			Status:   http.StatusNotFound,
+			Detail:   "O chooser com o ID " + input.ChooserID + " está desativado",
+			Instance: util.RFC404,
+		})
+
+		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
+	doesTheListExist, list, getListError := dl.ListRepository.GetByID(input.ListID)
 	if getListError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
-			Title:    "Erro ao desativar lista de ID " + input.ID,
+			Title:    "Erro ao desativar lista de ID " + input.ListID,
 			Status:   http.StatusInternalServerError,
 			Detail:   getListError.Error(),
 			Instance: util.RFC503,
@@ -51,7 +96,7 @@ func (cc *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (Deactiva
 			Type:     "Not Found",
 			Title:    "Lista não encontrada",
 			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + input.ID + " foi encontrada",
+			Detail:   "Nenhuma lista com o ID " + input.ListID + " foi encontrada",
 			Instance: util.RFC404,
 		})
 
@@ -63,7 +108,7 @@ func (cc *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (Deactiva
 			Type:     "Conflict",
 			Title:    "Lista já está desativada",
 			Status:   http.StatusConflict,
-			Detail:   "A lista com o ID " + input.ID + " já está desativada",
+			Detail:   "A lista com o ID " + input.ListID + " já está desativada",
 			Instance: util.RFC409,
 		})
 
@@ -74,7 +119,7 @@ func (cc *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (Deactiva
 
 	list.Deactivate()
 
-	listDeactivateError := cc.ListRepository.Deactivate(&list)
+	listDeactivateError := dl.ListRepository.Deactivate(&list)
 	if listDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
@@ -88,7 +133,7 @@ func (cc *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (Deactiva
 	}
 
 	output := DeactivateListOutputDTO{
-		ID:        list.ID,
+		ListID:    list.ID,
 		Message:   "Lista desativada com sucesso",
 		IsSuccess: true,
 	}
