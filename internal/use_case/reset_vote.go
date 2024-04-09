@@ -62,6 +62,18 @@ func (rv *ResetVoteUseCase) Execute(input ResetVoteInputDTO) (ResetVoteOutputDTO
 		return ResetVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
+	} else if !chooser.Active {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     "Not Found",
+			Title:    "Chooser não encontrado",
+			Status:   http.StatusNotFound,
+			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
+			Instance: util.RFC404,
+		})
+
+		return ResetVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
 	doesTheVotationExist, votation, getVotationError := rv.VotationRepository.GetByID(input.VotationID)
