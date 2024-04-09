@@ -7,11 +7,11 @@ import (
 )
 
 type DeactivateChooserInputDTO struct {
-	ID string `json:"id"`
+	ChooserID string `json:"chooser_id"`
 }
 
 type DeactivateChooserOutputDTO struct {
-	ID        string `json:"id"`
+	ChooserID string `json:"chooser_id"`
 	Message   string `json:"message"`
 	IsSuccess bool   `json:"success"`
 }
@@ -31,11 +31,11 @@ func NewDeactivateChooserUseCase(
 func (cc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (DeactivateChooserOutputDTO, util.ProblemDetailsOutputDTO) {
 	problemsDetails := []util.ProblemDetails{}
 
-	doesTheChooserExist, chooser, getChooserError := cc.ChooserRepository.GetByID(input.ID)
+	doesTheChooserExist, chooser, getChooserError := cc.ChooserRepository.GetByID(input.ChooserID)
 	if getChooserError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
-			Title:    "Erro ao desativar chooser de ID " + input.ID,
+			Title:    "Erro ao desativar chooser de ID " + input.ChooserID,
 			Status:   http.StatusInternalServerError,
 			Detail:   getChooserError.Error(),
 			Instance: util.RFC503,
@@ -51,7 +51,7 @@ func (cc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (De
 			Type:     "Not Found",
 			Title:    "Chooser não encontrado",
 			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ID + " foi encontrado",
+			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
 			Instance: util.RFC404,
 		})
 
@@ -63,7 +63,7 @@ func (cc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (De
 			Type:     "Conflict",
 			Title:    "Chooser já está desativado",
 			Status:   http.StatusConflict,
-			Detail:   "O chooser com o ID " + input.ID + " já está desativado",
+			Detail:   "O chooser com o ID " + input.ChooserID + " já está desativado",
 			Instance: util.RFC409,
 		})
 
@@ -88,7 +88,7 @@ func (cc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (De
 	}
 
 	output := DeactivateChooserOutputDTO{
-		ID:        chooser.ID,
+		ChooserID: chooser.ID,
 		Message:   "Chooser desativado com sucesso",
 		IsSuccess: true,
 	}
