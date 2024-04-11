@@ -1,9 +1,10 @@
-package usecase
+package usecase_test
 
 import (
 	"errors"
 	"testing"
 	"youchoose/internal/entity"
+	usecase "youchoose/internal/use_case"
 	"youchoose/internal/use_case/mock"
 	"youchoose/internal/util"
 	valueobject "youchoose/internal/value_object"
@@ -19,7 +20,7 @@ func TestGetListsUseCase_Execute(t *testing.T) {
 
 	mockChooserRepo := mock.NewMockChooserRepositoryInterface(ctrl)
 	mockRepositoryRepo := mock.NewMockListRepositoryInterface(ctrl)
-	getListsUseCase := NewGetListsUseCase(mockChooserRepo, mockRepositoryRepo)
+	getListsUseCase := usecase.NewGetListsUseCase(mockChooserRepo, mockRepositoryRepo)
 
 	list1, _ := entity.NewList("Minha Lista 1", "Descrição da Lista 1", uuid.NewString(), uuid.NewString(), uuid.NewString())
 	list2, _ := entity.NewList("Minha Lista 2", "Descrição da Lista 2", uuid.NewString(), uuid.NewString(), uuid.NewString())
@@ -37,14 +38,14 @@ func TestGetListsUseCase_Execute(t *testing.T) {
 	mockChooserRepo.EXPECT().GetByID(gomock.Any()).Return(true, *chooser, nil).Times(2)
 	mockRepositoryRepo.EXPECT().GetAll().Return(expectedLists, nil)
 
-	input := GetListsInputDTO{}
+	input := usecase.GetListsInputDTO{}
 	output, problemDetails := getListsUseCase.Execute(input)
 
 	assert.Empty(t, problemDetails.ProblemDetails)
 	assert.Equal(t, len(expectedLists), len(output.Lists))
 
 	for i, list := range output.Lists {
-		assert.Equal(t, expectedLists[i].ID, list.ChooserID)
+		assert.Equal(t, expectedLists[i].ChooserID, list.ChooserID)
 		assert.Equal(t, expectedLists[i].Title, list.Title)
 		assert.Equal(t, expectedLists[i].Description, list.Description)
 		assert.Equal(t, expectedLists[i].ChooserID, list.ChooserID)
