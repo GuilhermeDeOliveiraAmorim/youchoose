@@ -36,20 +36,61 @@ func TestGetMovieUseCase_Execute(t *testing.T) {
 
 	newChooser, _ := entity.NewChooser("Nome 1", login1, address1, birthDate1, uuid.New().String())
 
+	var genresOutputDTO []usecase.GenreOutputDTO
+	var directorsOutputDTO []usecase.DirectorOutputDTO
+	var actorsOutputDTO []usecase.ActorOutputDTO
+	var writersOutputDTO []usecase.WriterOutputDTO
+
+	for _, genre := range movie.Genres {
+		genresOutputDTO = append(genresOutputDTO, usecase.GenreOutputDTO{
+			ID:        genre.ID,
+			CreatedAt: genre.CreatedAt,
+			Name:      genre.Name,
+			ImageID:   genre.ImageID,
+		})
+	}
+
+	for _, director := range movie.Directors {
+		directorsOutputDTO = append(directorsOutputDTO, usecase.DirectorOutputDTO{
+			ID:        director.ID,
+			CreatedAt: director.CreatedAt,
+			Name:      director.Name,
+			ImageID:   director.ImageID,
+		})
+	}
+
+	for _, actor := range movie.Actors {
+		actorsOutputDTO = append(actorsOutputDTO, usecase.ActorOutputDTO{
+			ID:        actor.ID,
+			CreatedAt: actor.CreatedAt,
+			Name:      actor.Name,
+			ImageID:   actor.ImageID,
+		})
+	}
+
+	for _, writer := range movie.Writers {
+		writersOutputDTO = append(writersOutputDTO, usecase.WriterOutputDTO{
+			ID:        writer.ID,
+			CreatedAt: writer.CreatedAt,
+			Name:      writer.Name,
+			ImageID:   writer.ImageID,
+		})
+	}
+
 	mockChooserRepo.EXPECT().GetByID(newChooser.ID).Return(true, *newChooser, nil)
 	mockMovieRepo.EXPECT().GetByID(movie.ID).Return(true, *movie, nil)
 
-	outputExpected := usecase.GetMovieOutputDTO{
+	outputExpected := usecase.MovieOutputDTO{
 		ID:          movie.ID,
 		Title:       movie.Title,
 		Nationality: movie.Nationality,
 		ReleaseYear: movie.ReleaseYear,
 		ImageID:     movie.ImageID,
 		Votes:       movie.Votes,
-		Genres:      movie.Genres,
-		Directors:   movie.Directors,
-		Actors:      movie.Actors,
-		Writers:     movie.Writers,
+		Genres:      genresOutputDTO,
+		Directors:   directorsOutputDTO,
+		Actors:      actorsOutputDTO,
+		Writers:     writersOutputDTO,
 	}
 
 	input := usecase.GetMovieInputDTO{

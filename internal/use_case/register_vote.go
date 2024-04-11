@@ -43,65 +43,17 @@ func NewRegisterVoteUseCase(
 }
 
 func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVoteOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(rv.ChooserRepository, input.ChooserID, "RegisterVoteUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return RegisterVoteOutputDTO{}, chooserValidatorProblems
+	}
+
+	_, listValidatorProblems := listValidator(rv.ListRepository, input.ListID, "RegisterVoteUseCase")
+	if len(listValidatorProblems.ProblemDetails) > 0 {
+		return RegisterVoteOutputDTO{}, listValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, chooser, getChooserError := rv.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
-
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist || !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheListExist, list, getListError := rv.ListRepository.GetByID(input.ListID)
-	if getListError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar lista de ID " + input.ListID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getListError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getListError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
-
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheListExist || !list.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + input.ListID + " foi encontrada",
-			Instance: util.RFC404,
-		})
-
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
 
 	var moviesIDs []string
 

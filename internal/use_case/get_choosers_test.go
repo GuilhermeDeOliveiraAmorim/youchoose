@@ -22,18 +22,23 @@ func TestGetChoosersUseCase_Execute(t *testing.T) {
 
 	login1, _ := valueobject.NewLogin("email@email.com", "12@#asd89")
 	login2, _ := valueobject.NewLogin("email@email.com", "12@#asd89")
+	login3, _ := valueobject.NewLogin("email@email.com", "12@#asd89")
 
 	address1, _ := valueobject.NewAddress("Aracaju", "Sergipe", "Brasil")
 	address2, _ := valueobject.NewAddress("Maceió", "Alagoas", "Brasil")
+	address3, _ := valueobject.NewAddress("Recife", "Pernambuco", "Brasil")
 
 	birthDate1, _ := valueobject.NewBirthDate(1, 1, 1990)
 	birthDate2, _ := valueobject.NewBirthDate(2, 2, 1990)
+	birthDate3, _ := valueobject.NewBirthDate(3, 3, 1990)
 
 	chooser1, _ := entity.NewChooser("Nome 1", login1, address1, birthDate1, uuid.New().String())
 	chooser2, _ := entity.NewChooser("Nome 2", login2, address2, birthDate2, uuid.New().String())
+	chooser3, _ := entity.NewChooser("Nome 2", login3, address3, birthDate3, uuid.New().String())
 
 	expectedChoosers := []entity.Chooser{*chooser1, *chooser2}
 
+	mockRepository.EXPECT().GetByID(gomock.Any()).Return(true, *chooser3, nil).Times(2)
 	mockRepository.EXPECT().GetAll().Return(expectedChoosers, nil)
 
 	input := GetChoosersInputDTO{}

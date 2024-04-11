@@ -65,29 +65,30 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 	})
 
 	updateChooserInputDTO := UpdateChooserInputDTO{
-		ID:      chooserID,
-		Name:    "John Doe",
-		City:    "Aracaju",
-		State:   "Sergipe",
-		Country: "Brasil",
-		Day:     10,
-		Month:   5,
-		Year:    1990,
-		ImageID: imageID,
+		ChooserID: chooserID,
+		Name:      "John Doe",
+		City:      "Aracaju",
+		State:     "Sergipe",
+		Country:   "Brasil",
+		Day:       10,
+		Month:     5,
+		Year:      1990,
+		ImageID:   imageID,
 	}
 
 	output, problems := updateChooserUseCase.Execute(updateChooserInputDTO)
 
-	expectedOutput := UpdateChooserOutputDTO{
-		ID:      chooserID,
-		Name:    "John Doe",
-		City:    "Aracaju",
-		State:   "Sergipe",
-		Country: "Brasil",
-		Day:     10,
-		Month:   5,
-		Year:    1990,
-		ImageID: imageID,
+	expectedOutput := ChooserOutputDTO{
+		ID:        chooserID,
+		CreatedAt: output.CreatedAt,
+		Name:      "John Doe",
+		City:      "Aracaju",
+		State:     "Sergipe",
+		Country:   "Brasil",
+		Day:       10,
+		Month:     5,
+		Year:      1990,
+		ImageID:   imageID,
 	}
 
 	assert.Equal(t, expectedOutput, output)
@@ -105,21 +106,21 @@ func TestUpdateChooserUseCase_Execute_NotFound(t *testing.T) {
 	chooserID := uuid.New().String()
 
 	input := UpdateChooserInputDTO{
-		ID: chooserID,
+		ChooserID: chooserID,
 	}
 
-	mockRepository.EXPECT().GetByID(input.ID).Return(false, entity.Chooser{}, nil)
+	mockRepository.EXPECT().GetByID(input.ChooserID).Return(false, entity.Chooser{}, nil)
 
 	output, problems := updateChooserUseCase.Execute(input)
 
-	assert.Equal(t, UpdateChooserOutputDTO{}, output)
+	assert.Equal(t, ChooserOutputDTO{}, output)
 
 	expectedProblems := []util.ProblemDetails{
 		{
 			Type:     "Not Found",
-			Title:    "Recurso não encontrado",
+			Title:    "Chooser não encontrado",
 			Status:   http.StatusNotFound,
-			Detail:   "Não foi possível encontrar o chooser de id " + input.ID,
+			Detail:   "Nenhum chooser com o ID " + chooserID + " foi encontrado",
 			Instance: util.RFC404,
 		},
 	}
@@ -136,23 +137,24 @@ func TestUpdateChooserUseCase_Execute_InternalServerError(t *testing.T) {
 	chooserID := uuid.New().String()
 
 	input := UpdateChooserInputDTO{
-		ID: chooserID,
+		ChooserID: chooserID,
 	}
 
-	mockRepository.EXPECT().GetByID(input.ID).Return(false, entity.Chooser{}, errors.New("database error"))
+	mockRepository.EXPECT().GetByID(input.ChooserID).Return(false, entity.Chooser{}, errors.New("database error"))
 
 	output, problems := updateChooserUseCase.Execute(input)
 
-	assert.Equal(t, UpdateChooserOutputDTO{}, output)
+	assert.Equal(t, ChooserOutputDTO{}, output)
 
 	expectedProblems := []util.ProblemDetails{
 		{
 			Type:     "Internal Server Error",
-			Title:    "Erro ao buscar um chooser",
+			Title:    "Erro ao resgatar chooser de ID " + chooserID,
 			Status:   http.StatusInternalServerError,
 			Detail:   "database error",
 			Instance: util.RFC503,
 		},
 	}
+
 	assert.Equal(t, expectedProblems, problems.ProblemDetails)
 }

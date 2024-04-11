@@ -84,6 +84,8 @@ func TestRegisterVoteUseCase_ChooserNotFound(t *testing.T) {
 
 	registerVoteUC := NewRegisterVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
 
+	mockChooserRepo.EXPECT().GetByID(gomock.Any()).Return(false, entity.Chooser{}, nil)
+
 	input := RegisterVoteInputDTO{
 		ChooserID:     "non_existing_chooser_id",
 		ListID:        "list_id",
@@ -91,8 +93,6 @@ func TestRegisterVoteUseCase_ChooserNotFound(t *testing.T) {
 		SecondMovieID: "second_movie_id",
 		ChosenMovieID: "chosen_movie_id",
 	}
-
-	mockChooserRepo.EXPECT().GetByID(input.ChooserID).Return(false, entity.Chooser{}, nil)
 
 	output, problemDetails := registerVoteUC.Execute(input)
 

@@ -20,16 +20,6 @@ type CreateListInputDTO struct {
 	ChooserID           string                `json:"chooser_id"`
 }
 
-type CreateListOutputDTO struct {
-	ID             string         `json:"id"`
-	Title          string         `json:"title"`
-	Description    string         `json:"description"`
-	ProfileImageID string         `json:"profile_image_id"`
-	CoverImageID   string         `json:"cover_image_id"`
-	ChooserID      string         `json:"chooser_id"`
-	Movies         []entity.Movie `json:"movies"`
-}
-
 type CreateListUseCase struct {
 	ListRepository      repositoryinterface.ListRepositoryInterface
 	ChooserRepository   repositoryinterface.ChooserRepositoryInterface
@@ -54,37 +44,13 @@ func NewCreateListUseCase(
 	}
 }
 
-func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutputDTO, util.ProblemDetailsOutputDTO) {
-	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, _, getChooserError := cl.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
-
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
+func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(cl.ChooserRepository, input.ChooserID, "CreateListUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return ListOutputDTO{}, chooserValidatorProblems
 	}
+
+	problemsDetails := []util.ProblemDetails{}
 
 	doTheseMoviesExist, _, manyMoviesError := cl.MovieRepository.DoTheseMoviesExist(input.Movies)
 	if manyMoviesError != nil {
@@ -98,7 +64,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os filmes pelos ids", "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doTheseMoviesExist {
@@ -110,7 +76,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 			Instance: util.RFC409,
 		})
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -127,7 +93,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de profile da lista", "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -144,7 +110,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de capa da lista", "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -176,7 +142,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 	}
 
 	if len(problemsDetails) > 0 {
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -193,7 +159,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, profileImageCreationError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -210,7 +176,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, coverImageCreationError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -227,7 +193,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, listCreationError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -244,7 +210,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, listMoviesCreationError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -261,20 +227,14 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, addedMoviesListError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
 
-	output := CreateListOutputDTO{
-		ID:             newList.ID,
-		Title:          newList.Title,
-		Description:    newList.Description,
-		ProfileImageID: newProfileImageName.ID,
-		CoverImageID:   newCoverImageName.ID,
-		ChooserID:      newList.ChooserID,
-		Movies:         addedMoviesList,
-	}
+	newList.AddMovies(addedMoviesList)
+
+	output := NewListOutputDTO(*newList)
 
 	return output, util.ProblemDetailsOutputDTO{
 		ProblemDetails: problemsDetails,

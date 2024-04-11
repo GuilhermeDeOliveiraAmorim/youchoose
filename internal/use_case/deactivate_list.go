@@ -33,89 +33,17 @@ func NewDeactivateListUseCase(
 }
 
 func (dl *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (DeactivateListOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(dl.ChooserRepository, input.ChooserID, "DeactivateListInputDTO")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return DeactivateListOutputDTO{}, chooserValidatorProblems
+	}
+
+	list, listValidatorProblems := listValidator(dl.ListRepository, input.ListID, "DeactivateListInputDTO")
+	if len(listValidatorProblems.ProblemDetails) > 0 {
+		return DeactivateListOutputDTO{}, listValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, chooser, getChooserError := dl.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "DeactivateListUseCase", "Use Cases", "Internal Server Error")
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "O chooser com o ID " + input.ChooserID + " está desativado",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheListExist, list, getListError := dl.ListRepository.GetByID(input.ListID)
-	if getListError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao desativar lista de ID " + input.ListID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getListError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getListError.Error(), "DeactivateListUseCase", "Use Cases", "Internal Server Error")
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheListExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + input.ListID + " foi encontrada",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !list.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Conflict",
-			Title:    "Lista já está desativada",
-			Status:   http.StatusConflict,
-			Detail:   "A lista com o ID " + input.ListID + " já está desativada",
-			Instance: util.RFC409,
-		})
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
 
 	list.Deactivate()
 

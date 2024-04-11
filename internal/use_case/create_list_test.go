@@ -36,15 +36,9 @@ func TestCreateListUseCase_Execute(t *testing.T) {
 
 	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
 
-	nationality, problem := valueobject.NewNationality("United States", "🇺🇸")
-	if problem != nil {
-		fmt.Println(problem)
-	}
+	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	movie, problem := entity.NewMovie("Inception", *nationality, 2010, "image123")
-	if problem != nil {
-		t.Errorf("Erro ao criar um novo filme válido: %v", problem)
-	}
+	movie, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
 	var movies []entity.Movie
 
@@ -93,7 +87,7 @@ func TestCreateListUseCase_Execute(t *testing.T) {
 	}
 
 	assert.NotNil(t, output)
-	assert.NotEmpty(t, output.ID)
+	assert.NotEmpty(t, output.ChooserID)
 	assert.Equal(t, input.Title, output.Title)
 	assert.Equal(t, input.Description, output.Description)
 	assert.NotEmpty(t, output.ProfileImageID)

@@ -10,28 +10,17 @@ import (
 )
 
 type CreateChooserInputDTO struct {
-	Name     string `json:"name"`
-	Email    string `json:"email"`
-	Password string `json:"password"`
-	City     string `json:"city"`
-	State    string `json:"state"`
-	Country  string `json:"country"`
-	Day      int    `json:"day"`
-	Month    int    `json:"month"`
-	Year     int    `json:"year"`
-	ImageID  string `json:"image_id"`
-}
-
-type CreateChooserOutputDTO struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	City    string `json:"city"`
-	State   string `json:"state"`
-	Country string `json:"country"`
-	Day     int    `json:"day"`
-	Month   int    `json:"month"`
-	Year    int    `json:"year"`
-	ImageID string `json:"image_id"`
+	ChooserID string `json:"chooser_id"`
+	Name      string `json:"name"`
+	Email     string `json:"email"`
+	Password  string `json:"password"`
+	City      string `json:"city"`
+	State     string `json:"state"`
+	Country   string `json:"country"`
+	Day       int    `json:"day"`
+	Month     int    `json:"month"`
+	Year      int    `json:"year"`
+	ImageID   string `json:"image_id"`
 }
 
 type CreateChooserUseCase struct {
@@ -46,7 +35,12 @@ func NewCreateChooserUseCase(
 	}
 }
 
-func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChooserOutputDTO, util.ProblemDetailsOutputDTO) {
+func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(cc.ChooserRepository, input.ChooserID, "CreateChooserUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return ChooserOutputDTO{}, chooserValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
 
 	chooserAlreadyExists, chooserAlreadyExistsError := cc.ChooserRepository.ChooserAlreadyExists(input.Email)
@@ -61,7 +55,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar um chooser através do e-mail", "CreateChooserUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if chooserAlreadyExists {
@@ -73,7 +67,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 			Instance: util.RFC409,
 		})
 
-		return CreateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -111,7 +105,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 	}
 
 	if len(problemsDetails) > 0 {
-		return CreateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -128,22 +122,12 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (CreateChoo
 
 		util.NewLoggerError(http.StatusInternalServerError, chooserCreationError.Error(), "CreateChooserUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
 
-	output := CreateChooserOutputDTO{
-		ID:      newChooser.ID,
-		Name:    newChooser.Name,
-		City:    newChooser.Address.City,
-		State:   newChooser.Address.State,
-		Country: newChooser.Address.Country,
-		Day:     newChooser.BirthDate.Day,
-		Month:   newChooser.BirthDate.Month,
-		Year:    newChooser.BirthDate.Year,
-		ImageID: newChooser.ImageID,
-	}
+	output := NewChooserOutputDTO(*newChooser)
 
 	return output, util.ProblemDetailsOutputDTO{
 		ProblemDetails: problemsDetails,

@@ -31,7 +31,7 @@ func TestDeactivateChooserUseCase_Execute(t *testing.T) {
 	chooserID := chooser.ID
 	input := DeactivateChooserInputDTO{ChooserID: chooserID}
 
-	mockRepository.EXPECT().GetByID(chooserID).Return(true, *chooser, nil)
+	mockRepository.EXPECT().GetByID(gomock.Any()).Return(true, *chooser, nil).Times(2)
 
 	chooser.Deactivate()
 
