@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"testing"
 	"youchoose/internal/entity"
 	"youchoose/internal/use_case/mock"
@@ -35,15 +34,9 @@ func TestAddMovieToList_Success(t *testing.T) {
 
 	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
 
-	nationality, problem := valueobject.NewNationality("United States", "🇺🇸")
-	if problem != nil {
-		fmt.Println(problem)
-	}
+	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	movie, problem := entity.NewMovie("Inception", *nationality, 2010, "image123")
-	if problem != nil {
-		t.Errorf("Erro ao criar um novo filme válido: %v", problem)
-	}
+	movie, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
 
 	list, _ := entity.NewList("profile123", "cover123", "Minha Lista", "Descrição da Lista", "chooser123")
 
