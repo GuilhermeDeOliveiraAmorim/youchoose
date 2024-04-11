@@ -96,7 +96,7 @@ func TestUpdateListUseCase_Execute(t *testing.T) {
 
 	assert.Len(t, problem.ProblemDetails, 0)
 	assert.NotNil(t, output)
-	assert.NotEmpty(t, output.ID)
+	assert.NotEmpty(t, output.ChooserID)
 	assert.NotEqual(t, list.Title, output.Title)
 	assert.NotEqual(t, list.Description, output.Description)
 	assert.NotEmpty(t, output.ProfileImageID)

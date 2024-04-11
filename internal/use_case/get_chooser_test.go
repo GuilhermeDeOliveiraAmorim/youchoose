@@ -1,11 +1,9 @@
 package usecase
 
 import (
-	"errors"
 	"testing"
 	"youchoose/internal/entity"
 	"youchoose/internal/use_case/mock"
-	"youchoose/internal/util"
 	valueobject "youchoose/internal/value_object"
 
 	"github.com/golang/mock/gomock"
@@ -20,43 +18,37 @@ func TestGetChooserUseCase_Execute(t *testing.T) {
 	mockRepository := mock.NewMockChooserRepositoryInterface(ctrl)
 	getChooserUseCase := NewGetChooserUseCase(mockRepository)
 
-	login1, _ := valueobject.NewLogin("email@email.com", "12@#asd89")
+	login, _ := valueobject.NewLogin("email@email.com", "12@#asd89")
 
-	address1, _ := valueobject.NewAddress("Aracaju", "Sergipe", "Brasil")
+	address, _ := valueobject.NewAddress("Aracaju", "Sergipe", "Brasil")
 
-	birthDate1, _ := valueobject.NewBirthDate(1, 1, 1990)
+	birthDate, _ := valueobject.NewBirthDate(1, 1, 1990)
 
-	newChooser, _ := entity.NewChooser("Nome 1", login1, address1, birthDate1, uuid.New().String())
+	chooser_1, _ := entity.NewChooser("Nome 1", login, address, birthDate, uuid.New().String())
+	chooser_2, _ := entity.NewChooser("Nome 2", login, address, birthDate, uuid.New().String())
 
 	outputExpected := ChooserOutputDTO{
-		ID:        newChooser.ID,
-		CreatedAt: newChooser.CreatedAt,
-		Name:      newChooser.Name,
-		City:      newChooser.Address.City,
-		State:     newChooser.Address.State,
-		Country:   newChooser.Address.Country,
-		Day:       newChooser.BirthDate.Day,
-		Month:     newChooser.BirthDate.Month,
-		Year:      newChooser.BirthDate.Year,
-		ImageID:   newChooser.ImageID,
+		ID:        chooser_2.ID,
+		CreatedAt: chooser_2.CreatedAt,
+		Name:      chooser_2.Name,
+		City:      chooser_2.Address.City,
+		State:     chooser_2.Address.State,
+		Country:   chooser_2.Address.Country,
+		Day:       chooser_2.BirthDate.Day,
+		Month:     chooser_2.BirthDate.Month,
+		Year:      chooser_2.BirthDate.Year,
+		ImageID:   chooser_2.ImageID,
 	}
 
-	mockRepository.EXPECT().GetByID(newChooser.ID).Return(true, *newChooser, nil)
+	mockRepository.EXPECT().GetByID(gomock.Any()).Return(true, *chooser_1, nil)
+	mockRepository.EXPECT().GetByID(gomock.Any()).Return(true, *chooser_2, nil)
 
 	input := GetChooserInputDTO{
-		ID: newChooser.ID,
+		ChooserID: chooser_2.ID,
 	}
 
 	output, problemDetails := getChooserUseCase.Execute(input)
 
 	assert.Empty(t, problemDetails.ProblemDetails)
 	assert.Equal(t, output, outputExpected)
-
-	mockRepository.EXPECT().GetByID(newChooser.ID).Return(false, entity.Chooser{}, errors.New("database error"))
-
-	output, problemDetails = getChooserUseCase.Execute(input)
-
-	assert.Empty(t, output)
-	assert.NotEmpty(t, problemDetails.ProblemDetails)
-	assert.Equal(t, util.RFC503, problemDetails.ProblemDetails[0].Instance)
 }

@@ -54,15 +54,9 @@ func TestGetMoviesUseCase_Execute(t *testing.T) {
 	var moviesOutputDTO []usecase.MovieOutputDTO
 
 	for _, movie := range movies {
-		moviesOutputDTO = append(moviesOutputDTO, usecase.MovieOutputDTO{
-			ID:          movie.ID,
-			CreatedAt:   movie.CreatedAt,
-			Title:       movie.Title,
-			Nationality: movie.Nationality,
-			ReleaseYear: movie.ReleaseYear,
-			ImageID:     movie.ImageID,
-			Votes:       movie.Votes,
-		})
+		outputMovie := usecase.NewMovieOutputDTO(movie)
+
+		moviesOutputDTO = append(moviesOutputDTO, outputMovie)
 	}
 
 	outputExpected := usecase.GetMoviesOutputDTO{

@@ -87,7 +87,7 @@ func TestCreateListUseCase_Execute(t *testing.T) {
 	}
 
 	assert.NotNil(t, output)
-	assert.NotEmpty(t, output.ID)
+	assert.NotEmpty(t, output.ChooserID)
 	assert.Equal(t, input.Title, output.Title)
 	assert.Equal(t, input.Description, output.Description)
 	assert.NotEmpty(t, output.ProfileImageID)
