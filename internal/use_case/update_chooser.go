@@ -10,27 +10,15 @@ import (
 )
 
 type UpdateChooserInputDTO struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	City    string `json:"city"`
-	State   string `json:"state"`
-	Country string `json:"country"`
-	Day     int    `json:"day"`
-	Month   int    `json:"month"`
-	Year    int    `json:"year"`
-	ImageID string `json:"image_id"`
-}
-
-type UpdateChooserOutputDTO struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	City    string `json:"city"`
-	State   string `json:"state"`
-	Country string `json:"country"`
-	Day     int    `json:"day"`
-	Month   int    `json:"month"`
-	Year    int    `json:"year"`
-	ImageID string `json:"image_id"`
+	ChooserID string `json:"chooser_id"`
+	Name      string `json:"name"`
+	City      string `json:"city"`
+	State     string `json:"state"`
+	Country   string `json:"country"`
+	Day       int    `json:"day"`
+	Month     int    `json:"month"`
+	Year      int    `json:"year"`
+	ImageID   string `json:"image_id"`
 }
 
 type UpdateChooserUseCase struct {
@@ -45,49 +33,13 @@ func NewUpdateChooserUseCase(
 	}
 }
 
-func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChooserOutputDTO, util.ProblemDetailsOutputDTO) {
-	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, userThatExists, doesTheChooserExistError := uc.ChooserRepository.GetByID(input.ID)
-	if doesTheChooserExistError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao buscar um chooser",
-			Status:   http.StatusInternalServerError,
-			Detail:   doesTheChooserExistError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, doesTheChooserExistError.Error(), "UpdateChooserUseCase", "Use Cases", "Internal Server Error")
-
-		return UpdateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Recurso não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Não foi possível encontrar o chooser de id " + input.ID,
-			Instance: util.RFC404,
-		})
-
-		return UpdateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !userThatExists.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusForbidden,
-			Detail:   "Não foi possível encontrar o chooser de id " + input.ID,
-			Instance: util.RFC404,
-		})
-
-		return UpdateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
+func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOutputDTO, util.ProblemDetailsOutputDTO) {
+	chooser, chooserValidatorProblems := chooserValidator(uc.ChooserRepository, input.ChooserID, "UpdateChooserUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return ChooserOutputDTO{}, chooserValidatorProblems
 	}
+
+	problemsDetails := []util.ProblemDetails{}
 
 	ctx := context.Background()
 
@@ -107,28 +59,28 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 	}
 
 	if len(problemsDetails) > 0 {
-		return UpdateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
 
-	if userThatExists.Name != input.Name {
-		userThatExists.ChangeName(ctx, input.Name)
+	if chooser.Name != input.Name {
+		chooser.ChangeName(ctx, input.Name)
 	}
 
-	if !userThatExists.Address.Equals(newAddress) {
-		userThatExists.ChangeAddress(ctx, newAddress)
+	if !chooser.Address.Equals(newAddress) {
+		chooser.ChangeAddress(ctx, newAddress)
 	}
 
-	if !userThatExists.BirthDate.Equals(newBirthdate) {
-		userThatExists.ChangeBirthDate(ctx, newBirthdate)
+	if !chooser.BirthDate.Equals(newBirthdate) {
+		chooser.ChangeBirthDate(ctx, newBirthdate)
 	}
 
-	if userThatExists.ImageID != input.ImageID {
-		userThatExists.ChangeImageID(ctx, input.ImageID)
+	if chooser.ImageID != input.ImageID {
+		chooser.ChangeImageID(ctx, input.ImageID)
 	}
 
-	chooserUpdatedError := uc.ChooserRepository.Update(&userThatExists)
+	chooserUpdatedError := uc.ChooserRepository.Update(&chooser)
 	if chooserUpdatedError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
@@ -141,17 +93,7 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (UpdateChoo
 		util.NewLoggerError(http.StatusInternalServerError, chooserUpdatedError.Error(), "UpdateChooserUseCase", "Use Cases", "Internal Server Error")
 	}
 
-	output := UpdateChooserOutputDTO{
-		ID:      userThatExists.ID,
-		Name:    userThatExists.Name,
-		City:    userThatExists.Address.City,
-		State:   userThatExists.Address.State,
-		Country: userThatExists.Address.Country,
-		Day:     userThatExists.BirthDate.Day,
-		Month:   userThatExists.BirthDate.Month,
-		Year:    userThatExists.BirthDate.Year,
-		ImageID: userThatExists.ImageID,
-	}
+	output := NewChooserOutputDTO(chooser)
 
 	return output, util.ProblemDetailsOutputDTO{
 		ProblemDetails: problemsDetails,

@@ -67,19 +67,6 @@ type CreateMovieInputDTO struct {
 	Writers      []Writer              `json:"writers"`
 }
 
-type CreateMovieOutputDTO struct {
-	ID          string                  `json:"id"`
-	Title       string                  `json:"title"`
-	Nationality valueobject.Nationality `json:"nationality"`
-	ReleaseYear int                     `json:"release_year"`
-	ImageID     string                  `json:"image_id"`
-	Votes       int                     `json:"votes"`
-	Genres      []entity.Genre          `json:"genres"`
-	Directors   []entity.Director       `json:"directors"`
-	Actors      []entity.Actor          `json:"actors"`
-	Writers     []entity.Writer         `json:"writers"`
-}
-
 type CreateMovieUseCase struct {
 	ActorRepository         repositoryinterface.ActorRepositoryInterface
 	ChooserRepository       repositoryinterface.ChooserRepositoryInterface
@@ -122,49 +109,13 @@ func NewCreateMovieUseCase(
 	}
 }
 
-func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOutputDTO, util.ProblemDetailsOutputDTO) {
-	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, chooser, getChooserError := cm.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
-
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "O chooser com o ID " + input.ChooserID + " está desativado",
-			Instance: util.RFC404,
-		})
-
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
+func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(cm.ChooserRepository, input.ChooserID, "CreateMovieUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return MovieOutputDTO{}, chooserValidatorProblems
 	}
+
+	problemsDetails := []util.ProblemDetails{}
 
 	if len(input.Genres) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -212,7 +163,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 	}
 
 	if len(problemsDetails) > 0 {
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -231,7 +182,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do filme", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -247,7 +198,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 	}
 
 	if len(problemsDetails) > 0 {
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -278,7 +229,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os gêneros pelos ids", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-			return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		} else if !doTheseGenresExist {
@@ -290,7 +241,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 				Instance: util.RFC409,
 			})
 
-			return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -316,7 +267,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do gênero: "+genreToAdd.Name, "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-				return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+				return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
 				}
 			}
@@ -362,7 +313,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os diretores pelos ids", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-			return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		} else if !doTheseDirectorsExist {
@@ -374,7 +325,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 				Instance: util.RFC409,
 			})
 
-			return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -400,7 +351,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do diretor: "+directorToAdd.Name, "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-				return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+				return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
 				}
 			}
@@ -458,7 +409,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os(as) atores(atrizes) pelos ids", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-			return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		} else if !doTheseActorsExist {
@@ -470,7 +421,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 				Instance: util.RFC409,
 			})
 
-			return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -496,7 +447,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) ator(atriz): "+actorToAdd.Name, "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-				return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+				return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
 				}
 			}
@@ -554,7 +505,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os(as) escritores(escritoras) pelos ids", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-			return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		} else if !doTheseWritersExist {
@@ -566,7 +517,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 				Instance: util.RFC409,
 			})
 
-			return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -592,7 +543,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) escritor(escritora): "+writerToAdd.Name, "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-				return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+				return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
 				}
 			}
@@ -625,7 +576,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 	}
 
 	if len(problemsDetails) > 0 {
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -672,7 +623,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 	}
 
 	if len(problemsDetails) > 0 {
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -689,7 +640,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -706,7 +657,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) actores(atrizes)", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -723,7 +674,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) diretores(as)", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -740,7 +691,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os gêneros", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -757,7 +708,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) escritores(as)", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -774,23 +725,12 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (CreateMovieOut
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o filme", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
 
-		return CreateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
 
-	output := CreateMovieOutputDTO{
-		ID:          newMovie.ID,
-		Title:       newMovie.Title,
-		Nationality: newMovie.Nationality,
-		ReleaseYear: newMovie.ReleaseYear,
-		ImageID:     newMovie.ImageID,
-		Votes:       newMovie.Votes,
-		Actors:      newMovie.Actors,
-		Directors:   newMovie.Directors,
-		Genres:      newMovie.Genres,
-		Writers:     newMovie.Writers,
-	}
+	output := NewMovieOutputDTO(*newMovie)
 
 	return output, util.ProblemDetailsOutputDTO{
 		ProblemDetails: problemsDetails,

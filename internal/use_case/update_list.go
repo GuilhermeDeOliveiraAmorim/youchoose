@@ -21,16 +21,6 @@ type UpdateListInputDTO struct {
 	ChooserID           string                `json:"chooser_id"`
 }
 
-type UpdateListOutputDTO struct {
-	ID             string         `json:"id"`
-	Title          string         `json:"title"`
-	Description    string         `json:"description"`
-	ProfileImageID string         `json:"profile_image_id"`
-	CoverImageID   string         `json:"cover_image_id"`
-	ChooserID      string         `json:"chooser_id"`
-	Movies         []entity.Movie `json:"movies"`
-}
-
 type UpdateListUseCase struct {
 	ListRepository      repositoryinterface.ListRepositoryInterface
 	ChooserRepository   repositoryinterface.ChooserRepositoryInterface
@@ -55,90 +45,18 @@ func NewUpdateListUseCase(
 	}
 }
 
-func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutputDTO, util.ProblemDetailsOutputDTO) {
+func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(ul.ChooserRepository, input.ChooserID, "UpdateListUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return ListOutputDTO{}, chooserValidatorProblems
+	}
+
+	list, listValidatorProblems := listValidator(ul.ListRepository, input.ID, "UpdateListUseCase")
+	if len(listValidatorProblems.ProblemDetails) > 0 {
+		return ListOutputDTO{}, listValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, chooser, getChooserError := ul.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
-
-		return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "O chooser com o ID " + input.ID + " está desativado",
-			Instance: util.RFC404,
-		})
-
-		return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheListExist, listThatExists, getListError := ul.ListRepository.GetByID(input.ID)
-	if getListError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar lista de ID " + input.ID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getListError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getListError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
-
-		return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheListExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + input.ID + " foi encontrada",
-			Instance: util.RFC404,
-		})
-
-		return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !listThatExists.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "A lista com o ID " + input.ID + " está desativada",
-			Instance: util.RFC404,
-		})
-
-		return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
 
 	doTheseMoviesExist, moviesForUpdate, manyMoviesError := ul.MovieRepository.DoTheseMoviesExist(input.Movies)
 	if manyMoviesError != nil {
@@ -152,7 +70,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os filmes pelos ids", "CreateListUseCase", "Use Cases", "Internal Server Error")
 
-		return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doTheseMoviesExist {
@@ -164,7 +82,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 			Instance: util.RFC409,
 		})
 
-		return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -174,12 +92,12 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 		problemsDetails = append(problemsDetails, validateListProblems...)
 	}
 
-	if input.Title != listThatExists.Title {
-		listThatExists.ChangeTitle(input.Title)
+	if input.Title != list.Title {
+		list.ChangeTitle(input.Title)
 	}
 
-	if input.Description != listThatExists.Description {
-		listThatExists.ChangeDescription(input.Description)
+	if input.Description != list.Description {
+		list.ChangeDescription(input.Description)
 	}
 
 	if input.ProfileImageFile != nil {
@@ -195,7 +113,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 
 			util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de profile da lista", "UpdateListUseCase", "Use Cases", "Internal Server Error")
 
-			return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -206,7 +124,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 		}
 
 		if len(problemsDetails) > 0 {
-			return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -223,12 +141,12 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 
 			util.NewLoggerError(http.StatusInternalServerError, profileImageCreationError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
 
-			return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
 
-		listThatExists.ChangeProfileImageID(newProfileImageName.ID)
+		list.ChangeProfileImageID(newProfileImageName.ID)
 	}
 
 	if input.CoverImageFile != nil {
@@ -244,7 +162,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 
 			util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de capa da lista", "UpdateListUseCase", "Use Cases", "Internal Server Error")
 
-			return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -255,7 +173,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 		}
 
 		if len(problemsDetails) > 0 {
-			return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -272,18 +190,18 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 
 			util.NewLoggerError(http.StatusInternalServerError, coverImageCreationError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
 
-			return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
 
-		listThatExists.ChangeCoverImageID(newCoverImageName.ID)
+		list.ChangeCoverImageID(newCoverImageName.ID)
 	}
 
-	moviesToDelete, moviesToAdd := listThatExists.UpdateMovies(moviesForUpdate)
+	moviesToDelete, moviesToAdd := list.UpdateMovies(moviesForUpdate)
 
-	listThatExists.RemoveMovies(moviesToDelete)
-	listThatExists.AddMovies(moviesToAdd)
+	list.RemoveMovies(moviesToDelete)
+	list.AddMovies(moviesToAdd)
 
 	listMoviesToDeactivateError := ul.ListMovieRepository.DeactivateAll(&moviesToDelete)
 	if listMoviesToDeactivateError != nil {
@@ -301,17 +219,17 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 	var listMoviesToAdd []entity.ListMovie
 
 	for _, movieToAdd := range moviesToAdd {
-		newListMovie, newListMovieError := entity.NewListMovie(listThatExists.ID, movieToAdd.ID, chooser.ID)
+		newListMovie, newListMovieError := entity.NewListMovie(list.ID, movieToAdd.ID, input.ID)
 		if newListMovieError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     "Validation Error",
 				Title:    "Um ou mais filmes não encontrados",
 				Status:   http.StatusBadRequest,
-				Detail:   "Não foi possível adicioar o filme de ID " + movieToAdd.ID + " à lista de ID " + listThatExists.ID,
+				Detail:   "Não foi possível adicioar o filme de ID " + movieToAdd.ID + " à lista de ID " + list.ID,
 				Instance: util.RFC404,
 			})
 
-			return UpdateListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -332,7 +250,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 		util.NewLoggerError(http.StatusInternalServerError, listMoviesToAddError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
 	}
 
-	listUpdatedError := ul.ListRepository.Update(&listThatExists)
+	listUpdatedError := ul.ListRepository.Update(&list)
 	if listUpdatedError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
@@ -345,15 +263,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (UpdateListOutput
 		util.NewLoggerError(http.StatusInternalServerError, listUpdatedError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
 	}
 
-	output := UpdateListOutputDTO{
-		ID:             listThatExists.ID,
-		Title:          listThatExists.Title,
-		Description:    listThatExists.Description,
-		ChooserID:      listThatExists.ChooserID,
-		ProfileImageID: listThatExists.ProfileImageID,
-		CoverImageID:   listThatExists.CoverImageID,
-		Movies:         listThatExists.Movies,
-	}
+	output := NewListOutputDTO(list)
 
 	return output, util.ProblemDetailsOutputDTO{
 		ProblemDetails: problemsDetails,

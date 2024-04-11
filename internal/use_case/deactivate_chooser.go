@@ -7,7 +7,8 @@ import (
 )
 
 type DeactivateChooserInputDTO struct {
-	ChooserID string `json:"chooser_id"`
+	ChooserID             string `json:"chooser_id"`
+	ChooserIDToDeactivate string `json:"chooser_id_to_deactivate"`
 }
 
 type DeactivateChooserOutputDTO struct {
@@ -28,53 +29,22 @@ func NewDeactivateChooserUseCase(
 	}
 }
 
-func (cc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (DeactivateChooserOutputDTO, util.ProblemDetailsOutputDTO) {
-	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, chooser, getChooserError := cc.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao desativar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "DeactivateChooserUseCase", "Use Cases", "Internal Server Error")
-
-		return DeactivateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Conflict",
-			Title:    "Chooser já está desativado",
-			Status:   http.StatusConflict,
-			Detail:   "O chooser com o ID " + input.ChooserID + " já está desativado",
-			Instance: util.RFC409,
-		})
-
-		return DeactivateChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
+func (dc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (DeactivateChooserOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(dc.ChooserRepository, input.ChooserID, "DeactivateChooserUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return DeactivateChooserOutputDTO{}, chooserValidatorProblems
 	}
 
-	chooser.Deactivate()
+	chooserToDeactivate, chooserValidatorProblems := chooserValidator(dc.ChooserRepository, input.ChooserIDToDeactivate, "DeactivateChooserUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return DeactivateChooserOutputDTO{}, chooserValidatorProblems
+	}
 
-	chooserDeactivateError := cc.ChooserRepository.Deactivate(&chooser)
+	problemsDetails := []util.ProblemDetails{}
+
+	chooserToDeactivate.Deactivate()
+
+	chooserDeactivateError := dc.ChooserRepository.Deactivate(&chooserToDeactivate)
 	if chooserDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     "Internal Server Error",
@@ -88,7 +58,7 @@ func (cc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (De
 	}
 
 	output := DeactivateChooserOutputDTO{
-		ChooserID: chooser.ID,
+		ChooserID: chooserToDeactivate.ID,
 		Message:   "Chooser desativado com sucesso",
 		IsSuccess: true,
 	}
