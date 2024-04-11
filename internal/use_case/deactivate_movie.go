@@ -33,89 +33,17 @@ func NewDeactivateMovieUseCase(
 }
 
 func (dm *DeactivateMovieUseCase) Execute(input DeactivateMovieInputDTO) (DeactivateMovieOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(dm.ChooserRepository, input.ChooserID, "DeactivateMovieInputDTO")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return DeactivateMovieOutputDTO{}, chooserValidatorProblems
+	}
+
+	movie, movieValidatorProblems := movieValidator(dm.MovieRepository, input.MovieID, "DeactivateMovieInputDTO")
+	if len(movieValidatorProblems.ProblemDetails) > 0 {
+		return DeactivateMovieOutputDTO{}, movieValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, chooser, getChooserError := dm.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "DeactivateMovieUseCase", "Use Cases", "Internal Server Error")
-
-		return DeactivateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "O chooser com o ID " + input.ChooserID + " está desativado",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheMovieExist, movie, getMovieError := dm.MovieRepository.GetByID(input.MovieID)
-	if getMovieError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar filme de ID " + input.MovieID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getMovieError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getMovieError.Error(), "DeactivateMovieUseCase", "Use Cases", "Internal Server Error")
-
-		return DeactivateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheMovieExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Filme não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum filme com o ID " + input.MovieID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !movie.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Filme não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "O filme com o ID " + input.MovieID + " está desativado",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
 
 	movie.Deactivate()
 

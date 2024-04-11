@@ -57,36 +57,12 @@ func NewCreateListUseCase(
 }
 
 func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutputDTO, util.ProblemDetailsOutputDTO) {
-	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, _, getChooserError := cl.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
-
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return CreateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
+	_, chooserValidatorProblems := chooserValidator(cl.ChooserRepository, input.ChooserID, "CreateListUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return CreateListOutputDTO{}, chooserValidatorProblems
 	}
+
+	problemsDetails := []util.ProblemDetails{}
 
 	doTheseMoviesExist, _, manyMoviesError := cl.MovieRepository.DoTheseMoviesExist(input.Movies)
 	if manyMoviesError != nil {

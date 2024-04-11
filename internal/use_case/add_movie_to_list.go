@@ -27,130 +27,23 @@ type AddMovieToListUseCase struct {
 }
 
 func (am *AddMovieToListUseCase) Execute(input AddMovieToListInputDTO) (AddMovieToListOutputDTO, util.ProblemDetailsOutputDTO) {
+
+	_, chooserValidatorProblems := chooserValidator(am.ChooserRepository, input.ChooserID, "AddMovieToListUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return AddMovieToListOutputDTO{}, chooserValidatorProblems
+	}
+
+	_, listValidatorProblems := listValidator(am.ListRepository, input.ListID, "AddMovieToListUseCase")
+	if len(listValidatorProblems.ProblemDetails) > 0 {
+		return AddMovieToListOutputDTO{}, listValidatorProblems
+	}
+
+	_, movieValidatorProblems := movieValidator(am.MovieRepository, input.MovieID, "AddMovieToListUseCase")
+	if len(movieValidatorProblems.ProblemDetails) > 0 {
+		return AddMovieToListOutputDTO{}, movieValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, chooser, getChooserError := am.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "AddMovieToListUseCase", "Use Cases", "Internal Server Error")
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist || !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheListExist, list, getListError := am.ListRepository.GetByID(input.ListID)
-	if getListError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar lista de ID " + input.ListID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getListError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getListError.Error(), "AddMovieToListUseCase", "Use Cases", "Internal Server Error")
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheListExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + input.ListID + " foi encontrada",
-			Instance: util.RFC404,
-		})
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !list.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + input.ListID + " foi encontrada",
-			Instance: util.RFC404,
-		})
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheMovieExist, movie, getMovieError := am.MovieRepository.GetByID(input.MovieID)
-	if getMovieError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar filme de ID " + input.MovieID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getMovieError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getMovieError.Error(), "AddMovieToListUseCase", "Use Cases", "Internal Server Error")
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheMovieExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Filme não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum filme com o ID " + input.MovieID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !movie.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Filme não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum filme com o ID " + input.MovieID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
 
 	doesTheListMovieExist, listMovie, getListMovieError := am.ListMovieRepository.GetByListIDAndMovieIDAndChooserID(input.ListID, input.MovieID, input.ChooserID)
 	if getListMovieError != nil {

@@ -33,6 +33,11 @@ func NewRemoveListFavoriteUseCase(
 }
 
 func (rl *RemoveListFavoriteUseCase) Execute(input RemoveListFavoriteInputDTO) (RemoveListFavoriteOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(rl.ChooserRepository, input.ChooserID, "RemoveListFavoriteUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return RemoveListFavoriteOutputDTO{}, chooserValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
 
 	doesTheListFavoriteExist, listFavorite, getListFavoriteError := rl.ListFavoriteRepository.GetByID(input.ListFavoriteID)
@@ -68,47 +73,6 @@ func (rl *RemoveListFavoriteUseCase) Execute(input RemoveListFavoriteInputDTO) (
 			Title:    "A lista já removida",
 			Status:   http.StatusNotFound,
 			Detail:   "A lista já está removida das favoritas",
-			Instance: util.RFC404,
-		})
-
-		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheChooserExist, chooser, getChooserError := rl.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "GetChooserUseCase", "Use Cases", "Internal Server Error")
-
-		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "O chooser com o ID " + input.ChooserID + " está desativado",
 			Instance: util.RFC404,
 		})
 
