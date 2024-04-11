@@ -3,6 +3,7 @@ package usecase
 import (
 	"mime/multipart"
 	"net/http"
+	"time"
 	"youchoose/internal/entity"
 	repositoryinterface "youchoose/internal/repository_interface"
 	"youchoose/internal/service"
@@ -22,6 +23,7 @@ type CreateListInputDTO struct {
 
 type CreateListOutputDTO struct {
 	ID             string         `json:"id"`
+	CreatedAt      time.Time      `json:"created_at"`
 	Title          string         `json:"title"`
 	Description    string         `json:"description"`
 	ProfileImageID string         `json:"profile_image_id"`
@@ -268,6 +270,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (CreateListOutput
 
 	output := CreateListOutputDTO{
 		ID:             newList.ID,
+		CreatedAt:      newList.CreatedAt,
 		Title:          newList.Title,
 		Description:    newList.Description,
 		ProfileImageID: newProfileImageName.ID,

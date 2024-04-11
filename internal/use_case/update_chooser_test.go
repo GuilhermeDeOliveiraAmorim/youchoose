@@ -78,16 +78,17 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 
 	output, problems := updateChooserUseCase.Execute(updateChooserInputDTO)
 
-	expectedOutput := UpdateChooserOutputDTO{
-		ID:      chooserID,
-		Name:    "John Doe",
-		City:    "Aracaju",
-		State:   "Sergipe",
-		Country: "Brasil",
-		Day:     10,
-		Month:   5,
-		Year:    1990,
-		ImageID: imageID,
+	expectedOutput := ChooserOutputDTO{
+		ID:        chooserID,
+		CreatedAt: output.CreatedAt,
+		Name:      "John Doe",
+		City:      "Aracaju",
+		State:     "Sergipe",
+		Country:   "Brasil",
+		Day:       10,
+		Month:     5,
+		Year:      1990,
+		ImageID:   imageID,
 	}
 
 	assert.Equal(t, expectedOutput, output)
@@ -112,7 +113,7 @@ func TestUpdateChooserUseCase_Execute_NotFound(t *testing.T) {
 
 	output, problems := updateChooserUseCase.Execute(input)
 
-	assert.Equal(t, UpdateChooserOutputDTO{}, output)
+	assert.Equal(t, ChooserOutputDTO{}, output)
 
 	expectedProblems := []util.ProblemDetails{
 		{
@@ -143,7 +144,7 @@ func TestUpdateChooserUseCase_Execute_InternalServerError(t *testing.T) {
 
 	output, problems := updateChooserUseCase.Execute(input)
 
-	assert.Equal(t, UpdateChooserOutputDTO{}, output)
+	assert.Equal(t, ChooserOutputDTO{}, output)
 
 	expectedProblems := []util.ProblemDetails{
 		{

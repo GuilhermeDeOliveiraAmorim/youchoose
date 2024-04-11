@@ -28,16 +28,17 @@ func TestGetChooserUseCase_Execute(t *testing.T) {
 
 	newChooser, _ := entity.NewChooser("Nome 1", login1, address1, birthDate1, uuid.New().String())
 
-	outputExpected := GetChooserOutputDTO {
-		ID: newChooser.ID,
-		Name: newChooser.Name,
-        City: newChooser.Address.City,
-        State: newChooser.Address.State,
-        Country: newChooser.Address.Country,
-        Day: newChooser.BirthDate.Day,
-		Month: newChooser.BirthDate.Month,
-        Year: newChooser.BirthDate.Year,
-        ImageID: newChooser.ImageID,
+	outputExpected := ChooserOutputDTO{
+		ID:        newChooser.ID,
+		CreatedAt: newChooser.CreatedAt,
+		Name:      newChooser.Name,
+		City:      newChooser.Address.City,
+		State:     newChooser.Address.State,
+		Country:   newChooser.Address.Country,
+		Day:       newChooser.BirthDate.Day,
+		Month:     newChooser.BirthDate.Month,
+		Year:      newChooser.BirthDate.Year,
+		ImageID:   newChooser.ImageID,
 	}
 
 	mockRepository.EXPECT().GetByID(newChooser.ID).Return(true, *newChooser, nil)
