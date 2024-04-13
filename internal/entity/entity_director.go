@@ -38,9 +38,9 @@ func ValidateDirector(name string, birthDate *valueobject.BirthDate, nationality
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nome do(a) diretor(a) inválido",
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do(a) diretor(a) não pode estar vazio.",
+			Detail:   util.DirectorErrorDetailEmptyName,
 			Instance: util.RFC400,
 		})
 	}
@@ -48,9 +48,9 @@ func ValidateDirector(name string, birthDate *valueobject.BirthDate, nationality
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nome do(a) diretor(a) inválido",
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do(a) diretor(a) não pode ter mais do que 100 caracteres.",
+			Detail:   util.DirectorErrorDetailMaxLengthName,
 			Instance: util.RFC400,
 		})
 	}
@@ -58,9 +58,9 @@ func ValidateDirector(name string, birthDate *valueobject.BirthDate, nationality
 	if birthDate == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Data de nascimento do(a) diretor(a) inválida",
+			Title:    util.SharedErrorTitleInvalidBirthDate,
 			Status:   http.StatusBadRequest,
-			Detail:   "A data de nascimento do(a) diretor(a) não pode ser nula.",
+			Detail:   util.DirectorErrorDetailNotNullBirthDate,
 			Instance: util.RFC400,
 		})
 	}
@@ -68,9 +68,9 @@ func ValidateDirector(name string, birthDate *valueobject.BirthDate, nationality
 	if nationality == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nacionalidade do(a) diretor(a) inválida",
+			Title:    util.SharedErrorTitleInvalidNationality,
 			Status:   http.StatusBadRequest,
-			Detail:   "A nacionalidade do(a) diretor(a) não pode ser nula.",
+			Detail:   util.DirectorErrorDetailNotNullNationality,
 			Instance: util.RFC400,
 		})
 	}
@@ -78,9 +78,9 @@ func ValidateDirector(name string, birthDate *valueobject.BirthDate, nationality
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "ID de imagem do(a) diretor(a) inválido",
+			Title:    util.SharedErrorTitleInvalidImageID,
 			Status:   http.StatusBadRequest,
-			Detail:   "O ID de imagem do(a) diretor(a) não pode estar vazio.",
+			Detail:   util.DirectorErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}
