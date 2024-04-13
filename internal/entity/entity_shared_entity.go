@@ -50,11 +50,3 @@ func (se *SharedEntity) AddNotification(key, value string) {
 func (se *SharedEntity) AddError(problem util.ProblemDetails) {
 	se.Errors = append(se.Errors, problem)
 }
-
-func (se *SharedEntity) ClearNotifications() {
-	se.Notifications = nil
-}
-
-func (se *SharedEntity) ClearErrors() {
-	se.Errors = nil
-}
