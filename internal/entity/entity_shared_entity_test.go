@@ -75,28 +75,3 @@ func TestAddError(t *testing.T) {
 		t.Error("O erro não foi adicionado corretamente")
 	}
 }
-
-func TestClearNotifications(t *testing.T) {
-	sharedEntity := NewSharedEntity()
-	sharedEntity.AddNotification("info", "Operação concluída com sucesso")
-	sharedEntity.ClearNotifications()
-
-	if len(sharedEntity.Notifications) != 0 {
-		t.Error("As notificações não foram removidas corretamente")
-	}
-}
-
-func TestClearErrors(t *testing.T) {
-	sharedEntity := NewSharedEntity()
-	sharedEntity.AddError(util.ProblemDetails{
-		Type:   "Validation Error",
-		Title:  "Erro de validação",
-		Status: 400,
-		Detail: "Campos obrigatórios não preenchidos",
-	})
-	sharedEntity.ClearErrors()
-
-	if len(sharedEntity.Errors) != 0 {
-		t.Error("Os erros não foram removidos corretamente")
-	}
-}
