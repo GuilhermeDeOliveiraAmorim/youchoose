@@ -27,16 +27,14 @@ func NewChooser(name string, login *valueobject.Login, address *valueobject.Addr
 		return nil, validationErrors
 	}
 
-	chooser := &Chooser{
+	return &Chooser{
 		SharedEntity: *NewSharedEntity(),
 		Name:         name,
 		Login:        login,
 		Address:      address,
 		BirthDate:    birthDate,
 		ImageID:      imageID,
-	}
-
-	return chooser, nil
+	}, nil
 }
 
 func ValidateChooser(name string, imageID string) []util.ProblemDetails {

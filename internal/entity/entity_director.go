@@ -23,15 +23,13 @@ func NewDirector(name string, birthDate *valueobject.BirthDate, nationality *val
 		return nil, validationErrors
 	}
 
-	Director := &Director{
+	return &Director{
 		SharedEntity: *NewSharedEntity(),
 		Name:         name,
 		BirthDate:    birthDate,
 		Nationality:  nationality,
 		ImageID:      imageID,
-	}
-
-	return Director, nil
+	}, nil
 }
 
 func ValidateDirector(name string, birthDate *valueobject.BirthDate, nationality *valueobject.Nationality, imageID string) []util.ProblemDetails {
