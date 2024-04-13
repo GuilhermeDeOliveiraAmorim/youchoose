@@ -40,3 +40,9 @@ const (
 	DirectorErrorDetailNotNullNationality = "A nacionalidade do(a) diretor(a) não pode ser nula"
 	DirectorErrorDetailEmptyImageID       = "O ID de imagem do(a) diretor(a) não pode estar vazio"
 )
+
+const (
+	GenreErrorDetailEmptyName     = "O nome do gênero não pode estar vazio"
+	GenreErrorDetailMaxLengthName = "O nome do gênero não pode ter mais do que 100 caracteres"
+	GenreErrorDetailEmptyImageID  = "O ID de imagem do gênero não pode estar vazio"
+)
