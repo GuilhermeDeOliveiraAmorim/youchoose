@@ -43,21 +43,21 @@ func (rl *RemoveListFavoriteUseCase) Execute(input RemoveListFavoriteInputDTO) (
 	doesTheListFavoriteExist, listFavorite, getListFavoriteError := rl.ListFavoriteRepository.GetByID(input.ListFavoriteID)
 	if getListFavoriteError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao remover lista das favoritas",
 			Status:   http.StatusInternalServerError,
 			Detail:   getListFavoriteError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, getListFavoriteError.Error(), "RemoveListFavoriteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, getListFavoriteError.Error(), "RemoveListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doesTheListFavoriteExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Erro ao remover lista das favoritas",
 			Status:   http.StatusNotFound,
 			Detail:   "Não foi possível remover a lista das favoritas",
@@ -69,8 +69,8 @@ func (rl *RemoveListFavoriteUseCase) Execute(input RemoveListFavoriteInputDTO) (
 		}
 	} else if !listFavorite.Active {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "A lista já removida",
+			Type:     util.TypeNotFound,
+			Title:    "Lista já removida",
 			Status:   http.StatusNotFound,
 			Detail:   "A lista já está removida das favoritas",
 			Instance: util.RFC404,
@@ -86,14 +86,14 @@ func (rl *RemoveListFavoriteUseCase) Execute(input RemoveListFavoriteInputDTO) (
 	listFavoriteError := rl.ListFavoriteRepository.Deactivate(&listFavorite)
 	if listFavoriteError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao remover lista das favoritas",
 			Status:   http.StatusInternalServerError,
 			Detail:   listFavoriteError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "RemoveListFavoriteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "RemoveListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

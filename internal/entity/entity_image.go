@@ -33,7 +33,7 @@ func ValidateImage(name string, size int64) []util.ProblemDetails {
 
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Nome de imagem inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "A imagem deve ter um nome válido.",
@@ -43,7 +43,7 @@ func ValidateImage(name string, size int64) []util.ProblemDetails {
 
 	if size <= 0 || size > 100000 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Tamanho de imagem inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O tamanho da imagem deve estar entre 1 e 100000 bytes.",

@@ -48,21 +48,21 @@ func (am *AddMovieToListUseCase) Execute(input AddMovieToListInputDTO) (AddMovie
 	doesTheListMovieExist, listMovie, getListMovieError := am.ListMovieRepository.GetByListIDAndMovieIDAndChooserID(input.ListID, input.MovieID, input.ChooserID)
 	if getListMovieError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao adicionar filme de ID " + input.MovieID + " na lista de ID " + input.ListID,
 			Status:   http.StatusInternalServerError,
 			Detail:   getListMovieError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, getListMovieError.Error(), "AddMovieToListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, getListMovieError.Error(), "AddMovieToListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if doesTheListMovieExist && listMovie.Active {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Filme já cadastrado",
 			Status:   http.StatusConflict,
 			Detail:   "O filme com o ID " + input.MovieID + " já está adicionado na lista de ID " + input.ListID,
@@ -77,7 +77,7 @@ func (am *AddMovieToListUseCase) Execute(input AddMovieToListInputDTO) (AddMovie
 	newListMovie, newListMovieError := entity.NewListMovie(input.ListID, input.MovieID, input.ChooserID)
 	if newListMovieError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Erro ao adicionar filme",
 			Status:   http.StatusInternalServerError,
 			Detail:   "Erro ao adicionar filme de ID " + input.MovieID + " na lista de ID " + input.ListID,
@@ -96,14 +96,14 @@ func (am *AddMovieToListUseCase) Execute(input AddMovieToListInputDTO) (AddMovie
 	listMoviesCreationError := am.ListMovieRepository.Create(&listMovies)
 	if listMoviesCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao adicionar filme de ID " + input.MovieID + " na lista de ID " + input.ListID,
 			Status:   http.StatusInternalServerError,
 			Detail:   listMoviesCreationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listMoviesCreationError.Error(), "AddMovieToListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listMoviesCreationError.Error(), "AddMovieToListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return AddMovieToListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

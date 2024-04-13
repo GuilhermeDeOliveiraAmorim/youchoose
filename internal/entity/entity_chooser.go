@@ -44,7 +44,7 @@ func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Nome do Chooser inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O nome do Chooser não pode estar vazio.",
@@ -54,7 +54,7 @@ func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Nome do Chooser inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O nome do Chooser não pode ter mais do que 100 caracteres.",
@@ -64,7 +64,7 @@ func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 
 	if uuid.Validate(imageID) != nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "ID de imagem do Chooser inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O ID de imagem do Chooser não pode estar vazio.",
@@ -80,7 +80,7 @@ func (c *Chooser) ChangeLogin(ctx context.Context, newLogin *valueobject.Login) 
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Erro ao alterar o login do Chooser",
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
@@ -98,7 +98,7 @@ func (c *Chooser) ChangeAddress(ctx context.Context, newAddress *valueobject.Add
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Erro ao alterar o endereço do Chooser",
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
@@ -116,7 +116,7 @@ func (c *Chooser) ChangeBirthDate(ctx context.Context, newBirthDate *valueobject
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Erro ao alterar a data de aniversário do Chooser",
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
@@ -134,7 +134,7 @@ func (c *Chooser) ChangeImageID(ctx context.Context, newImageID string) []util.P
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Erro ao alterar o ID de imagem do Chooser",
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
@@ -152,7 +152,7 @@ func (c *Chooser) ChangeName(ctx context.Context, newName string) []util.Problem
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Erro ao alterar o nome do Chooser",
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),

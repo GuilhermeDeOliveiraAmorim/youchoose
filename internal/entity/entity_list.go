@@ -131,7 +131,7 @@ func ValidateList(title, description, chooserID string) []util.ProblemDetails {
 
 	if title == "" || len(title) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Título da lista inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O título da lista não pode estar vazio e deve ter no máximo 100 caracteres.",
@@ -141,7 +141,7 @@ func ValidateList(title, description, chooserID string) []util.ProblemDetails {
 
 	if description == "" || len(description) > 150 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Descrição da lista inválida",
 			Status:   http.StatusBadRequest,
 			Detail:   "A descrição da lista não pode estar vazia e deve ter no máximo 150 caracteres.",

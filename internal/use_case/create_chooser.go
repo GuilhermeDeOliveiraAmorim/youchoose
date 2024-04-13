@@ -46,21 +46,21 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 	chooserAlreadyExists, chooserAlreadyExistsError := cc.ChooserRepository.ChooserAlreadyExists(input.Email)
 	if chooserAlreadyExistsError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar um chooser através do e-mail",
 			Status:   http.StatusInternalServerError,
 			Detail:   chooserAlreadyExistsError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar um chooser através do e-mail", "CreateChooserUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar um chooser através do e-mail", "CreateChooserUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if chooserAlreadyExists {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "E-mail já está em uso",
 			Status:   http.StatusConflict,
 			Detail:   "O e-mail fornecido já está sendo utilizado por outro chooser.",
@@ -113,14 +113,14 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 	chooserCreationError := cc.ChooserRepository.Create(newChooser)
 	if chooserCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir um chooser",
 			Status:   http.StatusInternalServerError,
 			Detail:   chooserCreationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, chooserCreationError.Error(), "CreateChooserUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, chooserCreationError.Error(), "CreateChooserUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

@@ -64,21 +64,21 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 	doesTheMoviesExist, movies, doesTheMoviesExistError := rv.MovieRepository.DoTheseMoviesExist(moviesIDs)
 	if doesTheMoviesExistError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar lista de ID " + input.ListID,
 			Status:   http.StatusInternalServerError,
 			Detail:   doesTheMoviesExistError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, doesTheMoviesExistError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, doesTheMoviesExistError.Error(), "RegisterVoteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doesTheMoviesExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Um ou mais filmes não encontrados",
 			Status:   http.StatusConflict,
 			Detail:   "Um ou mais ids dos filmes não retornou resultado",
@@ -93,21 +93,21 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 	doesTheVotationExist, doesTheVotationExistError := rv.VotationRepository.VotationAlreadyExists(input.ChooserID, input.ListID, input.FirstMovieID, input.SecondMovieID, input.ChosenMovieID)
 	if doesTheVotationExistError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar lista de ID " + input.ListID,
 			Status:   http.StatusInternalServerError,
 			Detail:   doesTheVotationExistError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, doesTheVotationExistError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, doesTheVotationExistError.Error(), "RegisterVoteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if doesTheVotationExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Already Exists",
+			Type:     util.TypeConflict,
 			Title:    "Votação já existe",
 			Status:   http.StatusConflict,
 			Detail:   "A votação já foi registrada anteriormente",
@@ -133,14 +133,14 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 	movieUpdatedError := rv.MovieRepository.Update(&movies[2])
 	if movieUpdatedError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao atualizar filme de ID " + movies[2].ID,
 			Status:   http.StatusInternalServerError,
 			Detail:   movieUpdatedError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, movieUpdatedError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, movieUpdatedError.Error(), "RegisterVoteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -150,14 +150,14 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 	registerVoteCreationError := rv.VotationRepository.Create(newVotation)
 	if registerVoteCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir uma votação",
 			Status:   http.StatusInternalServerError,
 			Detail:   registerVoteCreationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, registerVoteCreationError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, registerVoteCreationError.Error(), "RegisterVoteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

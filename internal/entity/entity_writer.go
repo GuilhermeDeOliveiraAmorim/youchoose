@@ -39,7 +39,7 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Nome do(a) escritor(a) inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O nome do(a) escritor(a) não pode estar vazio.",
@@ -49,7 +49,7 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Nome do(a) escritor(a) inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O nome do(a) escritor(a) não pode ter mais do que 100 caracteres.",
@@ -59,7 +59,7 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 
 	if birthDate == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Data de nascimento do(a) escritor(a) inválida",
 			Status:   http.StatusBadRequest,
 			Detail:   "A data de nascimento do(a) escritor(a) não pode ser nula.",
@@ -69,7 +69,7 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 
 	if nationality == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Nacionalidade do(a) escritor(a) inválida",
 			Status:   http.StatusBadRequest,
 			Detail:   "A nacionalidade do(a) escritor(a) não pode ser nula.",
@@ -79,7 +79,7 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "ID de imagem do(a) escritor(a) inválido",
 			Status:   http.StatusBadRequest,
 			Detail:   "O ID de imagem do(a) escritor(a) não pode estar vazio.",

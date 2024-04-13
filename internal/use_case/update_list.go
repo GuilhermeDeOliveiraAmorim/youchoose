@@ -61,21 +61,21 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 	doTheseMoviesExist, moviesForUpdate, manyMoviesError := ul.MovieRepository.DoTheseMoviesExist(input.Movies)
 	if manyMoviesError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar os filmes pelos ids",
 			Status:   http.StatusInternalServerError,
 			Detail:   manyMoviesError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os filmes pelos ids", "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os filmes pelos ids", "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doTheseMoviesExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Um ou mais filmes não encontrados",
 			Status:   http.StatusConflict,
 			Detail:   "Um ou mais ids dos filmes não retornou resultado",
@@ -104,14 +104,14 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 		_, profileImageName, profileImageExtension, profileImageSize, profileImageError := service.MoveFile(input.ProfileImageFile, input.ProfileImageHandler)
 		if profileImageError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao mover a imagem de profile da lista",
 				Status:   http.StatusInternalServerError,
 				Detail:   profileImageError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de profile da lista", "UpdateListUseCase", "Use Cases", "Internal Server Error")
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de profile da lista", "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
@@ -132,14 +132,14 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 		profileImageCreationError := ul.ImageRepository.Create(newProfileImageName)
 		if profileImageCreationError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao persistir a imagem de profile",
 				Status:   http.StatusInternalServerError,
 				Detail:   profileImageCreationError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, profileImageCreationError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
+			util.NewLoggerError(http.StatusInternalServerError, profileImageCreationError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
@@ -153,14 +153,14 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 		_, coverImageName, coverImageExtension, coverImageSize, coverImageError := service.MoveFile(input.CoverImageFile, input.CoverImageHandler)
 		if coverImageError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao mover a imagem de capa da lista",
 				Status:   http.StatusInternalServerError,
 				Detail:   coverImageError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de capa da lista", "UpdateListUseCase", "Use Cases", "Internal Server Error")
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de capa da lista", "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
@@ -181,14 +181,14 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 		coverImageCreationError := ul.ImageRepository.Create(newCoverImageName)
 		if coverImageCreationError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao persistir a imagem de capa",
 				Status:   http.StatusInternalServerError,
 				Detail:   coverImageCreationError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, coverImageCreationError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
+			util.NewLoggerError(http.StatusInternalServerError, coverImageCreationError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
@@ -206,14 +206,14 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 	listMoviesToDeactivateError := ul.ListMovieRepository.DeactivateAll(&moviesToDelete)
 	if listMoviesToDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao remover filmes da lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listMoviesToDeactivateError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listMoviesToDeactivateError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listMoviesToDeactivateError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	var listMoviesToAdd []entity.ListMovie
@@ -222,7 +222,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 		newListMovie, newListMovieError := entity.NewListMovie(list.ID, movieToAdd.ID, input.ID)
 		if newListMovieError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Validation Error",
+				Type:     util.TypeValidationError,
 				Title:    "Um ou mais filmes não encontrados",
 				Status:   http.StatusBadRequest,
 				Detail:   "Não foi possível adicioar o filme de ID " + movieToAdd.ID + " à lista de ID " + list.ID,
@@ -240,27 +240,27 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 	listMoviesToAddError := ul.ListMovieRepository.Create(&listMoviesToAdd)
 	if listMoviesToAddError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir filmes na lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listMoviesToAddError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listMoviesToAddError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listMoviesToAddError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	listUpdatedError := ul.ListRepository.Update(&list)
 	if listUpdatedError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listUpdatedError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listUpdatedError.Error(), "UpdateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listUpdatedError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	output := NewListOutputDTO(list)

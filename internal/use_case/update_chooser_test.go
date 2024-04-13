@@ -117,7 +117,7 @@ func TestUpdateChooserUseCase_Execute_NotFound(t *testing.T) {
 
 	expectedProblems := []util.ProblemDetails{
 		{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Chooser não encontrado",
 			Status:   http.StatusNotFound,
 			Detail:   "Nenhum chooser com o ID " + chooserID + " foi encontrado",
@@ -148,7 +148,7 @@ func TestUpdateChooserUseCase_Execute_InternalServerError(t *testing.T) {
 
 	expectedProblems := []util.ProblemDetails{
 		{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar chooser de ID " + chooserID,
 			Status:   http.StatusInternalServerError,
 			Detail:   "database error",

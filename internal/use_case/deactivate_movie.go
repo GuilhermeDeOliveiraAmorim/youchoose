@@ -50,14 +50,14 @@ func (dm *DeactivateMovieUseCase) Execute(input DeactivateMovieInputDTO) (Deacti
 	movieDeactivateError := dm.MovieRepository.Deactivate(&movie)
 	if movieDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao desativar filme de ID " + input.MovieID,
 			Status:   http.StatusInternalServerError,
 			Detail:   movieDeactivateError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, movieDeactivateError.Error(), "DeactivateMovieUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, movieDeactivateError.Error(), "DeactivateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return DeactivateMovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
