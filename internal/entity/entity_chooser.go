@@ -3,6 +3,7 @@ package entity
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"youchoose/internal/util"
 
@@ -74,6 +75,8 @@ func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 }
 
 func (c *Chooser) ChangeLogin(ctx context.Context, newLogin *valueobject.Login) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
@@ -92,6 +95,8 @@ func (c *Chooser) ChangeLogin(ctx context.Context, newLogin *valueobject.Login) 
 }
 
 func (c *Chooser) ChangeAddress(ctx context.Context, newAddress *valueobject.Address) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
@@ -110,6 +115,8 @@ func (c *Chooser) ChangeAddress(ctx context.Context, newAddress *valueobject.Add
 }
 
 func (c *Chooser) ChangeBirthDate(ctx context.Context, newBirthDate *valueobject.BirthDate) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
@@ -128,6 +135,8 @@ func (c *Chooser) ChangeBirthDate(ctx context.Context, newBirthDate *valueobject
 }
 
 func (c *Chooser) ChangeImageID(ctx context.Context, newImageID string) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
@@ -146,6 +155,8 @@ func (c *Chooser) ChangeImageID(ctx context.Context, newImageID string) []util.P
 }
 
 func (c *Chooser) ChangeName(ctx context.Context, newName string) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
