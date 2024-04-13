@@ -22,15 +22,13 @@ func NewActor(name string, birthDate *valueobject.BirthDate, nationality *valueo
 		return nil, validationErrors
 	}
 
-	actor := &Actor{
+	return &Actor{
 		SharedEntity: *NewSharedEntity(),
 		Name:         name,
 		BirthDate:    birthDate,
 		Nationality:  nationality,
 		ImageID:      imageID,
-	}
-
-	return actor, nil
+	}, nil
 }
 
 func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *valueobject.Nationality, imageID string) []util.ProblemDetails {
@@ -39,9 +37,9 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nome do ator inválido",
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do ator não pode estar vazio.",
+			Detail:   util.ActorErrorDetailEmptyName,
 			Instance: util.RFC400,
 		})
 	}
@@ -49,9 +47,9 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nome do ator inválido",
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do ator não pode ter mais do que 100 caracteres.",
+			Detail:   util.ActorErrorDetailMaxLengthName,
 			Instance: util.RFC400,
 		})
 	}
@@ -59,9 +57,9 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 	if birthDate == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Data de nascimento do ator inválida",
+			Title:    util.SharedErrorTitleInvalidBirthDate,
 			Status:   http.StatusBadRequest,
-			Detail:   "A data de nascimento do ator não pode ser nula.",
+			Detail:   util.ActorErrorDetailNotNullBirthDate,
 			Instance: util.RFC400,
 		})
 	}
@@ -69,9 +67,9 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 	if nationality == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nacionalidade do ator inválida",
+			Title:    util.SharedErrorTitleInvalidNationality,
 			Status:   http.StatusBadRequest,
-			Detail:   "A nacionalidade do ator não pode ser nula.",
+			Detail:   util.ActorErrorDetailNotNullNationality,
 			Instance: util.RFC400,
 		})
 	}
@@ -79,9 +77,9 @@ func ValidateActor(name string, birthDate *valueobject.BirthDate, nationality *v
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "ID de imagem do ator inválido",
+			Title:    util.SharedErrorTitleInvalidImageID,
 			Status:   http.StatusBadRequest,
-			Detail:   "O ID de imagem do ator não pode estar vazio.",
+			Detail:   util.ActorErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}
