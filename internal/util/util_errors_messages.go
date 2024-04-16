@@ -19,6 +19,7 @@ const (
 	SharedErrorTitleErrorChangingImageID   = "Erro ao alterar ID da imagem"
 	SharedErrorTitleErrorChangingName      = "Erro ao alterar nome"
 	SharedErrorTitleErrorImageSize         = "Tamanho inválido"
+	SharedErrorTitleInvalidDescription     = "Descrição inválida"
 )
 
 const (
@@ -51,4 +52,9 @@ const (
 const (
 	ImageErrorDetailEmptyName = "O nome da imagem não pode estar vazio"
 	ImageErrorDetailImageSize = "O tamanho da imagem deve estar entre 1 e 100000 bytes"
+)
+
+const (
+	ListErrorDetailEmptyName        = "O nome da lista não pode estar vazio e deve ter no máximo 100 caracteres"
+	ListErrorDetailEmptyDescription = "A descrição da lista não pode estar vazia e deve ter no máximo 150 caracteres"
 )
