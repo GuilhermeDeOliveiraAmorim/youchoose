@@ -20,6 +20,7 @@ const (
 	SharedErrorTitleErrorChangingName      = "Erro ao alterar nome"
 	SharedErrorTitleErrorImageSize         = "Tamanho inválido"
 	SharedErrorTitleInvalidDescription     = "Descrição inválida"
+	SharedErrorTitleInvalidYear            = "Ano do filme inválido"
 )
 
 const (
@@ -57,4 +58,9 @@ const (
 const (
 	ListErrorDetailEmptyName        = "O nome da lista não pode estar vazio e deve ter no máximo 100 caracteres"
 	ListErrorDetailEmptyDescription = "A descrição da lista não pode estar vazia e deve ter no máximo 150 caracteres"
+)
+
+const (
+	MovieErrorDetailEmptyImageID = "O ID do filme não pode estar vazio"
+	MovieErrorDetailInvalidYear  = "O ano do filme deve estar entre 1800 e "
 )

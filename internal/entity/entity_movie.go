@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"youchoose/internal/util"
@@ -45,9 +46,31 @@ func ValidateMovie(title string, nationality valueobject.Nationality, releaseYea
 	if title == "" || len(title) > 255 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Título do filme inválido",
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
 			Detail:   "O título do filme não pode estar vazio e deve ter no máximo 255 caracteres.",
+			Instance: util.RFC400,
+		})
+	}
+
+	yearNow := time.Now().Year()
+
+	if releaseYear < 1800 || releaseYear > yearNow {
+		validationErrors = append(validationErrors, util.ProblemDetails{
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidYear,
+			Status:   http.StatusBadRequest,
+			Detail:   util.MovieErrorDetailInvalidYear + strconv.Itoa(yearNow),
+			Instance: util.RFC400,
+		})
+	}
+
+	if imageID == "" {
+		validationErrors = append(validationErrors, util.ProblemDetails{
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidImageID,
+			Status:   http.StatusBadRequest,
+			Detail:   util.MovieErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}
