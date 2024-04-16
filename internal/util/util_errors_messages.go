@@ -18,6 +18,7 @@ const (
 	SharedErrorTitleErrorChangingBirthDate = "Erro ao alterar data de aniversário"
 	SharedErrorTitleErrorChangingImageID   = "Erro ao alterar ID da imagem"
 	SharedErrorTitleErrorChangingName      = "Erro ao alterar nome"
+	SharedErrorTitleErrorImageSize         = "Tamanho inválido"
 )
 
 const (
@@ -45,4 +46,9 @@ const (
 	GenreErrorDetailEmptyName     = "O nome do gênero não pode estar vazio"
 	GenreErrorDetailMaxLengthName = "O nome do gênero não pode ter mais do que 100 caracteres"
 	GenreErrorDetailEmptyImageID  = "O ID de imagem do gênero não pode estar vazio"
+)
+
+const (
+	ImageErrorDetailEmptyName = "O nome da imagem não pode estar vazio"
+	ImageErrorDetailImageSize = "O tamanho da imagem deve estar entre 1 e 100000 bytes"
 )
