@@ -21,6 +21,7 @@ const (
 	SharedErrorTitleErrorImageSize         = "Tamanho inválido"
 	SharedErrorTitleInvalidDescription     = "Descrição inválida"
 	SharedErrorTitleInvalidYear            = "Ano do filme inválido"
+	SharedErrorTitleInvalidIDs             = "Existe um ou mais IDs inválidos"
 )
 
 const (
@@ -63,4 +64,8 @@ const (
 const (
 	MovieErrorDetailEmptyImageID = "O ID do filme não pode estar vazio"
 	MovieErrorDetailInvalidYear  = "O ano do filme deve estar entre 1800 e "
+)
+
+const (
+	VoteErrorDetailEmptyIDs = "Para registrar uma votação os IDs não podem estar vazios"
 )

@@ -37,9 +37,9 @@ func ValidateVotation(chooserID, listID, firstMovieID, secondMovieID, chosenMovi
 	if chooserID == "" || listID == "" || firstMovieID == "" || secondMovieID == "" || chosenMovieID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Existe um ou mais IDs inválidos",
+			Title:    util.SharedErrorTitleInvalidIDs,
 			Status:   http.StatusBadRequest,
-			Detail:   "Para registrar uma votação os IDs não podem estar vazios.",
+			Detail:   util.VoteErrorDetailEmptyIDs,
 			Instance: util.RFC400,
 		})
 	}
