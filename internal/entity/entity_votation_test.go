@@ -41,6 +41,6 @@ func TestNewVotation_InvalidInput(t *testing.T) {
 	assert.Equal(t, "Validation Error", validationErrors[0].Type)
 	assert.Equal(t, "Existe um ou mais IDs inválidos", validationErrors[0].Title)
 	assert.Equal(t, http.StatusBadRequest, validationErrors[0].Status)
-	assert.Equal(t, "Para registrar uma votação os IDs não podem estar vazios.", validationErrors[0].Detail)
+	assert.Equal(t, util.VoteErrorDetailEmptyIDs, validationErrors[0].Detail)
 	assert.Equal(t, util.RFC400, validationErrors[0].Instance)
 }
