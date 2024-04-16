@@ -22,6 +22,7 @@ const (
 	SharedErrorTitleInvalidDescription     = "Descrição inválida"
 	SharedErrorTitleInvalidYear            = "Ano do filme inválido"
 	SharedErrorTitleInvalidIDs             = "Existe um ou mais IDs inválidos"
+	SharedErrorTitleInvalidCountry         = "País inválido"
 )
 
 const (
@@ -76,4 +77,36 @@ const (
 	WriterErrorDetailNotNullBirthDate   = "A data de nascimento do(a) escritor(a) não pode ser nula"
 	WriterErrorDetailNotNullNationality = "A nacionalidade do(a) escritor(a) não pode ser nula"
 	WriterErrorDetailEmptyImageID       = "O ID de imagem do(a) escritor(a) não pode estar vazio"
+)
+
+const (
+	AddressErrorTitleEmptyCity       = "Cidade inválida"
+	AddressErrorDetailEmptyCity      = "A cidade não pode estar vazia"
+	AddressErrorTitleEmptyState      = "Estado inválido"
+	AddressErrorDetailEmptyState     = "O estado não pode estar vazio"
+	AddressErrorTitleEmptyCountry    = "País inválido"
+	AddressErrorDetailEmptyCountry   = "O país não pode estar vazio"
+	AddressErrorTitleInvalidCountry  = "País inválido"
+	AddressErrorDetailInvalidCountry = "Por favor, forneça um país válido"
+)
+
+const (
+	BirthDateErrorDetailInvalidDate = "Por favor, forneça uma data de nascimento válida."
+)
+
+const (
+	LoginErrorTitleInvalidEmail     = "E-mail inválido"
+	LoginErrorDetailInvalidEmail    = "Por favor, forneça um endereço de e-mail válido"
+	LoginErrorTitleInvalidPassword  = "Senha inválida"
+	LoginErrorDetailInvalidPassword = "A senha deve ter pelo menos 6 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um numeral e um caracter especial"
+	LoginErrorTitleSaltGeneration   = "Erro ao gerar salt"
+	LoginErrorDetailSaltGeneration  = "Ocorreu um erro ao gerar salt"
+	LoginErrorTitleEncryptEmail     = "Erro ao encriptar e-mail"
+	LoginErrorTitleEncryptPassword  = "Erro ao encriptar password"
+	LoginErrorTitleDecryptEmail     = "Erro ao decriptar e-mail"
+	LoginErrorTitleDecryptPassword  = "Erro ao decriptar password"
+	LoginErrorTitleHashGeneration   = "Erro ao gerar hash"
+	LoginErrorDetailHashGeneration  = "Ocorreu um erro ao gerar hash para a senha"
+	LoginErrorTitleCompareDecrypt   = "Erro ao comparar e decriptar"
+	LoginErrorDetailCompareDecrypt  = "Ocorreu um erro ao comparar senha e hash para decriptar"
 )

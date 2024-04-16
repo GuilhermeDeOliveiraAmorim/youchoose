@@ -40,9 +40,9 @@ func ValidateLogin(email, password string) ([]util.ProblemDetails, []byte, []byt
 	if !isValidEmail(email) {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "E-mail inválido",
+			Title:    util.LoginErrorTitleInvalidEmail,
 			Status:   http.StatusBadRequest,
-			Detail:   "Por favor, forneça um endereço de e-mail válido.",
+			Detail:   util.LoginErrorDetailInvalidEmail,
 			Instance: util.RFC400,
 		})
 	}
@@ -50,9 +50,9 @@ func ValidateLogin(email, password string) ([]util.ProblemDetails, []byte, []byt
 	if !isValidPassword(password) {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Senha inválida",
+			Title:    util.LoginErrorTitleInvalidPassword,
 			Status:   http.StatusBadRequest,
-			Detail:   "A senha deve ter pelo menos 6 caracteres, incluindo pelo menos uma letra maiúscula, uma letra minúscula, um numeral e um caracter especial.",
+			Detail:   util.LoginErrorDetailInvalidPassword,
 			Instance: util.RFC400,
 		})
 	}
@@ -61,9 +61,9 @@ func ValidateLogin(email, password string) ([]util.ProblemDetails, []byte, []byt
 	if err != nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao gerar salt",
+			Title:    util.LoginErrorTitleSaltGeneration,
 			Status:   http.StatusBadRequest,
-			Detail:   "Ocorreu um erro ao gerar salt para o e-mail.",
+			Detail:   util.LoginErrorDetailSaltGeneration,
 			Instance: util.RFC400,
 		})
 	}
@@ -72,9 +72,9 @@ func ValidateLogin(email, password string) ([]util.ProblemDetails, []byte, []byt
 	if err != nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao gerar salt",
+			Title:    util.LoginErrorTitleSaltGeneration,
 			Status:   http.StatusBadRequest,
-			Detail:   "Ocorreu um erro ao gerar salt para a senha.",
+			Detail:   util.LoginErrorDetailSaltGeneration,
 			Instance: util.RFC400,
 		})
 	}
@@ -123,7 +123,7 @@ func (l *Login) EncryptEmail(ctx context.Context) ([]byte, []util.ProblemDetails
 		var validationErrors []util.ProblemDetails
 		return nil, append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao encriptar e-mail",
+			Title:    util.LoginErrorTitleEncryptEmail,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,
@@ -140,7 +140,7 @@ func (l *Login) EncryptPassword(ctx context.Context) ([]byte, []util.ProblemDeta
 		var validationErrors []util.ProblemDetails
 		return nil, append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao encriptar password",
+			Title:    util.LoginErrorTitleEncryptPassword,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,
@@ -157,7 +157,7 @@ func (l *Login) DecryptEmail(ctx context.Context, encryptedEmail []byte) (string
 		var validationErrors []util.ProblemDetails
 		return "", ctx, append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao decriptar e-mail",
+			Title:    util.LoginErrorTitleDecryptEmail,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,
@@ -174,7 +174,7 @@ func (l *Login) DecryptPassword(ctx context.Context, encryptedPassword []byte) (
 		var validationErrors []util.ProblemDetails
 		return "", ctx, append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao decriptar password",
+			Title:    util.LoginErrorTitleDecryptPassword,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,
@@ -192,9 +192,9 @@ func generateSalt() ([]byte, []util.ProblemDetails) {
 	if err != nil {
 		return nil, append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao gerar salt",
+			Title:    util.LoginErrorTitleSaltGeneration,
 			Status:   http.StatusBadRequest,
-			Detail:   "Ocorreu um erro ao gerar salt",
+			Detail:   util.LoginErrorDetailSaltGeneration,
 			Instance: util.RFC400,
 		})
 	}
@@ -207,9 +207,9 @@ func hashPassword(_ context.Context, input string, salt []byte) ([]byte, []util.
 	if err != nil {
 		return nil, append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao gerar hash",
+			Title:    util.LoginErrorTitleHashGeneration,
 			Status:   http.StatusBadRequest,
-			Detail:   "Ocorreu um erro ao gerar hash para a senha.",
+			Detail:   util.LoginErrorDetailHashGeneration,
 			Instance: util.RFC400,
 		})
 	}
@@ -222,9 +222,9 @@ func compareAndDecrypt(ctx context.Context, input string, encrypted []byte, salt
 	if err != nil {
 		return "", ctx, append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Erro ao comparar e decriptar",
+			Title:    util.LoginErrorTitleCompareDecrypt,
 			Status:   http.StatusBadRequest,
-			Detail:   "Ocorreu um erro ao comparar senha e hash para decriptar.",
+			Detail:   util.LoginErrorDetailCompareDecrypt,
 			Instance: util.RFC400,
 		})
 	}

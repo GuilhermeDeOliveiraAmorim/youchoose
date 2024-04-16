@@ -35,9 +35,9 @@ func ValidateDate(day, month, year int) []util.ProblemDetails {
 	if date.Day() != day || int(date.Month()) != month || date.Year() != year {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Data de nascimento inválida",
+			Title:    util.SharedErrorTitleInvalidBirthDate,
 			Status:   http.StatusBadRequest,
-			Detail:   "Por favor, forneça uma data de nascimento válida.",
+			Detail:   util.BirthDateErrorDetailInvalidDate,
 			Instance: util.RFC400,
 		})
 	}
