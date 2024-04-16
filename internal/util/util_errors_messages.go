@@ -69,3 +69,11 @@ const (
 const (
 	VoteErrorDetailEmptyIDs = "Para registrar uma votação os IDs não podem estar vazios"
 )
+
+const (
+	WriterErrorDetailEmptyName          = "O nome do(a) escritor(a) não pode estar vazio"
+	WriterErrorDetailMaxLengthName      = "O nome do(a) escritor(a) não pode ter mais do que 100 caracteres"
+	WriterErrorDetailNotNullBirthDate   = "A data de nascimento do(a) escritor(a) não pode ser nula"
+	WriterErrorDetailNotNullNationality = "A nacionalidade do(a) escritor(a) não pode ser nula"
+	WriterErrorDetailEmptyImageID       = "O ID de imagem do(a) escritor(a) não pode estar vazio"
+)

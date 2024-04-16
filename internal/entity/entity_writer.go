@@ -40,9 +40,9 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nome do(a) escritor(a) inválido",
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do(a) escritor(a) não pode estar vazio.",
+			Detail:   util.WriterErrorDetailEmptyName,
 			Instance: util.RFC400,
 		})
 	}
@@ -50,9 +50,9 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nome do(a) escritor(a) inválido",
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do(a) escritor(a) não pode ter mais do que 100 caracteres.",
+			Detail:   util.WriterErrorDetailMaxLengthName,
 			Instance: util.RFC400,
 		})
 	}
@@ -60,9 +60,9 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 	if birthDate == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Data de nascimento do(a) escritor(a) inválida",
+			Title:    util.SharedErrorTitleInvalidBirthDate,
 			Status:   http.StatusBadRequest,
-			Detail:   "A data de nascimento do(a) escritor(a) não pode ser nula.",
+			Detail:   util.WriterErrorDetailNotNullBirthDate,
 			Instance: util.RFC400,
 		})
 	}
@@ -70,9 +70,9 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 	if nationality == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "Nacionalidade do(a) escritor(a) inválida",
+			Title:    util.SharedErrorTitleInvalidNationality,
 			Status:   http.StatusBadRequest,
-			Detail:   "A nacionalidade do(a) escritor(a) não pode ser nula.",
+			Detail:   util.WriterErrorDetailNotNullNationality,
 			Instance: util.RFC400,
 		})
 	}
@@ -80,9 +80,9 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeValidationError,
-			Title:    "ID de imagem do(a) escritor(a) inválido",
+			Title:    util.SharedErrorTitleInvalidImageID,
 			Status:   http.StatusBadRequest,
-			Detail:   "O ID de imagem do(a) escritor(a) não pode estar vazio.",
+			Detail:   util.WriterErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}
