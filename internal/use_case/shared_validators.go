@@ -15,7 +15,7 @@ func chooserValidator(chooserRepository repositoryinterface.ChooserRepositoryInt
 	if getChooserError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao resgatar chooser de ID " + chooserID,
+			Title:    util.SharedErrorTitleErrorGetResource,
 			Status:   http.StatusInternalServerError,
 			Detail:   getChooserError.Error(),
 			Instance: util.RFC503,
@@ -25,17 +25,17 @@ func chooserValidator(chooserRepository repositoryinterface.ChooserRepositoryInt
 	} else if !doesTheChooserExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeNotFound,
-			Title:    "Chooser não encontrado",
+			Title:    util.SharedErrorTitleNotFound,
 			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + chooserID + " foi encontrado",
+			Detail:   util.ChooserErrorDetailNotFound,
 			Instance: util.RFC404,
 		})
 	} else if !chooser.Active {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeNotFound,
-			Title:    "Chooser não encontrado",
+			Title:    util.SharedErrorTitleNotFound,
 			Status:   http.StatusNotFound,
-			Detail:   "O chooser com o ID " + chooserID + " está desativado",
+			Detail:   util.ChooserErrorDetailDeactivate,
 			Instance: util.RFC404,
 		})
 	}
@@ -58,7 +58,7 @@ func listValidator(listRepository repositoryinterface.ListRepositoryInterface, l
 	if getListError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao resgatar lista de ID " + listID,
+			Title:    util.SharedErrorTitleErrorGetResource,
 			Status:   http.StatusInternalServerError,
 			Detail:   getListError.Error(),
 			Instance: util.RFC503,
@@ -68,17 +68,17 @@ func listValidator(listRepository repositoryinterface.ListRepositoryInterface, l
 	} else if !doesTheListExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeNotFound,
-			Title:    "Lista não encontrada",
+			Title:    util.SharedErrorTitleNotFound,
 			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + listID + " foi encontrada",
+			Detail:   util.ListErrorDetailNotFound,
 			Instance: util.RFC404,
 		})
 	} else if !list.Active {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeNotFound,
-			Title:    "Lista não encontrada",
+			Title:    util.SharedErrorTitleNotFound,
 			Status:   http.StatusNotFound,
-			Detail:   "A lista com o ID " + listID + " está desativada",
+			Detail:   util.ListErrorDetailDeactivate,
 			Instance: util.RFC404,
 		})
 	}
@@ -101,7 +101,7 @@ func movieValidator(movieRepository repositoryinterface.MovieRepositoryInterface
 	if getMovieError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao resgatar filme de ID " + movieID,
+			Title:    util.SharedErrorTitleErrorGetResource,
 			Status:   http.StatusInternalServerError,
 			Detail:   getMovieError.Error(),
 			Instance: util.RFC503,
@@ -111,17 +111,17 @@ func movieValidator(movieRepository repositoryinterface.MovieRepositoryInterface
 	} else if !doesTheMovieExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeNotFound,
-			Title:    "Filme não encontrado",
+			Title:    util.SharedErrorTitleNotFound,
 			Status:   http.StatusNotFound,
-			Detail:   "Nenhum filme com o ID " + movieID + " foi encontrado",
+			Detail:   util.MovieErrorDetailNotFound,
 			Instance: util.RFC404,
 		})
 	} else if !movie.Active {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeNotFound,
-			Title:    "Filme não encontrado",
+			Title:    util.SharedErrorTitleNotFound,
 			Status:   http.StatusNotFound,
-			Detail:   "O filme com o ID " + movieID + " está desativado",
+			Detail:   util.MovieErrorDetailDeactivate,
 			Instance: util.RFC404,
 		})
 	}

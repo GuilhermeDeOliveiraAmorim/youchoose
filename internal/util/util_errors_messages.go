@@ -23,6 +23,8 @@ const (
 	SharedErrorTitleInvalidYear            = "Ano do filme inválido"
 	SharedErrorTitleInvalidIDs             = "Existe um ou mais IDs inválidos"
 	SharedErrorTitleInvalidCountry         = "País inválido"
+	SharedErrorTitleNotFound               = "Não encontrado"
+	SharedErrorTitleErrorGetResource       = "Erro ao resgatar recurso"
 )
 
 const (
@@ -109,4 +111,19 @@ const (
 	LoginErrorDetailHashGeneration  = "Ocorreu um erro ao gerar hash para a senha"
 	LoginErrorTitleCompareDecrypt   = "Erro ao comparar e decriptar"
 	LoginErrorDetailCompareDecrypt  = "Ocorreu um erro ao comparar senha e hash para decriptar"
+)
+
+const (
+	ChooserErrorDetailNotFound   = "Chooser não encontrado"
+	ChooserErrorDetailDeactivate = "O chooser está desativado"
+)
+
+const (
+	ListErrorDetailNotFound   = "Lista não encontrada"
+	ListErrorDetailDeactivate = "A lista está desativada"
+)
+
+const (
+	MovieErrorDetailNotFound   = "Filme não encontrado"
+	MovieErrorDetailDeactivate = "O filme está desativado"
 )
