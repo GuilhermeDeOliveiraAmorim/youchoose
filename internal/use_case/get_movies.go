@@ -40,21 +40,21 @@ func (gm *GetMoviesUseCase) Execute(input GetMoviesInputDTO) (GetMoviesOutputDTO
 	movies, getMoviesError := gm.MovieRepository.GetAll()
 	if getMoviesError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar todos os filmes",
 			Status:   http.StatusInternalServerError,
 			Detail:   getMoviesError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, getMoviesError.Error(), "GetMoviesUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, getMoviesError.Error(), "GetMoviesUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return GetMoviesOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if len(movies) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Filmes não encontrados",
 			Status:   http.StatusNotFound,
 			Detail:   "Nenhum filme foi encontrado",

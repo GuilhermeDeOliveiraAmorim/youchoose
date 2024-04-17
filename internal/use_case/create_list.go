@@ -55,21 +55,21 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 	doTheseMoviesExist, _, manyMoviesError := cl.MovieRepository.DoTheseMoviesExist(input.Movies)
 	if manyMoviesError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar os filmes pelos ids",
 			Status:   http.StatusInternalServerError,
 			Detail:   manyMoviesError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os filmes pelos ids", "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os filmes pelos ids", "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doTheseMoviesExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Validation Error",
+			Type:     util.TypeValidationError,
 			Title:    "Um ou mais filmes não encontrados",
 			Status:   http.StatusConflict,
 			Detail:   "Um ou mais ids dos filmes não retornou resultado",
@@ -84,14 +84,14 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 	_, profileImageName, profileImageExtension, profileImageSize, profileImageError := service.MoveFile(input.ProfileImageFile, input.ProfileImageHandler)
 	if profileImageError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao mover a imagem de profile da lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   profileImageError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de profile da lista", "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de profile da lista", "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -101,14 +101,14 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 	_, coverImageName, coverImageExtension, coverImageSize, coverImageError := service.MoveFile(input.CoverImageFile, input.CoverImageHandler)
 	if coverImageError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao mover a imagem de capa da lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   coverImageError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de capa da lista", "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de capa da lista", "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -150,14 +150,14 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 	profileImageCreationError := cl.ImageRepository.Create(newProfileImageName)
 	if profileImageCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir a imagem de profile",
 			Status:   http.StatusInternalServerError,
 			Detail:   profileImageCreationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, profileImageCreationError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, profileImageCreationError.Error(), "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -167,14 +167,14 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 	coverImageCreationError := cl.ImageRepository.Create(newCoverImageName)
 	if coverImageCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir a imagem de capa",
 			Status:   http.StatusInternalServerError,
 			Detail:   coverImageCreationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, coverImageCreationError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, coverImageCreationError.Error(), "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -184,14 +184,14 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 	listCreationError := cl.ListRepository.Create(newList)
 	if listCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listCreationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listCreationError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listCreationError.Error(), "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -201,14 +201,14 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 	listMoviesCreationError := cl.ListMovieRepository.Create(&listMovies)
 	if listMoviesCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir relações entre lista e filmes",
 			Status:   http.StatusInternalServerError,
 			Detail:   listMoviesCreationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listMoviesCreationError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listMoviesCreationError.Error(), "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -218,14 +218,14 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 	addedMoviesList, addedMoviesListError := cl.ListRepository.GetAllMoviesByListID(newList.ID)
 	if addedMoviesListError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao retornar os filmes da lista de id " + newList.ID,
 			Status:   http.StatusInternalServerError,
 			Detail:   addedMoviesListError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, addedMoviesListError.Error(), "CreateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, addedMoviesListError.Error(), "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

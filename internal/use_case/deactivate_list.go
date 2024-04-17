@@ -50,14 +50,14 @@ func (dl *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (Deactiva
 	listDeactivateError := dl.ListRepository.Deactivate(&list)
 	if listDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao desativar uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listDeactivateError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listDeactivateError.Error(), "DeactivateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listDeactivateError.Error(), "DeactivateListUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	output := DeactivateListOutputDTO{

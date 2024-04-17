@@ -37,21 +37,21 @@ func (gc *GetChoosersUseCase) Execute(input GetChoosersInputDTO) (GetChoosersOut
 	allChoosers, allChoosersError := gc.ChooserRepository.GetAll()
 	if allChoosersError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar todos os choosers",
 			Status:   http.StatusInternalServerError,
 			Detail:   allChoosersError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, allChoosersError.Error(), "GetChoosersUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, allChoosersError.Error(), "GetChoosersUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return GetChoosersOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if len(allChoosers) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Choosers não encontrados",
 			Status:   http.StatusNotFound,
 			Detail:   "Nenhum chooser foi encontrado",

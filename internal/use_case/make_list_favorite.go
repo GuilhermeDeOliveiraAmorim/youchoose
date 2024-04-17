@@ -52,14 +52,14 @@ func (ml *MakeListFavoriteUseCase) Execute(input MakeListFavoriteInputDTO) (Make
 	listsFavorites, listsFavoritesError := ml.ListFavoriteRepository.GetAllByListID(list.ID)
 	if listsFavoritesError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao desativar uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listsFavoritesError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listsFavoritesError.Error(), "MakeListFavoriteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listsFavoritesError.Error(), "MakeListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	newListFavorite := entity.NewListFavorite(input.ChooserID, input.ListID)
@@ -67,7 +67,7 @@ func (ml *MakeListFavoriteUseCase) Execute(input MakeListFavoriteInputDTO) (Make
 	for _, listFavorite := range listsFavorites {
 		if listFavorite.Equals(newListFavorite) {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Conflict",
+				Type:     util.TypeConflict,
 				Title:    "Lista já favorita",
 				Status:   http.StatusConflict,
 				Detail:   "A lista com o ID " + input.ListID + " já é favorita",
@@ -83,14 +83,14 @@ func (ml *MakeListFavoriteUseCase) Execute(input MakeListFavoriteInputDTO) (Make
 	listFavoriteError := ml.ListFavoriteRepository.Create(newListFavorite)
 	if listFavoriteError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao desativar uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listFavoriteError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "MakeListFavoriteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "MakeListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

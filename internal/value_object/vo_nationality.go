@@ -34,10 +34,10 @@ func ValidateNationality(country string) []util.ProblemDetails {
 	}
 
 	validationErrors = append(validationErrors, util.ProblemDetails{
-		Type:     "Validation Error",
-		Title:    "País inválido",
+		Type:     util.TypeValidationError,
+		Title:    util.SharedErrorTitleInvalidCountry,
 		Status:   http.StatusBadRequest,
-		Detail:   "Por favor, forneça um país válido.",
+		Detail:   util.AddressErrorTitleInvalidCountry,
 		Instance: util.RFC400,
 	})
 

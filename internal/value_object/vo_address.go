@@ -33,40 +33,40 @@ func ValidateAddress(city, state, country string) []util.ProblemDetails {
 
 	if city == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Cidade inválida",
+			Type:     util.TypeValidationError,
+			Title:    util.AddressErrorTitleEmptyCity,
 			Status:   http.StatusBadRequest,
-			Detail:   "A cidade não pode estar vazia.",
+			Detail:   util.AddressErrorDetailEmptyCity,
 			Instance: util.RFC400,
 		})
 	}
 
 	if state == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Estado inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.AddressErrorTitleEmptyState,
 			Status:   http.StatusBadRequest,
-			Detail:   "O estado não pode estar vazio.",
+			Detail:   util.AddressErrorDetailEmptyState,
 			Instance: util.RFC400,
 		})
 	}
 
 	if country == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "País inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidCountry,
 			Status:   http.StatusBadRequest,
-			Detail:   "O país não pode estar vazio.",
+			Detail:   util.AddressErrorDetailEmptyCountry,
 			Instance: util.RFC400,
 		})
 	}
 
 	if !isCountryValid(country) {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "País inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.AddressErrorTitleInvalidCountry,
 			Status:   http.StatusBadRequest,
-			Detail:   "Por favor, forneça um país válido.",
+			Detail:   util.AddressErrorDetailInvalidCountry,
 			Instance: util.RFC400,
 		})
 	}

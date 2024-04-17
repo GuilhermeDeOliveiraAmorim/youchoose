@@ -52,7 +52,7 @@ func TestChooserValidator_ChooserNotFound(t *testing.T) {
 	expectedProblemDetails := util.ProblemDetailsOutputDTO{
 		ProblemDetails: []util.ProblemDetails{
 			{
-				Type:     "Not Found",
+				Type:     util.TypeNotFound,
 				Title:    "Chooser não encontrado",
 				Status:   http.StatusNotFound,
 				Detail:   "Nenhum chooser com o ID " + chooserID + " foi encontrado",
@@ -90,7 +90,7 @@ func TestChooserValidator_ChooserInactive(t *testing.T) {
 	expectedProblemDetails := util.ProblemDetailsOutputDTO{
 		ProblemDetails: []util.ProblemDetails{
 			{
-				Type:     "Not Found",
+				Type:     util.TypeNotFound,
 				Title:    "Chooser não encontrado",
 				Status:   http.StatusNotFound,
 				Detail:   "O chooser com o ID " + chooserID + " está desativado",
@@ -120,7 +120,7 @@ func TestChooserValidator_InternalServerError(t *testing.T) {
 	expectedProblemDetails := util.ProblemDetailsOutputDTO{
 		ProblemDetails: []util.ProblemDetails{
 			{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao resgatar chooser de ID " + chooserID,
 				Status:   http.StatusInternalServerError,
 				Detail:   internalError.Error(),

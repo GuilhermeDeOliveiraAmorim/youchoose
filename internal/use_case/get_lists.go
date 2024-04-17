@@ -40,21 +40,21 @@ func (gl *GetListsUseCase) Execute(input GetListsInputDTO) (GetListsOutputDTO, u
 	allLists, allListsError := gl.ListRepository.GetAll()
 	if allListsError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar todas as listas",
 			Status:   http.StatusInternalServerError,
 			Detail:   allListsError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, allListsError.Error(), "GetListsUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, allListsError.Error(), "GetListsUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return GetListsOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if len(allLists) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Listas não encontradas",
 			Status:   http.StatusNotFound,
 			Detail:   "Nenhuma lista foi encontrada",

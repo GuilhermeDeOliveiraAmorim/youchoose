@@ -119,7 +119,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 
 	if len(input.Genres) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Bad Request",
+			Type:     util.TypeBadRequest,
 			Title:    "Gêneros não informados",
 			Status:   http.StatusBadRequest,
 			Detail:   "Nenhum gênero informado",
@@ -129,7 +129,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 
 	if len(input.Directors) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Bad Request",
+			Type:     util.TypeBadRequest,
 			Title:    "Diretores não informados",
 			Status:   http.StatusBadRequest,
 			Detail:   "Nenhum diretor informado",
@@ -139,7 +139,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 
 	if len(input.Actors) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Bad Request",
+			Type:     util.TypeBadRequest,
 			Title:    "Atores não informados",
 			Status:   http.StatusBadRequest,
 			Detail:   "Nenhum ator informado",
@@ -149,7 +149,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 
 	if len(input.Writers) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Bad Request",
+			Type:     util.TypeBadRequest,
 			Title:    "Escritores não informados",
 			Status:   http.StatusBadRequest,
 			Detail:   "Nenhum escritor informado",
@@ -173,14 +173,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	_, movieImageName, movieImageExtension, movieImageSize, profileImageError := service.MoveFile(input.ImageFile, input.ImageHandler)
 	if profileImageError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao mover a imagem do filme",
 			Status:   http.StatusInternalServerError,
 			Detail:   profileImageError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do filme", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -220,21 +220,21 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		doTheseGenresExist, existingGenres, manyGenresError := cm.GenreRepository.DoTheseGenresExist(genresToCheck)
 		if manyGenresError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao resgatar os gêneros pelos ids",
 				Status:   http.StatusInternalServerError,
 				Detail:   manyGenresError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os gêneros pelos ids", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os gêneros pelos ids", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		} else if !doTheseGenresExist {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Validation Error",
+				Type:     util.TypeValidationError,
 				Title:    "Um ou mais gêneros não encontrados",
 				Status:   http.StatusConflict,
 				Detail:   "Um ou mais ids dos gêneros não retornou resultado",
@@ -258,14 +258,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 			_, genreToAddName, genreToAddExtension, genreToAddSize, profileImageError := service.MoveFile(genreToAdd.ImageFile, genreToAdd.ImageHandler)
 			if profileImageError != nil {
 				problemsDetails = append(problemsDetails, util.ProblemDetails{
-					Type:     "Internal Server Error",
+					Type:     util.TypeInternalServerError,
 					Title:    "Erro ao mover a imagem do gênero: " + genreToAdd.Name,
 					Status:   http.StatusInternalServerError,
 					Detail:   profileImageError.Error(),
 					Instance: util.RFC503,
 				})
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do gênero: "+genreToAdd.Name, "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do gênero: "+genreToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 				return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
@@ -304,21 +304,21 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		doTheseDirectorsExist, existingDirectors, manyDirectorsError := cm.DirectorRepository.DoTheseDirectorsExist(genresToCheck)
 		if manyDirectorsError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao resgatar os diretores pelos ids",
 				Status:   http.StatusInternalServerError,
 				Detail:   manyDirectorsError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os diretores pelos ids", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os diretores pelos ids", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		} else if !doTheseDirectorsExist {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Validation Error",
+				Type:     util.TypeValidationError,
 				Title:    "Um ou mais diretores não encontrados",
 				Status:   http.StatusConflict,
 				Detail:   "Um ou mais ids dos diretores não retornou resultado",
@@ -342,14 +342,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 			_, directorToAddName, directorToAddExtension, directorToAddSize, profileImageError := service.MoveFile(directorToAdd.ImageFile, directorToAdd.ImageHandler)
 			if profileImageError != nil {
 				problemsDetails = append(problemsDetails, util.ProblemDetails{
-					Type:     "Internal Server Error",
+					Type:     util.TypeInternalServerError,
 					Title:    "Erro ao mover a imagem do diretor: " + directorToAdd.Name,
 					Status:   http.StatusInternalServerError,
 					Detail:   profileImageError.Error(),
 					Instance: util.RFC503,
 				})
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do diretor: "+directorToAdd.Name, "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do diretor: "+directorToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 				return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
@@ -400,21 +400,21 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		doTheseActorsExist, existingActors, manyActorsError := cm.ActorRepository.DoTheseActorsExist(genresToCheck)
 		if manyActorsError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao resgatar os(as) atores(atrizes) pelos ids",
 				Status:   http.StatusInternalServerError,
 				Detail:   manyActorsError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os(as) atores(atrizes) pelos ids", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os(as) atores(atrizes) pelos ids", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		} else if !doTheseActorsExist {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Validation Error",
+				Type:     util.TypeValidationError,
 				Title:    "Um(a) ou mais atores(atrizes) não encontrados(as)",
 				Status:   http.StatusConflict,
 				Detail:   "Um ou mais ids dos(as) atores(atrizes) não retornou resultado",
@@ -438,14 +438,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 			_, actorToAddName, actorToAddExtension, actorToAddSize, profileImageError := service.MoveFile(actorToAdd.ImageFile, actorToAdd.ImageHandler)
 			if profileImageError != nil {
 				problemsDetails = append(problemsDetails, util.ProblemDetails{
-					Type:     "Internal Server Error",
+					Type:     util.TypeInternalServerError,
 					Title:    "Erro ao mover a imagem do(a) ator(atriz): " + actorToAdd.Name,
 					Status:   http.StatusInternalServerError,
 					Detail:   profileImageError.Error(),
 					Instance: util.RFC503,
 				})
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) ator(atriz): "+actorToAdd.Name, "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) ator(atriz): "+actorToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 				return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
@@ -496,21 +496,21 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		doTheseWritersExist, existingWriters, manyWritersError := cm.WriterRepository.DoTheseWritersExist(genresToCheck)
 		if manyWritersError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Internal Server Error",
+				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao resgatar os(as) escritores(escritoras) pelos ids",
 				Status:   http.StatusInternalServerError,
 				Detail:   manyWritersError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os(as) escritores(escritoras) pelos ids", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar os(as) escritores(escritoras) pelos ids", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		} else if !doTheseWritersExist {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Validation Error",
+				Type:     util.TypeValidationError,
 				Title:    "Um(a) ou mais escritores(escritoras) não encontrados(as)",
 				Status:   http.StatusConflict,
 				Detail:   "Um ou mais ids dos(as) escritores(escritoras) não retornou resultado",
@@ -534,14 +534,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 			_, writerToAddName, writerToAddExtension, writerToAddSize, profileImageError := service.MoveFile(writerToAdd.ImageFile, writerToAdd.ImageHandler)
 			if profileImageError != nil {
 				problemsDetails = append(problemsDetails, util.ProblemDetails{
-					Type:     "Internal Server Error",
+					Type:     util.TypeInternalServerError,
 					Title:    "Erro ao mover a imagem do(a) escritor(escritora): " + writerToAdd.Name,
 					Status:   http.StatusInternalServerError,
 					Detail:   profileImageError.Error(),
 					Instance: util.RFC503,
 				})
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) escritor(escritora): "+writerToAdd.Name, "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) escritor(escritora): "+writerToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 				return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
@@ -631,14 +631,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	imagesToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
 	if imagesToAddError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao criar as imagens",
 			Status:   http.StatusInternalServerError,
 			Detail:   imagesToAddError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -648,14 +648,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	movieActorsError := cm.MovieActorRepository.CreateMany(&movieActors)
 	if movieActorsError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao criar os(as) actores(atrizes)",
 			Status:   http.StatusInternalServerError,
 			Detail:   movieActorsError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) actores(atrizes)", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) actores(atrizes)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -665,14 +665,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	movieDirectorsError := cm.MovieDirectorRepository.CreateMany(&movieDirectors)
 	if movieDirectorsError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao criar os(as) diretores(as)",
 			Status:   http.StatusInternalServerError,
 			Detail:   movieDirectorsError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) diretores(as)", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) diretores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -682,14 +682,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	movieGenresError := cm.MovieGenreRepository.CreateMany(&movieGenres)
 	if movieGenresError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao criar os gêneros",
 			Status:   http.StatusInternalServerError,
 			Detail:   movieGenresError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os gêneros", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os gêneros", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -699,14 +699,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	movieWritersError := cm.MovieWriterRepository.CreateMany(&movieWriters)
 	if movieWritersError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao criar os(as) escritores(as)",
 			Status:   http.StatusInternalServerError,
 			Detail:   movieWritersError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) escritores(as)", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) escritores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
@@ -716,14 +716,14 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	newMovieError := cm.MovieRepository.Create(newMovie)
 	if newMovieError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao criar o filme",
 			Status:   http.StatusInternalServerError,
 			Detail:   newMovieError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o filme", "CreateMovieUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

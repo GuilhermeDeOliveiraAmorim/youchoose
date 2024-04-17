@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/http"
+	"time"
 
 	"youchoose/internal/util"
 )
@@ -37,26 +38,38 @@ func NewList(title, description, profileImageID, coverImageID, chooserID string)
 }
 
 func (l *List) IncrementVotes() {
+	l.UpdatedAt = time.Now()
+
 	l.Votes++
 }
 
 func (l *List) ChangeProfileImageID(profileImageID string) {
+	l.UpdatedAt = time.Now()
+
 	l.ProfileImageID = profileImageID
 }
 
 func (l *List) ChangeCoverImageID(coverImageID string) {
+	l.UpdatedAt = time.Now()
+
 	l.CoverImageID = coverImageID
 }
 
 func (l *List) ChangeTitle(title string) {
+	l.UpdatedAt = time.Now()
+
 	l.Title = title
 }
 
 func (l *List) ChangeDescription(description string) {
+	l.UpdatedAt = time.Now()
+
 	l.Description = description
 }
 
 func (l *List) AddMovies(movies []Movie) {
+	l.UpdatedAt = time.Now()
+
 	l.Movies = append(l.Movies, movies...)
 }
 
@@ -73,11 +86,13 @@ func (l *List) RemoveMovies(moviesToRemove []Movie) {
 		}
 
 		if !found {
+			l.UpdatedAt = time.Now()
 			updatedMovies = append(updatedMovies, existingMovie)
 		}
 	}
 
 	if len(updatedMovies) > 0 {
+		l.UpdatedAt = time.Now()
 		l.Movies = updatedMovies
 	}
 }
@@ -97,6 +112,8 @@ func (l *List) GetAvailableMoviesCombinations() [][]Movie {
 }
 
 func (l *List) UpdateMovies(newMovies []Movie) ([]Movie, []Movie) {
+	l.UpdatedAt = time.Now()
+
 	currentMoviesMap := make(map[string]Movie)
 	newMoviesMap := make(map[string]Movie)
 
@@ -131,20 +148,20 @@ func ValidateList(title, description, chooserID string) []util.ProblemDetails {
 
 	if title == "" || len(title) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Título da lista inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O título da lista não pode estar vazio e deve ter no máximo 100 caracteres.",
+			Detail:   util.ListErrorDetailEmptyName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if description == "" || len(description) > 150 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Descrição da lista inválida",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidDescription,
 			Status:   http.StatusBadRequest,
-			Detail:   "A descrição da lista não pode estar vazia e deve ter no máximo 150 caracteres.",
+			Detail:   util.ListErrorDetailEmptyDescription,
 			Instance: util.RFC400,
 		})
 	}

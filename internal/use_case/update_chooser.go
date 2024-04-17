@@ -83,14 +83,14 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOut
 	chooserUpdatedError := uc.ChooserRepository.Update(&chooser)
 	if chooserUpdatedError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao persistir um chooser",
 			Status:   http.StatusInternalServerError,
 			Detail:   chooserUpdatedError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, chooserUpdatedError.Error(), "UpdateChooserUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, chooserUpdatedError.Error(), "UpdateChooserUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	output := NewChooserOutputDTO(chooser)

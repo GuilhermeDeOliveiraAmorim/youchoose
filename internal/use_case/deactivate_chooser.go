@@ -47,14 +47,14 @@ func (dc *DeactivateChooserUseCase) Execute(input DeactivateChooserInputDTO) (De
 	chooserDeactivateError := dc.ChooserRepository.Deactivate(&chooserToDeactivate)
 	if chooserDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao desativar um chooser",
 			Status:   http.StatusInternalServerError,
 			Detail:   chooserDeactivateError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, chooserDeactivateError.Error(), "DeactivateChooserUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, chooserDeactivateError.Error(), "DeactivateChooserUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	output := DeactivateChooserOutputDTO{
