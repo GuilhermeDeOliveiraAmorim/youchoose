@@ -16,9 +16,10 @@ func TestRemoveListFavoriteUseCase_Execute(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockChooserRepository := mock.NewMockChooserRepositoryInterface(ctrl)
+	mockListRepository := mock.NewMockListRepositoryInterface(ctrl)
 	mockListFavoriteRepository := mock.NewMockListFavoriteRepositoryInterface(ctrl)
 
-	removeListFavoriteUseCase := NewRemoveListFavoriteUseCase(mockChooserRepository, mockListFavoriteRepository)
+	removeListFavoriteUseCase := NewRemoveListFavoriteUseCase(mockChooserRepository, mockListRepository, mockListFavoriteRepository)
 
 	name := "John Doe"
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
