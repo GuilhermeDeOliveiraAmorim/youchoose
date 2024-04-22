@@ -64,18 +64,20 @@ func (ml *MakeListFavoriteUseCase) Execute(input MakeListFavoriteInputDTO) (Make
 
 	newListFavorite := entity.NewListFavorite(input.ChooserID, input.ListID)
 
-	for _, listFavorite := range listsFavorites {
-		if listFavorite.Equals(newListFavorite) {
-			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     util.TypeConflict,
-				Title:    "Lista já favorita",
-				Status:   http.StatusConflict,
-				Detail:   "A lista com o ID " + input.ListID + " já é favorita",
-				Instance: util.RFC409,
-			})
+	if len(listsFavorites) > 0 {
+		for _, listFavorite := range listsFavorites {
+			if listFavorite.Equals(newListFavorite) {
+				problemsDetails = append(problemsDetails, util.ProblemDetails{
+					Type:     util.TypeConflict,
+					Title:    "Lista já favorita",
+					Status:   http.StatusConflict,
+					Detail:   "A lista com o ID " + input.ListID + " já é favorita",
+					Instance: util.RFC409,
+				})
 
-			return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-				ProblemDetails: problemsDetails,
+				return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
+					ProblemDetails: problemsDetails,
+				}
 			}
 		}
 	}
@@ -84,13 +86,32 @@ func (ml *MakeListFavoriteUseCase) Execute(input MakeListFavoriteInputDTO) (Make
 	if listFavoriteError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao desativar uma lista",
+			Title:    "Erro ao favoritar uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listFavoriteError.Error(),
 			Instance: util.RFC503,
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "MakeListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
+
+		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
+	list.IncrementVotes()
+
+	listError := ml.ListRepository.Update(&list)
+	if listError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao favoritar uma lista",
+			Status:   http.StatusInternalServerError,
+			Detail:   listError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, listError.Error(), "MakeListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
