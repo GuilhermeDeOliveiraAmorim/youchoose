@@ -628,6 +628,23 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
+	newMovieError := cm.MovieRepository.Create(newMovie)
+	if newMovieError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao criar o filme",
+			Status:   http.StatusInternalServerError,
+			Detail:   newMovieError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
 	imagesToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
 	if imagesToAddError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -707,23 +724,6 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) escritores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
-
-		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	newMovieError := cm.MovieRepository.Create(newMovie)
-	if newMovieError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao criar o filme",
-			Status:   http.StatusInternalServerError,
-			Detail:   newMovieError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
