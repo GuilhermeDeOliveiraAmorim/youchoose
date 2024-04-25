@@ -9,4 +9,5 @@ type WriterRepositoryInterface interface {
 	GetAll() ([]entity.Writer, error)
 	Deactivate(writer *entity.Writer) error
 	DoTheseWritersExist(writerIDs []string) (bool, []entity.Writer, error)
+	DoTheseWritersAreIncludedInTheMovie(movieID string, writersIDs []string) (bool, []entity.Writer, error)
 }
