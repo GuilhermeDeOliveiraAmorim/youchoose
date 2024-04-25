@@ -12,8 +12,10 @@ import (
 type UpdateListInputDTO struct {
 	ID                  string                `json:"id"`
 	Title               string                `json:"title"`
+	ProfileImageID      string                `json:"profile_image_id"`
 	ProfileImageFile    multipart.File        `json:"profile_image_file"`
 	ProfileImageHandler *multipart.FileHeader `json:"profile_image_handler"`
+	CoverImageID        string                `json:"cover_image_id"`
 	CoverImageFile      multipart.File        `json:"cover_image_file"`
 	CoverImageHandler   *multipart.FileHeader `json:"cover_image_handler"`
 	Description         string                `json:"description"`
@@ -100,7 +102,20 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 		list.ChangeDescription(input.Description)
 	}
 
-	if input.ProfileImageFile != nil {
+	if input.ProfileImageID == "" && (input.ProfileImageFile == nil || input.ProfileImageHandler == nil) {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeBadRequest,
+			Title:    "Imagem não informada",
+			Status:   http.StatusBadRequest,
+			Detail:   "A lista deve ter uma imagem de profile",
+			Instance: util.RFC400,
+		})
+
+	}
+
+	var imagesToAdd []entity.Image
+
+	if input.ProfileImageID == "" {
 		_, profileImageName, profileImageExtension, profileImageSize, profileImageError := service.MoveFile(input.ProfileImageFile, input.ProfileImageHandler)
 		if profileImageError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -118,7 +133,7 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 			}
 		}
 
-		newProfileImageName, newProfileImageNameProblems := entity.NewImage(profileImageName, profileImageExtension, profileImageSize)
+		newProfileImage, newProfileImageNameProblems := entity.NewImage(profileImageName, profileImageExtension, profileImageSize)
 		if len(newProfileImageNameProblems) > 0 {
 			problemsDetails = append(problemsDetails, newProfileImageNameProblems...)
 		}
@@ -129,27 +144,22 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 			}
 		}
 
-		profileImageCreationError := ul.ImageRepository.Create(newProfileImageName)
-		if profileImageCreationError != nil {
-			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     util.TypeInternalServerError,
-				Title:    "Erro ao persistir a imagem de profile",
-				Status:   http.StatusInternalServerError,
-				Detail:   profileImageCreationError.Error(),
-				Instance: util.RFC503,
-			})
-
-			util.NewLoggerError(http.StatusInternalServerError, profileImageCreationError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
-
-			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
-				ProblemDetails: problemsDetails,
-			}
-		}
-
-		list.ChangeProfileImageID(newProfileImageName.ID)
+		list.ChangeProfileImageID(newProfileImage.ID)
+		imagesToAdd = append(imagesToAdd, *newProfileImage)
 	}
 
-	if input.CoverImageFile != nil {
+	if input.CoverImageID == "" && (input.CoverImageFile == nil || input.CoverImageHandler == nil) {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeBadRequest,
+			Title:    "Imagem não informada",
+			Status:   http.StatusBadRequest,
+			Detail:   "A lista deve ter uma imagem de capa",
+			Instance: util.RFC400,
+		})
+
+	}
+
+	if input.CoverImageID == "" {
 		_, coverImageName, coverImageExtension, coverImageSize, coverImageError := service.MoveFile(input.CoverImageFile, input.CoverImageHandler)
 		if coverImageError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -167,9 +177,9 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 			}
 		}
 
-		newCoverImageName, newCoverImageNameProblems := entity.NewImage(coverImageName, coverImageExtension, coverImageSize)
-		if len(newCoverImageNameProblems) > 0 {
-			problemsDetails = append(problemsDetails, newCoverImageNameProblems...)
+		newCoverImage, newCoverImageProblems := entity.NewImage(coverImageName, coverImageExtension, coverImageSize)
+		if len(newCoverImageProblems) > 0 {
+			problemsDetails = append(problemsDetails, newCoverImageProblems...)
 		}
 
 		if len(problemsDetails) > 0 {
@@ -178,24 +188,9 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 			}
 		}
 
-		coverImageCreationError := ul.ImageRepository.Create(newCoverImageName)
-		if coverImageCreationError != nil {
-			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     util.TypeInternalServerError,
-				Title:    "Erro ao persistir a imagem de capa",
-				Status:   http.StatusInternalServerError,
-				Detail:   coverImageCreationError.Error(),
-				Instance: util.RFC503,
-			})
+		imagesToAdd = append(imagesToAdd, *newCoverImage)
 
-			util.NewLoggerError(http.StatusInternalServerError, coverImageCreationError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
-
-			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
-				ProblemDetails: problemsDetails,
-			}
-		}
-
-		list.ChangeCoverImageID(newCoverImageName.ID)
+		list.ChangeCoverImageID(newCoverImage.ID)
 	}
 
 	moviesToDelete, moviesToAdd := list.UpdateMovies(moviesForUpdate)
@@ -235,6 +230,25 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 		}
 
 		listMoviesToAdd = append(listMoviesToAdd, *newListMovie)
+	}
+
+	if len(imagesToAdd) > 0 {
+		imagesToAddError := ul.ImageRepository.CreateMany(&imagesToAdd)
+		if imagesToAddError != nil {
+			problemsDetails = append(problemsDetails, util.ProblemDetails{
+				Type:     util.TypeInternalServerError,
+				Title:    "Erro ao criar imagens",
+				Status:   http.StatusInternalServerError,
+				Detail:   imagesToAddError.Error(),
+				Instance: util.RFC503,
+			})
+
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens da lista", "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
+
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
+				ProblemDetails: problemsDetails,
+			}
+		}
 	}
 
 	listMoviesToAddError := ul.ListMovieRepository.Create(&listMoviesToAdd)
