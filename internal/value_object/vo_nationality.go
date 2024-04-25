@@ -12,7 +12,7 @@ type Nationality struct {
 }
 
 func NewNationality(countryName, flag string) (*Nationality, []util.ProblemDetails) {
-	validationErrors := ValidateNationality(countryName)
+	validationErrors := ValidateNationality(countryName, flag)
 
 	if len(validationErrors) > 0 {
 		return nil, validationErrors
@@ -24,11 +24,21 @@ func NewNationality(countryName, flag string) (*Nationality, []util.ProblemDetai
 	}, nil
 }
 
-func ValidateNationality(country string) []util.ProblemDetails {
+func ValidateNationality(country, flag string) []util.ProblemDetails {
 	var validationErrors []util.ProblemDetails
 
+	if country == "" || flag == "" {
+		validationErrors = append(validationErrors, util.ProblemDetails{
+			Type:     util.TypeBadRequest,
+			Title:    "Nome do país ou bandeira não informados",
+			Status:   http.StatusBadRequest,
+			Detail:   "O nome do país ou a bandeira não foram informados",
+			Instance: util.RFC400,
+		})
+	}
+
 	for _, c := range countries {
-		if c.Name == country {
+		if c.Name == country && c.Flag == flag {
 			return validationErrors
 		}
 	}
