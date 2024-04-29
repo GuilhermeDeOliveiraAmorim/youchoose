@@ -127,3 +127,8 @@ const (
 	MovieErrorDetailNotFound   = "Filme não encontrado"
 	MovieErrorDetailDeactivate = "O filme está desativado"
 )
+
+const (
+	NationalityErrorTitleCountryOrFlagEmpty  = "Nome do país ou bandeira não informados"
+	NationalityErrorDetailCountryOrFlagEmpty = "O nome do país ou a bandeira não foram informados"
+)

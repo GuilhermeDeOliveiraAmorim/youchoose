@@ -30,9 +30,9 @@ func ValidateNationality(country, flag string) []util.ProblemDetails {
 	if country == "" || flag == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
 			Type:     util.TypeBadRequest,
-			Title:    "Nome do país ou bandeira não informados",
+			Title:    util.NationalityErrorTitleCountryOrFlagEmpty,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do país ou a bandeira não foram informados",
+			Detail:   util.NationalityErrorDetailCountryOrFlagEmpty,
 			Instance: util.RFC400,
 		})
 	}
@@ -45,9 +45,9 @@ func ValidateNationality(country, flag string) []util.ProblemDetails {
 
 	validationErrors = append(validationErrors, util.ProblemDetails{
 		Type:     util.TypeValidationError,
-		Title:    util.SharedErrorTitleInvalidCountry,
+		Title:    util.NationalityErrorTitleCountryOrFlagEmpty,
 		Status:   http.StatusBadRequest,
-		Detail:   util.AddressErrorTitleInvalidCountry,
+		Detail:   util.NationalityErrorDetailCountryOrFlagEmpty,
 		Instance: util.RFC400,
 	})
 

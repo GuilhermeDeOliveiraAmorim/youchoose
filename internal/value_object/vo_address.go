@@ -56,7 +56,7 @@ func ValidateAddress(city, state, country string) []util.ProblemDetails {
 			Type:     util.TypeValidationError,
 			Title:    util.SharedErrorTitleInvalidCountry,
 			Status:   http.StatusBadRequest,
-			Detail:   util.AddressErrorDetailEmptyCountry,
+			Detail:   util.AddressErrorDetailInvalidCountry,
 			Instance: util.RFC400,
 		})
 	}
