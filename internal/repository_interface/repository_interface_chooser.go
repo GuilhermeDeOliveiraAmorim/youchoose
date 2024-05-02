@@ -10,7 +10,6 @@ type ChooserRepositoryInterface interface {
 	ChooserAlreadyExists(chooserEmail string) (bool, error)
 	GetAll() ([]entity.Chooser, error)
 	Deactivate(chooser *entity.Chooser) error
-	GetLists(chooserID string) ([]entity.List, error)
 	GetVotation(chooserID, listID string) (entity.Votation, error)
 	GetVotations(chooserID string) ([]entity.Votation, error)
 }

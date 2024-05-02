@@ -8,6 +8,7 @@ type ListRepositoryInterface interface {
 	GetByID(listID string) (bool, entity.List, error)
 	GetAll() ([]entity.List, error)
 	Deactivate(list *entity.List) error
+	GetLists(chooserID string) ([]entity.List, error)
 	GetAllMoviesByListID(listID string) ([]entity.Movie, error)
 	GetAllMoviesCombinationsByListID(listID string) ([][]entity.Movie, error)
 }

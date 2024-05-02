@@ -123,6 +123,21 @@ func (mr *MockListRepositoryInterfaceMockRecorder) GetByID(listID interface{}) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockListRepositoryInterface)(nil).GetByID), listID)
 }
 
+// GetLists mocks base method.
+func (m *MockListRepositoryInterface) GetLists(chooserID string) ([]entity.List, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetLists", chooserID)
+	ret0, _ := ret[0].([]entity.List)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetLists indicates an expected call of GetLists.
+func (mr *MockListRepositoryInterfaceMockRecorder) GetLists(chooserID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLists", reflect.TypeOf((*MockListRepositoryInterface)(nil).GetLists), chooserID)
+}
+
 // Update mocks base method.
 func (m *MockListRepositoryInterface) Update(list *entity.List) error {
 	m.ctrl.T.Helper()
