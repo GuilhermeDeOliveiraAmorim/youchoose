@@ -19,7 +19,8 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockChooserRepositoryInterface(ctrl)
-	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository)
+	mockImageRepository := mock.NewMockImageRepositoryInterface(ctrl)
+	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository, mockImageRepository)
 
 	imageID := uuid.New().String()
 
@@ -101,7 +102,8 @@ func TestUpdateChooserUseCase_Execute_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockChooserRepositoryInterface(ctrl)
-	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository)
+	mockImageRepository := mock.NewMockImageRepositoryInterface(ctrl)
+	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository, mockImageRepository)
 
 	chooserID := uuid.New().String()
 
@@ -132,7 +134,8 @@ func TestUpdateChooserUseCase_Execute_InternalServerError(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockChooserRepositoryInterface(ctrl)
-	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository)
+	mockImageRepository := mock.NewMockImageRepositoryInterface(ctrl)
+	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository, mockImageRepository)
 
 	chooserID := uuid.New().String()
 

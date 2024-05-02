@@ -52,9 +52,7 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
 	imageID := uuid.New().String()
 
-	chooser, chooserErr := entity.NewChooser(name, login, address, birthDate, imageID)
-
-	fmt.Println("5", chooserErr)
+	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
 
 	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
 	if myError != nil {
@@ -159,8 +157,6 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 	mockMovieRepo.EXPECT().Create(gomock.Any()).Return(nil)
 
 	output, problemDetails := createMovieUC.Execute(createMovieInput)
-
-	fmt.Println(output, problemDetails)
 
 	assert.Empty(t, problemDetails.ProblemDetails)
 	assert.NotNil(t, output)
