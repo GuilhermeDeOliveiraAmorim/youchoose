@@ -27,7 +27,7 @@ func TestUpdateListUseCase_Execute(t *testing.T) {
 
 	name := "John Doe"
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
-	address := &valueobject.Address{City: "Aracaju", State: "Sergipe", Country: "Brazil"}
+	address := &valueobject.Address{City: "Aracaju", State: "Sergipe", Country: "Brasil"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
 	imageID := uuid.New().String()
 
@@ -35,20 +35,20 @@ func TestUpdateListUseCase_Execute(t *testing.T) {
 
 	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	movie, _ := entity.NewMovie("Inception", *nationality, 2010, "image123")
+	movie_1, _ := entity.NewMovie("Inception_1", *nationality, 2011, uuid.New().String())
+	movie_2, _ := entity.NewMovie("Inception_2", *nationality, 2012, uuid.New().String())
+	movie_3, _ := entity.NewMovie("Inception_3", *nationality, 2013, uuid.New().String())
 
 	var movies []entity.Movie
 
-	movies = append(movies, *movie)
-	movies = append(movies, *movie)
-	movies = append(movies, *movie)
-
-	name = uuid.NewString()
+	movies = append(movies, *movie_1)
+	movies = append(movies, *movie_2)
+	movies = append(movies, *movie_3)
 	imageType := "jpeg"
 	size := int64(50000)
 
-	image_1, _ := entity.NewImage(name, imageType, size)
-	image_2, _ := entity.NewImage(name, imageType, size)
+	image_1, _ := entity.NewImage(uuid.NewString(), imageType, size)
+	image_2, _ := entity.NewImage(uuid.NewString(), imageType, size)
 
 	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
 	if myError != nil {
@@ -60,14 +60,12 @@ func TestUpdateListUseCase_Execute(t *testing.T) {
 		t.Errorf("Erro ao criar file2: %v", myError)
 	}
 
-	list, _ := entity.NewList("Minha Lista", "Descrição da Lista", "Minha Lista", "Descrição da Lista", chooser.ID)
+	list, _ := entity.NewList("Minha Lista", "Descrição da Lista", image_2.ID, image_1.ID, chooser.ID)
 
 	list.AddMovies(movies)
-	list.CoverImageID = image_1.ID
-	list.ProfileImageID = image_2.ID
 
 	input := UpdateListInputDTO{
-		ID:               list.ID,
+		ListID:           list.ID,
 		ChooserID:        chooser.ID,
 		Title:            "Nova Lista",
 		Description:      "Descrição da nova Lista",
@@ -81,16 +79,14 @@ func TestUpdateListUseCase_Execute(t *testing.T) {
 			Filename: uuid.NewString(),
 			Size:     150,
 		},
-		Movies: []string{movie.ID, movie.ID, movie.ID},
+		Movies: []string{movie_1.ID, movie_2.ID, movie_3.ID},
 	}
 
-	mockListRepo.EXPECT().GetByID(input.ID).Return(true, *list, nil)
-	mockListRepo.EXPECT().Update(gomock.Any()).Return(nil)
-	mockChooserRepo.EXPECT().GetByID(chooser.ID).Return(true, *chooser, nil)
+	mockChooserRepo.EXPECT().GetByID(input.ChooserID).Return(true, *chooser, nil)
+	mockListRepo.EXPECT().GetByID(input.ListID).Return(true, *list, nil)
 	mockMovieRepo.EXPECT().DoTheseMoviesExist(gomock.Any()).Return(true, movies, nil)
-	mockImageRepo.EXPECT().Create(gomock.Any()).Return(nil).Times(2)
-	mockListMovieRepo.EXPECT().DeactivateAll(gomock.Any()).Return(nil)
-	mockListMovieRepo.EXPECT().Create(gomock.Any()).Return(nil)
+	mockImageRepo.EXPECT().CreateMany(gomock.Any()).Return(nil)
+	mockListRepo.EXPECT().Update(gomock.Any()).Return(nil)
 
 	output, problem := useCase.Execute(input)
 

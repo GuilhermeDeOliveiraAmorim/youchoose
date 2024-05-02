@@ -19,7 +19,8 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockChooserRepositoryInterface(ctrl)
-	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository)
+	mockImageRepository := mock.NewMockImageRepositoryInterface(ctrl)
+	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository, mockImageRepository)
 
 	imageID := uuid.New().String()
 
@@ -101,7 +102,8 @@ func TestUpdateChooserUseCase_Execute_NotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockChooserRepositoryInterface(ctrl)
-	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository)
+	mockImageRepository := mock.NewMockImageRepositoryInterface(ctrl)
+	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository, mockImageRepository)
 
 	chooserID := uuid.New().String()
 
@@ -118,9 +120,9 @@ func TestUpdateChooserUseCase_Execute_NotFound(t *testing.T) {
 	expectedProblems := []util.ProblemDetails{
 		{
 			Type:     util.TypeNotFound,
-			Title:    "Chooser não encontrado",
+			Title:    "Não encontrado",
 			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + chooserID + " foi encontrado",
+			Detail:   "Chooser não encontrado",
 			Instance: util.RFC404,
 		},
 	}
@@ -132,7 +134,8 @@ func TestUpdateChooserUseCase_Execute_InternalServerError(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockChooserRepositoryInterface(ctrl)
-	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository)
+	mockImageRepository := mock.NewMockImageRepositoryInterface(ctrl)
+	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository, mockImageRepository)
 
 	chooserID := uuid.New().String()
 
@@ -149,7 +152,7 @@ func TestUpdateChooserUseCase_Execute_InternalServerError(t *testing.T) {
 	expectedProblems := []util.ProblemDetails{
 		{
 			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao resgatar chooser de ID " + chooserID,
+			Title:    "Erro ao resgatar recurso",
 			Status:   http.StatusInternalServerError,
 			Detail:   "database error",
 			Instance: util.RFC503,

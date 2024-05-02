@@ -39,37 +39,36 @@ func NewList(title, description, profileImageID, coverImageID, chooserID string)
 
 func (l *List) IncrementVotes() {
 	l.UpdatedAt = time.Now()
-
 	l.Votes++
+}
+
+func (l *List) DecrementVotes() {
+	l.UpdatedAt = time.Now()
+	l.Votes--
 }
 
 func (l *List) ChangeProfileImageID(profileImageID string) {
 	l.UpdatedAt = time.Now()
-
 	l.ProfileImageID = profileImageID
 }
 
 func (l *List) ChangeCoverImageID(coverImageID string) {
 	l.UpdatedAt = time.Now()
-
 	l.CoverImageID = coverImageID
 }
 
 func (l *List) ChangeTitle(title string) {
 	l.UpdatedAt = time.Now()
-
 	l.Title = title
 }
 
 func (l *List) ChangeDescription(description string) {
 	l.UpdatedAt = time.Now()
-
 	l.Description = description
 }
 
 func (l *List) AddMovies(movies []Movie) {
 	l.UpdatedAt = time.Now()
-
 	l.Movies = append(l.Movies, movies...)
 }
 

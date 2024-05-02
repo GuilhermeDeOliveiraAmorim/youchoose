@@ -93,7 +93,7 @@ func (am *AddMovieToListUseCase) Execute(input AddMovieToListInputDTO) (AddMovie
 
 	listMovies = append(listMovies, *newListMovie)
 
-	listMoviesCreationError := am.ListMovieRepository.Create(&listMovies)
+	listMoviesCreationError := am.ListMovieRepository.CreateMany(&listMovies)
 	if listMoviesCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,

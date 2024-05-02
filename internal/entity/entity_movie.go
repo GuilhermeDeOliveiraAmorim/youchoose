@@ -194,3 +194,23 @@ func (m *Movie) RemoveGenres(genresToRemove []Genre) {
 		m.Genres = updatedGenres
 	}
 }
+
+func (m *Movie) ChangeNationality(nationality valueobject.Nationality) {
+	m.UpdatedAt = time.Now()
+	m.Nationality = nationality
+}
+
+func (m *Movie) ChangeReleaseYear(releaseYear int) {
+	m.UpdatedAt = time.Now()
+	m.ReleaseYear = releaseYear
+}
+
+func (m *Movie) ChangeImage(imageID string) {
+	m.UpdatedAt = time.Now()
+	m.ImageID = imageID
+}
+
+func (m *Movie) ChangeTitle(title string) {
+	m.UpdatedAt = time.Now()
+	m.Title = title
+}

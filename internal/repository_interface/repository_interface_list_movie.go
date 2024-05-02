@@ -3,7 +3,7 @@ package repositoryinterface
 import "youchoose/internal/entity"
 
 type ListMovieRepositoryInterface interface {
-	Create(listMovies *[]entity.ListMovie) error
+	CreateMany(listMovies *[]entity.ListMovie) error
 	Update(listMovie *entity.ListMovie) error
 	GetByID(listMovieID string) (entity.ListMovie, error)
 	GetByListIDAndMovieIDAndChooserID(listID, movieID, chooserID string) (bool, entity.ListMovie, error)

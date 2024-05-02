@@ -50,7 +50,7 @@ func TestCreateListUseCase_Execute(t *testing.T) {
 	mockListRepo.EXPECT().Create(gomock.Any()).Return(nil)
 	mockImageRepo.EXPECT().Create(gomock.Any()).Return(nil).Times(2)
 	mockMovieRepo.EXPECT().DoTheseMoviesExist(gomock.Any()).Return(true, movies, nil)
-	mockListMovieRepo.EXPECT().Create(gomock.Any()).Return(nil)
+	mockListMovieRepo.EXPECT().CreateMany(gomock.Any()).Return(nil)
 	mockListRepo.EXPECT().GetAllMoviesByListID(gomock.Any()).Return(movies, nil)
 
 	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")

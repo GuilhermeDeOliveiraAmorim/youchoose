@@ -92,6 +92,22 @@ func (mr *MockListFavoriteRepositoryInterfaceMockRecorder) GetAllByListID(listID
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllByListID", reflect.TypeOf((*MockListFavoriteRepositoryInterface)(nil).GetAllByListID), listID)
 }
 
+// GetByChooserIDAndListID mocks base method.
+func (m *MockListFavoriteRepositoryInterface) GetByChooserIDAndListID(chooserID, listID string) (bool, entity.ListFavorite, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByChooserIDAndListID", chooserID, listID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(entity.ListFavorite)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetByChooserIDAndListID indicates an expected call of GetByChooserIDAndListID.
+func (mr *MockListFavoriteRepositoryInterfaceMockRecorder) GetByChooserIDAndListID(chooserID, listID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByChooserIDAndListID", reflect.TypeOf((*MockListFavoriteRepositoryInterface)(nil).GetByChooserIDAndListID), chooserID, listID)
+}
+
 // GetByID mocks base method.
 func (m *MockListFavoriteRepositoryInterface) GetByID(listFavoriteID string) (bool, entity.ListFavorite, error) {
 	m.ctrl.T.Helper()

@@ -46,7 +46,7 @@ func TestAddMovieToList_Success(t *testing.T) {
 	mockListRepo.EXPECT().GetByID(gomock.Any()).Return(true, *list, nil)
 	mockMovieRepo.EXPECT().GetByID(gomock.Any()).Return(true, *movie, nil)
 	mockListMovieRepo.EXPECT().GetByListIDAndMovieIDAndChooserID(gomock.Any(), gomock.Any(), gomock.Any()).Return(false, entity.ListMovie{}, nil)
-	mockListMovieRepo.EXPECT().Create(gomock.Any()).Return(nil)
+	mockListMovieRepo.EXPECT().CreateMany(gomock.Any()).Return(nil)
 
 	input := AddMovieToListInputDTO{
 		ChooserID: uuid.NewString(),

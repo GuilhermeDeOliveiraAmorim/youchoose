@@ -10,14 +10,14 @@ import (
 	valueobject "youchoose/internal/value_object"
 )
 
-type Genre struct {
+type GenreDTO struct {
 	GenreID      string                `json:"genre_id"`
 	Name         string                `json:"name"`
 	ImageFile    multipart.File        `json:"genre_image_file"`
 	ImageHandler *multipart.FileHeader `json:"genre_image_handler"`
 }
 
-type Director struct {
+type DirectorDTO struct {
 	DirectorID   string                `json:"director_id"`
 	Name         string                `json:"name"`
 	Day          int                   `json:"day"`
@@ -29,7 +29,7 @@ type Director struct {
 	ImageHandler *multipart.FileHeader `json:"director_image_handler"`
 }
 
-type Actor struct {
+type ActorDTO struct {
 	ActorID      string                `json:"actor_id"`
 	Name         string                `json:"name"`
 	Day          int                   `json:"day"`
@@ -41,7 +41,7 @@ type Actor struct {
 	ImageHandler *multipart.FileHeader `json:"actor_image_handler"`
 }
 
-type Writer struct {
+type WriterDTO struct {
 	WriterID     string                `json:"writer_id"`
 	Name         string                `json:"name"`
 	Day          int                   `json:"day"`
@@ -61,10 +61,10 @@ type CreateMovieInputDTO struct {
 	ReleaseYear  int                   `json:"release_year"`
 	ImageFile    multipart.File        `json:"movie_image_file"`
 	ImageHandler *multipart.FileHeader `json:"movie_image_handler"`
-	Genres       []Genre               `json:"genres"`
-	Directors    []Director            `json:"directors"`
-	Actors       []Actor               `json:"actors"`
-	Writers      []Writer              `json:"writers"`
+	Genres       []GenreDTO            `json:"genres"`
+	Directors    []DirectorDTO         `json:"directors"`
+	Actors       []ActorDTO            `json:"actors"`
+	Writers      []WriterDTO           `json:"writers"`
 }
 
 type CreateMovieUseCase struct {
@@ -206,7 +206,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	imagesToAdd = append(imagesToAdd, *movieImage)
 
 	var genresToCheck []string
-	var genresToAdd []Genre
+	var genresToAdd []GenreDTO
 
 	for _, genre := range input.Genres {
 		if genre.GenreID == "" {
@@ -290,7 +290,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	}
 
 	var directorsToCheck []string
-	var directorsToAdd []Director
+	var directorsToAdd []DirectorDTO
 
 	for _, director := range input.Directors {
 		if director.DirectorID == "" {
@@ -386,7 +386,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	//Actor
 
 	var actorsToCheck []string
-	var actorsToAdd []Actor
+	var actorsToAdd []ActorDTO
 
 	for _, actor := range input.Actors {
 		if actor.ActorID == "" {
@@ -482,7 +482,7 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	//Writer
 
 	var writersToCheck []string
-	var writersToAdd []Writer
+	var writersToAdd []WriterDTO
 
 	for _, writer := range input.Writers {
 		if writer.WriterID == "" {
@@ -628,6 +628,23 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
+	newMovieError := cm.MovieRepository.Create(newMovie)
+	if newMovieError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao criar o filme",
+			Status:   http.StatusInternalServerError,
+			Detail:   newMovieError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
 	imagesToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
 	if imagesToAddError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
@@ -707,23 +724,6 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar os(as) escritores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
-
-		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	newMovieError := cm.MovieRepository.Create(newMovie)
-	if newMovieError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao criar o filme",
-			Status:   http.StatusInternalServerError,
-			Detail:   newMovieError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

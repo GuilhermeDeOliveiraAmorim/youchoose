@@ -62,6 +62,22 @@ func (mr *MockWriterRepositoryInterfaceMockRecorder) Deactivate(writer interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockWriterRepositoryInterface)(nil).Deactivate), writer)
 }
 
+// DoTheseWritersAreIncludedInTheMovie mocks base method.
+func (m *MockWriterRepositoryInterface) DoTheseWritersAreIncludedInTheMovie(movieID string, writersIDs []string) (bool, []entity.Writer, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DoTheseWritersAreIncludedInTheMovie", movieID, writersIDs)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].([]entity.Writer)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// DoTheseWritersAreIncludedInTheMovie indicates an expected call of DoTheseWritersAreIncludedInTheMovie.
+func (mr *MockWriterRepositoryInterfaceMockRecorder) DoTheseWritersAreIncludedInTheMovie(movieID, writersIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DoTheseWritersAreIncludedInTheMovie", reflect.TypeOf((*MockWriterRepositoryInterface)(nil).DoTheseWritersAreIncludedInTheMovie), movieID, writersIDs)
+}
+
 // DoTheseWritersExist mocks base method.
 func (m *MockWriterRepositoryInterface) DoTheseWritersExist(writerIDs []string) (bool, []entity.Writer, error) {
 	m.ctrl.T.Helper()

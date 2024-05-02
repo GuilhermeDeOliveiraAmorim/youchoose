@@ -198,7 +198,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 		}
 	}
 
-	listMoviesCreationError := cl.ListMovieRepository.Create(&listMovies)
+	listMoviesCreationError := cl.ListMovieRepository.CreateMany(&listMovies)
 	if listMoviesCreationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,

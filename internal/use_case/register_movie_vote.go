@@ -7,7 +7,7 @@ import (
 	"youchoose/internal/util"
 )
 
-type RegisterVoteInputDTO struct {
+type RegisterMovieVoteInputDTO struct {
 	ChooserID     string `json:"chooser_id"`
 	ListID        string `json:"list_id"`
 	FirstMovieID  string `json:"first_movie_id"`
@@ -15,26 +15,26 @@ type RegisterVoteInputDTO struct {
 	ChosenMovieID string `json:"chosen_movie_id"`
 }
 
-type RegisterVoteOutputDTO struct {
+type RegisterMovieVoteOutputDTO struct {
 	ID        string `json:"id"`
 	Message   string `json:"message"`
 	IsSuccess bool   `json:"success"`
 }
 
-type RegisterVoteUseCase struct {
+type RegisterMovieVoteUseCase struct {
 	ChooserRepository  repositoryinterface.ChooserRepositoryInterface
 	ListRepository     repositoryinterface.ListRepositoryInterface
 	VotationRepository repositoryinterface.VotationRepositoryInterface
 	MovieRepository    repositoryinterface.MovieRepositoryInterface
 }
 
-func NewRegisterVoteUseCase(
+func NewRegisterMovieVoteUseCase(
 	ChooserRepository repositoryinterface.ChooserRepositoryInterface,
 	ListRepository repositoryinterface.ListRepositoryInterface,
 	VotationRepository repositoryinterface.VotationRepositoryInterface,
 	MovieRepository repositoryinterface.MovieRepositoryInterface,
-) *RegisterVoteUseCase {
-	return &RegisterVoteUseCase{
+) *RegisterMovieVoteUseCase {
+	return &RegisterMovieVoteUseCase{
 		ChooserRepository:  ChooserRepository,
 		ListRepository:     ListRepository,
 		VotationRepository: VotationRepository,
@@ -42,15 +42,15 @@ func NewRegisterVoteUseCase(
 	}
 }
 
-func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVoteOutputDTO, util.ProblemDetailsOutputDTO) {
-	_, chooserValidatorProblems := chooserValidator(rv.ChooserRepository, input.ChooserID, "RegisterVoteUseCase")
+func (rv *RegisterMovieVoteUseCase) Execute(input RegisterMovieVoteInputDTO) (RegisterMovieVoteOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(rv.ChooserRepository, input.ChooserID, "RegisterMovieVoteUseCase")
 	if len(chooserValidatorProblems.ProblemDetails) > 0 {
-		return RegisterVoteOutputDTO{}, chooserValidatorProblems
+		return RegisterMovieVoteOutputDTO{}, chooserValidatorProblems
 	}
 
-	_, listValidatorProblems := listValidator(rv.ListRepository, input.ListID, "RegisterVoteUseCase")
+	_, listValidatorProblems := listValidator(rv.ListRepository, input.ListID, "RegisterMovieVoteUseCase")
 	if len(listValidatorProblems.ProblemDetails) > 0 {
-		return RegisterVoteOutputDTO{}, listValidatorProblems
+		return RegisterMovieVoteOutputDTO{}, listValidatorProblems
 	}
 
 	problemsDetails := []util.ProblemDetails{}
@@ -71,9 +71,9 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, doesTheMoviesExistError.Error(), "RegisterVoteUseCase", "Use Cases", util.TypeInternalServerError)
+		util.NewLoggerError(http.StatusInternalServerError, doesTheMoviesExistError.Error(), "RegisterMovieVoteUseCase", "Use Cases", util.TypeInternalServerError)
 
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return RegisterMovieVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doesTheMoviesExist {
@@ -85,7 +85,7 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 			Instance: util.RFC409,
 		})
 
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return RegisterMovieVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -100,9 +100,9 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, doesTheVotationExistError.Error(), "RegisterVoteUseCase", "Use Cases", util.TypeInternalServerError)
+		util.NewLoggerError(http.StatusInternalServerError, doesTheVotationExistError.Error(), "RegisterMovieVoteUseCase", "Use Cases", util.TypeInternalServerError)
 
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return RegisterMovieVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if doesTheVotationExist {
@@ -114,7 +114,7 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 			Instance: util.RFC409,
 		})
 
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return RegisterMovieVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -123,7 +123,7 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 	if newVotationError != nil {
 		problemsDetails = append(problemsDetails, newVotationError...)
 
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return RegisterMovieVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -140,9 +140,9 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, movieUpdatedError.Error(), "RegisterVoteUseCase", "Use Cases", util.TypeInternalServerError)
+		util.NewLoggerError(http.StatusInternalServerError, movieUpdatedError.Error(), "RegisterMovieVoteUseCase", "Use Cases", util.TypeInternalServerError)
 
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return RegisterMovieVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
@@ -157,14 +157,14 @@ func (rv *RegisterVoteUseCase) Execute(input RegisterVoteInputDTO) (RegisterVote
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, registerVoteCreationError.Error(), "RegisterVoteUseCase", "Use Cases", util.TypeInternalServerError)
+		util.NewLoggerError(http.StatusInternalServerError, registerVoteCreationError.Error(), "RegisterMovieVoteUseCase", "Use Cases", util.TypeInternalServerError)
 
-		return RegisterVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
+		return RegisterMovieVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
 
-	output := RegisterVoteOutputDTO{
+	output := RegisterMovieVoteOutputDTO{
 		ID:        newVotation.ID,
 		Message:   "Voto registrado com sucesso",
 		IsSuccess: true,
