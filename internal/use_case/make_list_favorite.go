@@ -37,117 +37,47 @@ func NewMakeListFavoriteUseCase(
 }
 
 func (ml *MakeListFavoriteUseCase) Execute(input MakeListFavoriteInputDTO) (MakeListFavoriteOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(ml.ChooserRepository, input.ChooserID, "MakeListFavoriteUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return MakeListFavoriteOutputDTO{}, chooserValidatorProblems
+	}
+
+	list, listValidatorProblems := listValidator(ml.ListRepository, input.ListID, "MakeListFavoriteUseCase")
+	if len(listValidatorProblems.ProblemDetails) > 0 {
+		return MakeListFavoriteOutputDTO{}, listValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
-
-	doesTheListExist, list, getListError := ml.ListRepository.GetByID(input.ListID)
-	if getListError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao desativar lista de ID " + input.ListID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getListError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getListError.Error(), "MakeListFavoriteUseCase", "Use Cases", "Internal Server Error")
-
-		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheListExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + input.ListID + " foi encontrada",
-			Instance: util.RFC404,
-		})
-
-		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !list.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "A lista com o ID " + input.ListID + " está desativada",
-			Instance: util.RFC404,
-		})
-
-		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheChooserExist, chooser, getChooserError := ml.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "GetChooserUseCase", "Use Cases", "Internal Server Error")
-
-		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "O chooser com o ID " + input.ChooserID + " está desativado",
-			Instance: util.RFC404,
-		})
-
-		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
 
 	listsFavorites, listsFavoritesError := ml.ListFavoriteRepository.GetAllByListID(list.ID)
 	if listsFavoritesError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao desativar uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listsFavoritesError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listsFavoritesError.Error(), "MakeListFavoriteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listsFavoritesError.Error(), "MakeListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	newListFavorite := entity.NewListFavorite(input.ChooserID, input.ListID)
 
-	for _, listFavorite := range listsFavorites {
-		if listFavorite.Equals(newListFavorite) {
-			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     "Conflict",
-				Title:    "Lista já favorita",
-				Status:   http.StatusConflict,
-				Detail:   "A lista com o ID " + input.ListID + " já é favorita",
-				Instance: util.RFC409,
-			})
+	if len(listsFavorites) > 0 {
+		for _, listFavorite := range listsFavorites {
+			if listFavorite.Equals(newListFavorite) {
+				problemsDetails = append(problemsDetails, util.ProblemDetails{
+					Type:     util.TypeConflict,
+					Title:    "Lista já favorita",
+					Status:   http.StatusConflict,
+					Detail:   "A lista com o ID " + input.ListID + " já é favorita",
+					Instance: util.RFC409,
+				})
 
-			return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-				ProblemDetails: problemsDetails,
+				return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
+					ProblemDetails: problemsDetails,
+				}
 			}
 		}
 	}
@@ -155,14 +85,33 @@ func (ml *MakeListFavoriteUseCase) Execute(input MakeListFavoriteInputDTO) (Make
 	listFavoriteError := ml.ListFavoriteRepository.Create(newListFavorite)
 	if listFavoriteError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao desativar uma lista",
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao favoritar uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listFavoriteError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "MakeListFavoriteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "MakeListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
+
+		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
+	list.IncrementVotes()
+
+	listError := ml.ListRepository.Update(&list)
+	if listError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao favoritar uma lista",
+			Status:   http.StatusInternalServerError,
+			Detail:   listError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, listError.Error(), "MakeListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return MakeListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

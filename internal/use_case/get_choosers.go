@@ -6,18 +6,8 @@ import (
 	"youchoose/internal/util"
 )
 
-type GetChoosersInputDTO struct{}
-
-type ChooserOutputDTO struct {
-	ID      string `json:"id"`
-	Name    string `json:"name"`
-	City    string `json:"city"`
-	State   string `json:"state"`
-	Country string `json:"country"`
-	Day     int    `json:"day"`
-	Month   int    `json:"month"`
-	Year    int    `json:"year"`
-	ImageID string `json:"image_id"`
+type GetChoosersInputDTO struct {
+	ChooserID string `json:"chooser_id"`
 }
 
 type GetChoosersOutputDTO struct {
@@ -36,27 +26,32 @@ func NewGetChoosersUseCase(
 	}
 }
 
-func (cc *GetChoosersUseCase) Execute(input GetChoosersInputDTO) (GetChoosersOutputDTO, util.ProblemDetailsOutputDTO) {
+func (gc *GetChoosersUseCase) Execute(input GetChoosersInputDTO) (GetChoosersOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(gc.ChooserRepository, input.ChooserID, "GetChoosersUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return GetChoosersOutputDTO{}, chooserValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
 
-	allChoosers, allChoosersError := cc.ChooserRepository.GetAll()
+	allChoosers, allChoosersError := gc.ChooserRepository.GetAll()
 	if allChoosersError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar todos os choosers",
 			Status:   http.StatusInternalServerError,
 			Detail:   allChoosersError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, allChoosersError.Error(), "GetChoosersUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, allChoosersError.Error(), "GetChoosersUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return GetChoosersOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if len(allChoosers) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Choosers não encontrados",
 			Status:   http.StatusNotFound,
 			Detail:   "Nenhum chooser foi encontrado",
@@ -71,17 +66,9 @@ func (cc *GetChoosersUseCase) Execute(input GetChoosersInputDTO) (GetChoosersOut
 	allGetChoosersOutputDTO := []ChooserOutputDTO{}
 
 	for _, chooser := range allChoosers {
-		allGetChoosersOutputDTO = append(allGetChoosersOutputDTO, ChooserOutputDTO{
-			ID:      chooser.ID,
-			Name:    chooser.Name,
-			City:    chooser.Address.City,
-			State:   chooser.Address.State,
-			Country: chooser.Address.Country,
-			Day:     chooser.BirthDate.Day,
-			Month:   chooser.BirthDate.Month,
-			Year:    chooser.BirthDate.Year,
-			ImageID: chooser.ImageID,
-		})
+		outputChooser := NewChooserOutputDTO(chooser)
+
+		allGetChoosersOutputDTO = append(allGetChoosersOutputDTO, outputChooser)
 	}
 
 	output := GetChoosersOutputDTO{

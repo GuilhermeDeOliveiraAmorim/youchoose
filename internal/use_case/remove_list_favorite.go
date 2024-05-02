@@ -7,8 +7,8 @@ import (
 )
 
 type RemoveListFavoriteInputDTO struct {
-	ChooserID      string `json:"chooser_id"`
-	ListFavoriteID string `json:"list_favorite_id"`
+	ChooserID string `json:"chooser_id"`
+	ListID    string `json:"list_id"`
 }
 
 type RemoveListFavoriteOutputDTO struct {
@@ -19,40 +19,53 @@ type RemoveListFavoriteOutputDTO struct {
 
 type RemoveListFavoriteUseCase struct {
 	ChooserRepository      repositoryinterface.ChooserRepositoryInterface
+	ListRepository         repositoryinterface.ListRepositoryInterface
 	ListFavoriteRepository repositoryinterface.ListFavoriteRepositoryInterface
 }
 
 func NewRemoveListFavoriteUseCase(
 	ChooserRepository repositoryinterface.ChooserRepositoryInterface,
+	ListRepository repositoryinterface.ListRepositoryInterface,
 	ListFavoriteRepository repositoryinterface.ListFavoriteRepositoryInterface,
 ) *RemoveListFavoriteUseCase {
 	return &RemoveListFavoriteUseCase{
 		ChooserRepository:      ChooserRepository,
+		ListRepository:         ListRepository,
 		ListFavoriteRepository: ListFavoriteRepository,
 	}
 }
 
 func (rl *RemoveListFavoriteUseCase) Execute(input RemoveListFavoriteInputDTO) (RemoveListFavoriteOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(rl.ChooserRepository, input.ChooserID, "RemoveListFavoriteUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return RemoveListFavoriteOutputDTO{}, chooserValidatorProblems
+	}
+
+	list, listValidatorProblems := listValidator(rl.ListRepository, input.ListID, "RemoveListFavoriteUseCase")
+	if len(listValidatorProblems.ProblemDetails) > 0 {
+		return RemoveListFavoriteOutputDTO{}, listValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
 
-	doesTheListFavoriteExist, listFavorite, getListFavoriteError := rl.ListFavoriteRepository.GetByID(input.ListFavoriteID)
+	doesTheListFavoriteExist, listFavorite, getListFavoriteError := rl.ListFavoriteRepository.GetByChooserIDAndListID(input.ChooserID, input.ListID)
 	if getListFavoriteError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao remover lista das favoritas",
 			Status:   http.StatusInternalServerError,
 			Detail:   getListFavoriteError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, getListFavoriteError.Error(), "RemoveListFavoriteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, getListFavoriteError.Error(), "RemoveListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doesTheListFavoriteExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Erro ao remover lista das favoritas",
 			Status:   http.StatusNotFound,
 			Detail:   "Não foi possível remover a lista das favoritas",
@@ -64,51 +77,10 @@ func (rl *RemoveListFavoriteUseCase) Execute(input RemoveListFavoriteInputDTO) (
 		}
 	} else if !listFavorite.Active {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "A lista já removida",
+			Type:     util.TypeNotFound,
+			Title:    "Lista já removida",
 			Status:   http.StatusNotFound,
 			Detail:   "A lista já está removida das favoritas",
-			Instance: util.RFC404,
-		})
-
-		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	}
-
-	doesTheChooserExist, chooser, getChooserError := rl.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "GetChooserUseCase", "Use Cases", "Internal Server Error")
-
-		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "O chooser com o ID " + input.ChooserID + " está desativado",
 			Instance: util.RFC404,
 		})
 
@@ -122,14 +94,33 @@ func (rl *RemoveListFavoriteUseCase) Execute(input RemoveListFavoriteInputDTO) (
 	listFavoriteError := rl.ListFavoriteRepository.Deactivate(&listFavorite)
 	if listFavoriteError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao remover lista das favoritas",
 			Status:   http.StatusInternalServerError,
 			Detail:   listFavoriteError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "RemoveListFavoriteUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listFavoriteError.Error(), "RemoveListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
+
+		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
+	list.DecrementVotes()
+
+	listError := rl.ListRepository.Update(&list)
+	if listError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao remover lista das favoritas",
+			Status:   http.StatusInternalServerError,
+			Detail:   listError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, listError.Error(), "RemoveListFavoriteUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return RemoveListFavoriteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,

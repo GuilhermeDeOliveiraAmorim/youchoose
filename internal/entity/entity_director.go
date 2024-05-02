@@ -23,15 +23,13 @@ func NewDirector(name string, birthDate *valueobject.BirthDate, nationality *val
 		return nil, validationErrors
 	}
 
-	Director := &Director{
+	return &Director{
 		SharedEntity: *NewSharedEntity(),
 		Name:         name,
 		BirthDate:    birthDate,
 		Nationality:  nationality,
 		ImageID:      imageID,
-	}
-
-	return Director, nil
+	}, nil
 }
 
 func ValidateDirector(name string, birthDate *valueobject.BirthDate, nationality *valueobject.Nationality, imageID string) []util.ProblemDetails {
@@ -39,50 +37,50 @@ func ValidateDirector(name string, birthDate *valueobject.BirthDate, nationality
 
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nome do(a) diretor(a) inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do(a) diretor(a) não pode estar vazio.",
+			Detail:   util.DirectorErrorDetailEmptyName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nome do(a) diretor(a) inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do(a) diretor(a) não pode ter mais do que 100 caracteres.",
+			Detail:   util.DirectorErrorDetailMaxLengthName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if birthDate == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Data de nascimento do(a) diretor(a) inválida",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidBirthDate,
 			Status:   http.StatusBadRequest,
-			Detail:   "A data de nascimento do(a) diretor(a) não pode ser nula.",
+			Detail:   util.DirectorErrorDetailNotNullBirthDate,
 			Instance: util.RFC400,
 		})
 	}
 
 	if nationality == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nacionalidade do(a) diretor(a) inválida",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidNationality,
 			Status:   http.StatusBadRequest,
-			Detail:   "A nacionalidade do(a) diretor(a) não pode ser nula.",
+			Detail:   util.DirectorErrorDetailNotNullNationality,
 			Instance: util.RFC400,
 		})
 	}
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "ID de imagem do(a) diretor(a) inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidImageID,
 			Status:   http.StatusBadRequest,
-			Detail:   "O ID de imagem do(a) diretor(a) não pode estar vazio.",
+			Detail:   util.DirectorErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}

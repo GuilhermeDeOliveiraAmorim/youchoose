@@ -139,12 +139,13 @@ func (mr *MockMovieRepositoryInterfaceMockRecorder) GetByGenreID(genreID interfa
 }
 
 // GetByID mocks base method.
-func (m *MockMovieRepositoryInterface) GetByID(movieID string) (entity.Movie, error) {
+func (m *MockMovieRepositoryInterface) GetByID(movieID string) (bool, entity.Movie, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", movieID)
-	ret0, _ := ret[0].(entity.Movie)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(entity.Movie)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetByID indicates an expected call of GetByID.

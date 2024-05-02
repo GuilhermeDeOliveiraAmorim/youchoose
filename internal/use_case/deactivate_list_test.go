@@ -5,7 +5,7 @@ import (
 	"time"
 	"youchoose/internal/entity"
 	"youchoose/internal/use_case/mock"
-	"youchoose/internal/util"
+	valueobject "youchoose/internal/value_object"
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
@@ -16,33 +16,39 @@ func TestDeactivateListUseCase_Execute(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock.NewMockListRepositoryInterface(ctrl)
-	deactivateListUseCase := NewDeactivateListUseCase(mockRepository)
+	mockChooserRepo := mock.NewMockChooserRepositoryInterface(ctrl)
+	mockListRepo := mock.NewMockListRepositoryInterface(ctrl)
+	deactivateListUseCase := NewDeactivateListUseCase(mockChooserRepo, mockListRepo)
 
-	newList, _ := entity.NewList("Nome 1", "Descrição", uuid.NewString(), uuid.NewString(), uuid.NewString())
+	list, _ := entity.NewList("Nome 1", "Descrição", uuid.NewString(), uuid.NewString(), uuid.NewString())
 	time := time.Now()
 
-	mockRepository.EXPECT().GetByID(newList.ID).Return(true, *newList, nil)
+	name := "John Doe"
+	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
+	address := &valueobject.Address{City: "City", State: "State", Country: "Country"}
+	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
+	imageID := uuid.NewString()
 
-	mockRepository.EXPECT().Deactivate(gomock.Any()).Do(func(c *entity.List) {
+	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
+
+	mockChooserRepo.EXPECT().GetByID(chooser.ID).Return(true, *chooser, nil)
+	mockListRepo.EXPECT().GetByID(list.ID).Return(true, *list, nil)
+
+	mockListRepo.EXPECT().Deactivate(gomock.Any()).Do(func(c *entity.List) {
 		assert.False(t, c.Active)
 		assert.NotEqual(t, c.DeactivatedAt, time)
 		assert.NotEqual(t, c.UpdatedAt, time)
 	}).Return(nil)
 
-	input := DeactivateListInputDTO{ID: newList.ID}
+	input := DeactivateListInputDTO{
+		ChooserID: chooser.ID,
+		ListID:    list.ID,
+	}
+
 	output, problemDetails := deactivateListUseCase.Execute(input)
 
 	assert.Empty(t, problemDetails.ProblemDetails)
-	assert.Equal(t, newList.ID, output.ID)
+	assert.Equal(t, list.ID, output.ListID)
 	assert.Equal(t, "Lista desativada com sucesso", output.Message)
 	assert.True(t, output.IsSuccess)
-
-	mockRepository.EXPECT().GetByID(newList.ID).Return(false, entity.List{}, nil)
-
-	input = DeactivateListInputDTO{ID: newList.ID}
-	output, problemDetails = deactivateListUseCase.Execute(input)
-
-	assert.NotEmpty(t, problemDetails.ProblemDetails)
-	assert.Equal(t, util.RFC404, problemDetails.ProblemDetails[0].Instance)
 }

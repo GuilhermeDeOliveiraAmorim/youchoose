@@ -34,18 +34,18 @@ func (m *MockListMovieRepositoryInterface) EXPECT() *MockListMovieRepositoryInte
 	return m.recorder
 }
 
-// Create mocks base method.
-func (m *MockListMovieRepositoryInterface) Create(listMovies *[]entity.ListMovie) error {
+// CreateMany mocks base method.
+func (m *MockListMovieRepositoryInterface) CreateMany(listMovies *[]entity.ListMovie) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Create", listMovies)
+	ret := m.ctrl.Call(m, "CreateMany", listMovies)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// Create indicates an expected call of Create.
-func (mr *MockListMovieRepositoryInterfaceMockRecorder) Create(listMovies interface{}) *gomock.Call {
+// CreateMany indicates an expected call of CreateMany.
+func (mr *MockListMovieRepositoryInterfaceMockRecorder) CreateMany(listMovies interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockListMovieRepositoryInterface)(nil).Create), listMovies)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMany", reflect.TypeOf((*MockListMovieRepositoryInterface)(nil).CreateMany), listMovies)
 }
 
 // Deactivate mocks base method.
@@ -119,6 +119,22 @@ func (m *MockListMovieRepositoryInterface) GetByID(listMovieID string) (entity.L
 func (mr *MockListMovieRepositoryInterfaceMockRecorder) GetByID(listMovieID interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByID", reflect.TypeOf((*MockListMovieRepositoryInterface)(nil).GetByID), listMovieID)
+}
+
+// GetByListIDAndMovieIDAndChooserID mocks base method.
+func (m *MockListMovieRepositoryInterface) GetByListIDAndMovieIDAndChooserID(listID, movieID, chooserID string) (bool, entity.ListMovie, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetByListIDAndMovieIDAndChooserID", listID, movieID, chooserID)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(entity.ListMovie)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// GetByListIDAndMovieIDAndChooserID indicates an expected call of GetByListIDAndMovieIDAndChooserID.
+func (mr *MockListMovieRepositoryInterfaceMockRecorder) GetByListIDAndMovieIDAndChooserID(listID, movieID, chooserID interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByListIDAndMovieIDAndChooserID", reflect.TypeOf((*MockListMovieRepositoryInterface)(nil).GetByListIDAndMovieIDAndChooserID), listID, movieID, chooserID)
 }
 
 // Update mocks base method.

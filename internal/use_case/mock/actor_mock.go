@@ -62,6 +62,22 @@ func (mr *MockActorRepositoryInterfaceMockRecorder) Deactivate(actor interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockActorRepositoryInterface)(nil).Deactivate), actor)
 }
 
+// DoTheseActorsAreIncludedInTheMovie mocks base method.
+func (m *MockActorRepositoryInterface) DoTheseActorsAreIncludedInTheMovie(movieID string, actorsIDs []string) (bool, []entity.Actor, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DoTheseActorsAreIncludedInTheMovie", movieID, actorsIDs)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].([]entity.Actor)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// DoTheseActorsAreIncludedInTheMovie indicates an expected call of DoTheseActorsAreIncludedInTheMovie.
+func (mr *MockActorRepositoryInterfaceMockRecorder) DoTheseActorsAreIncludedInTheMovie(movieID, actorsIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DoTheseActorsAreIncludedInTheMovie", reflect.TypeOf((*MockActorRepositoryInterface)(nil).DoTheseActorsAreIncludedInTheMovie), movieID, actorsIDs)
+}
+
 // DoTheseActorsExist mocks base method.
 func (m *MockActorRepositoryInterface) DoTheseActorsExist(actorIDs []string) (bool, []entity.Actor, error) {
 	m.ctrl.T.Helper()

@@ -62,6 +62,22 @@ func (mr *MockGenreRepositoryInterfaceMockRecorder) Deactivate(genre interface{}
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Deactivate", reflect.TypeOf((*MockGenreRepositoryInterface)(nil).Deactivate), genre)
 }
 
+// DoTheseGenresAreIncludedInTheMovie mocks base method.
+func (m *MockGenreRepositoryInterface) DoTheseGenresAreIncludedInTheMovie(movieID string, genresIDs []string) (bool, []entity.Genre, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DoTheseGenresAreIncludedInTheMovie", movieID, genresIDs)
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].([]entity.Genre)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// DoTheseGenresAreIncludedInTheMovie indicates an expected call of DoTheseGenresAreIncludedInTheMovie.
+func (mr *MockGenreRepositoryInterfaceMockRecorder) DoTheseGenresAreIncludedInTheMovie(movieID, genresIDs interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DoTheseGenresAreIncludedInTheMovie", reflect.TypeOf((*MockGenreRepositoryInterface)(nil).DoTheseGenresAreIncludedInTheMovie), movieID, genresIDs)
+}
+
 // DoTheseGenresExist mocks base method.
 func (m *MockGenreRepositoryInterface) DoTheseGenresExist(genreIDs []string) (bool, []entity.Genre, error) {
 	m.ctrl.T.Helper()

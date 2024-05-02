@@ -3,6 +3,7 @@ package entity
 import (
 	"context"
 	"net/http"
+	"time"
 
 	"youchoose/internal/util"
 
@@ -27,16 +28,14 @@ func NewChooser(name string, login *valueobject.Login, address *valueobject.Addr
 		return nil, validationErrors
 	}
 
-	chooser := &Chooser{
+	return &Chooser{
 		SharedEntity: *NewSharedEntity(),
 		Name:         name,
 		Login:        login,
 		Address:      address,
 		BirthDate:    birthDate,
 		ImageID:      imageID,
-	}
-
-	return chooser, nil
+	}, nil
 }
 
 func ValidateChooser(name string, imageID string) []util.ProblemDetails {
@@ -44,30 +43,30 @@ func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nome do Chooser inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do Chooser não pode estar vazio.",
+			Detail:   util.ChooserErrorDetailEmptyName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nome do Chooser inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do Chooser não pode ter mais do que 100 caracteres.",
+			Detail:   util.ChooserErrorDetailMaxLengthName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if uuid.Validate(imageID) != nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "ID de imagem do Chooser inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidImageID,
 			Status:   http.StatusBadRequest,
-			Detail:   "O ID de imagem do Chooser não pode estar vazio.",
+			Detail:   util.ActorErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}
@@ -76,12 +75,14 @@ func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 }
 
 func (c *Chooser) ChangeLogin(ctx context.Context, newLogin *valueobject.Login) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Erro ao alterar o login do Chooser",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleErrorChangingLogin,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,
@@ -94,12 +95,14 @@ func (c *Chooser) ChangeLogin(ctx context.Context, newLogin *valueobject.Login) 
 }
 
 func (c *Chooser) ChangeAddress(ctx context.Context, newAddress *valueobject.Address) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Erro ao alterar o endereço do Chooser",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleErrorChangingAddress,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,
@@ -112,12 +115,14 @@ func (c *Chooser) ChangeAddress(ctx context.Context, newAddress *valueobject.Add
 }
 
 func (c *Chooser) ChangeBirthDate(ctx context.Context, newBirthDate *valueobject.BirthDate) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Erro ao alterar a data de aniversário do Chooser",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleErrorChangingBirthDate,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,
@@ -129,13 +134,15 @@ func (c *Chooser) ChangeBirthDate(ctx context.Context, newBirthDate *valueobject
 	return nil
 }
 
-func (c *Chooser) ChangeImageID(ctx context.Context, newImageID string) []util.ProblemDetails {
+func (c *Chooser) ChangeImage(ctx context.Context, newImageID string) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Erro ao alterar o ID de imagem do Chooser",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleErrorChangingImageID,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,
@@ -148,12 +155,14 @@ func (c *Chooser) ChangeImageID(ctx context.Context, newImageID string) []util.P
 }
 
 func (c *Chooser) ChangeName(ctx context.Context, newName string) []util.ProblemDetails {
+	c.UpdatedAt = time.Now()
+
 	select {
 	case <-ctx.Done():
 		var validationErrors []util.ProblemDetails
 		return append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Erro ao alterar o nome do Chooser",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleErrorChangingName,
 			Status:   http.StatusBadRequest,
 			Detail:   ctx.Err().Error(),
 			Instance: util.RFC400,

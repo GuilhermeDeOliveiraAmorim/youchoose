@@ -12,7 +12,7 @@ type Nationality struct {
 }
 
 func NewNationality(countryName, flag string) (*Nationality, []util.ProblemDetails) {
-	validationErrors := ValidateNationality(countryName)
+	validationErrors := ValidateNationality(countryName, flag)
 
 	if len(validationErrors) > 0 {
 		return nil, validationErrors
@@ -24,22 +24,37 @@ func NewNationality(countryName, flag string) (*Nationality, []util.ProblemDetai
 	}, nil
 }
 
-func ValidateNationality(country string) []util.ProblemDetails {
+func ValidateNationality(country, flag string) []util.ProblemDetails {
 	var validationErrors []util.ProblemDetails
+	countries := NewCountries()
+
+	if country == "" || flag == "" {
+		validationErrors = append(validationErrors, util.ProblemDetails{
+			Type:     util.TypeBadRequest,
+			Title:    util.NationalityErrorTitleCountryOrFlagEmpty,
+			Status:   http.StatusBadRequest,
+			Detail:   util.NationalityErrorDetailCountryOrFlagEmpty,
+			Instance: util.RFC400,
+		})
+	}
 
 	for _, c := range countries {
-		if c.Name == country {
+		if c.Name == country && c.Flag == flag {
 			return validationErrors
 		}
 	}
 
 	validationErrors = append(validationErrors, util.ProblemDetails{
-		Type:     "Validation Error",
-		Title:    "País inválido",
+		Type:     util.TypeValidationError,
+		Title:    util.NationalityErrorTitleCountryOrFlagEmpty,
 		Status:   http.StatusBadRequest,
-		Detail:   "Por favor, forneça um país válido.",
+		Detail:   util.NationalityErrorDetailCountryOrFlagEmpty,
 		Instance: util.RFC400,
 	})
 
 	return validationErrors
+}
+
+func (na *Nationality) Equals(other *Nationality) bool {
+	return na.CountryName == other.CountryName && na.Flag == other.Flag
 }

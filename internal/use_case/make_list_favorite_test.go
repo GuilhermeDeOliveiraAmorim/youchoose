@@ -46,6 +46,7 @@ func TestMakeListFavoriteUseCase_Execute(t *testing.T) {
 	mockListRepository.EXPECT().GetByID(list.ID).Return(true, *list, nil)
 	mockListFavoriteRepository.EXPECT().GetAllByListID(list.ID).Return(mockListsFavorites, nil)
 	mockListFavoriteRepository.EXPECT().Create(gomock.Any()).Return(nil)
+	mockListRepository.EXPECT().Update(gomock.Any()).Return(nil)
 
 	output, problemDetails := makeListFavoriteUseCase.Execute(input)
 

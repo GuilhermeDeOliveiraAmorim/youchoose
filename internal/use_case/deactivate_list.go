@@ -7,88 +7,61 @@ import (
 )
 
 type DeactivateListInputDTO struct {
-	ID string `json:"id"`
+	ChooserID string `json:"chooser_id"`
+	ListID    string `json:"list_id"`
 }
 
 type DeactivateListOutputDTO struct {
-	ID        string `json:"id"`
+	ListID    string `json:"list_id"`
 	Message   string `json:"message"`
 	IsSuccess bool   `json:"success"`
 }
 
 type DeactivateListUseCase struct {
-	ListRepository repositoryinterface.ListRepositoryInterface
+	ChooserRepository repositoryinterface.ChooserRepositoryInterface
+	ListRepository    repositoryinterface.ListRepositoryInterface
 }
 
 func NewDeactivateListUseCase(
+	ChooserRepository repositoryinterface.ChooserRepositoryInterface,
 	ListRepository repositoryinterface.ListRepositoryInterface,
 ) *DeactivateListUseCase {
 	return &DeactivateListUseCase{
-		ListRepository: ListRepository,
+		ChooserRepository: ChooserRepository,
+		ListRepository:    ListRepository,
 	}
 }
 
-func (cc *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (DeactivateListOutputDTO, util.ProblemDetailsOutputDTO) {
-	problemsDetails := []util.ProblemDetails{}
-
-	doesTheListExist, list, getListError := cc.ListRepository.GetByID(input.ID)
-	if getListError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao desativar lista de ID " + input.ID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getListError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getListError.Error(), "DeactivateListUseCase", "Use Cases", "Internal Server Error")
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheListExist {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Lista não encontrada",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhuma lista com o ID " + input.ID + " foi encontrada",
-			Instance: util.RFC404,
-		})
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !list.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Conflict",
-			Title:    "Lista já está desativada",
-			Status:   http.StatusConflict,
-			Detail:   "A lista com o ID " + input.ID + " já está desativada",
-			Instance: util.RFC409,
-		})
-
-		return DeactivateListOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
+func (dl *DeactivateListUseCase) Execute(input DeactivateListInputDTO) (DeactivateListOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(dl.ChooserRepository, input.ChooserID, "DeactivateListInputDTO")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return DeactivateListOutputDTO{}, chooserValidatorProblems
 	}
+
+	list, listValidatorProblems := listValidator(dl.ListRepository, input.ListID, "DeactivateListInputDTO")
+	if len(listValidatorProblems.ProblemDetails) > 0 {
+		return DeactivateListOutputDTO{}, listValidatorProblems
+	}
+
+	problemsDetails := []util.ProblemDetails{}
 
 	list.Deactivate()
 
-	listDeactivateError := cc.ListRepository.Deactivate(&list)
+	listDeactivateError := dl.ListRepository.Deactivate(&list)
 	if listDeactivateError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao desativar uma lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listDeactivateError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, listDeactivateError.Error(), "DeactivateListUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, listDeactivateError.Error(), "DeactivateListUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	output := DeactivateListOutputDTO{
-		ID:        list.ID,
+		ListID:    list.ID,
 		Message:   "Lista desativada com sucesso",
 		IsSuccess: true,
 	}

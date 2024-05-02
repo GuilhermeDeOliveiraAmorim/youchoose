@@ -48,7 +48,7 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 
 	name := "John Doe"
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
-	address := &valueobject.Address{City: "City", State: "State", Country: "Country"}
+	address := &valueobject.Address{City: "Aracaju", State: "SE", Country: "Brasil"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
 	imageID := uuid.New().String()
 
@@ -79,7 +79,7 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 		t.Errorf("Erro ao criar file2: %v", myError)
 	}
 
-	genre := usecase.Genre{
+	genre := usecase.GenreDTO{
 		Name:      "Comedy",
 		ImageFile: file1,
 		ImageHandler: &multipart.FileHeader{
@@ -88,13 +88,13 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 		},
 	}
 
-	director := usecase.Director{
+	director := usecase.DirectorDTO{
 		Name:        "Guilherme",
 		Day:         10,
 		Month:       10,
 		Year:        1990,
 		CountryName: "Brasil",
-		Flag:        "🇺🇸",
+		Flag:        "🇧🇷",
 		ImageFile:   file2,
 		ImageHandler: &multipart.FileHeader{
 			Filename: "cover.jpg",
@@ -102,13 +102,13 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 		},
 	}
 
-	actor := usecase.Actor{
+	actor := usecase.ActorDTO{
 		Name:        "Nayara",
 		Day:         10,
 		Month:       10,
 		Year:        1990,
 		CountryName: "Brasil",
-		Flag:        "🇺🇸",
+		Flag:        "🇧🇷",
 		ImageFile:   file3,
 		ImageHandler: &multipart.FileHeader{
 			Filename: "cover.jpg",
@@ -116,13 +116,13 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 		},
 	}
 
-	writer := usecase.Writer{
+	writer := usecase.WriterDTO{
 		Name:        "Helder",
 		Day:         10,
 		Month:       10,
 		Year:        1990,
 		CountryName: "Brasil",
-		Flag:        "🇺🇸",
+		Flag:        "🇧🇷",
 		ImageFile:   file4,
 		ImageHandler: &multipart.FileHeader{
 			Filename: "cover.jpg",
@@ -133,18 +133,18 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 	createMovieInput := usecase.CreateMovieInputDTO{
 		ChooserID:   uuid.NewString(),
 		Title:       "Test Movie",
-		CountryName: "Brazil",
-		Flag:        "🇺🇸",
+		CountryName: "Brasil",
+		Flag:        "🇧🇷",
 		ReleaseYear: 2023,
 		ImageFile:   file5,
 		ImageHandler: &multipart.FileHeader{
 			Filename: "cover.jpg",
 			Size:     150,
 		},
-		Genres:    []usecase.Genre{genre},
-		Directors: []usecase.Director{director},
-		Actors:    []usecase.Actor{actor},
-		Writers:   []usecase.Writer{writer},
+		Genres:    []usecase.GenreDTO{genre},
+		Directors: []usecase.DirectorDTO{director},
+		Actors:    []usecase.ActorDTO{actor},
+		Writers:   []usecase.WriterDTO{writer},
 	}
 
 	mockChooserRepo.EXPECT().GetByID(gomock.Any()).Return(true, *chooser, nil)
