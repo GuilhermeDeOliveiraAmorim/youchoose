@@ -10,7 +10,8 @@ import (
 )
 
 type UpdateListInputDTO struct {
-	ID                  string                `json:"id"`
+	ListID              string                `json:"list_id"`
+	ChooserID           string                `json:"chooser_id"`
 	Title               string                `json:"title"`
 	ProfileImageID      string                `json:"profile_image_id"`
 	ProfileImageFile    multipart.File        `json:"profile_image_file"`
@@ -20,7 +21,6 @@ type UpdateListInputDTO struct {
 	CoverImageHandler   *multipart.FileHeader `json:"cover_image_handler"`
 	Description         string                `json:"description"`
 	Movies              []string              `json:"movies"`
-	ChooserID           string                `json:"chooser_id"`
 }
 
 type UpdateListUseCase struct {
@@ -48,12 +48,12 @@ func NewUpdateListUseCase(
 }
 
 func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, util.ProblemDetailsOutputDTO) {
-	_, chooserValidatorProblems := chooserValidator(ul.ChooserRepository, input.ChooserID, "UpdateListUseCase")
+	chooser, chooserValidatorProblems := chooserValidator(ul.ChooserRepository, input.ChooserID, "UpdateListUseCase")
 	if len(chooserValidatorProblems.ProblemDetails) > 0 {
 		return ListOutputDTO{}, chooserValidatorProblems
 	}
 
-	list, listValidatorProblems := listValidator(ul.ListRepository, input.ID, "UpdateListUseCase")
+	list, listValidatorProblems := listValidator(ul.ListRepository, input.ListID, "UpdateListUseCase")
 	if len(listValidatorProblems.ProblemDetails) > 0 {
 		return ListOutputDTO{}, listValidatorProblems
 	}
@@ -110,7 +110,6 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 			Detail:   "A lista deve ter uma imagem de profile",
 			Instance: util.RFC400,
 		})
-
 	}
 
 	var imagesToAdd []entity.Image
@@ -156,7 +155,6 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 			Detail:   "A lista deve ter uma imagem de capa",
 			Instance: util.RFC400,
 		})
-
 	}
 
 	if input.CoverImageID == "" {
@@ -198,38 +196,63 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 	list.RemoveMovies(moviesToDelete)
 	list.AddMovies(moviesToAdd)
 
-	listMoviesToDeactivateError := ul.ListMovieRepository.DeactivateAll(&moviesToDelete)
-	if listMoviesToDeactivateError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao remover filmes da lista",
-			Status:   http.StatusInternalServerError,
-			Detail:   listMoviesToDeactivateError.Error(),
-			Instance: util.RFC503,
-		})
+	if len(moviesToDelete) > 0 {
+		listMoviesToDeactivateError := ul.ListMovieRepository.DeactivateAll(&moviesToDelete)
+		if listMoviesToDeactivateError != nil {
+			problemsDetails = append(problemsDetails, util.ProblemDetails{
+				Type:     util.TypeInternalServerError,
+				Title:    "Erro ao remover filmes da lista",
+				Status:   http.StatusInternalServerError,
+				Detail:   listMoviesToDeactivateError.Error(),
+				Instance: util.RFC503,
+			})
 
-		util.NewLoggerError(http.StatusInternalServerError, listMoviesToDeactivateError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
+			util.NewLoggerError(http.StatusInternalServerError, listMoviesToDeactivateError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
+		
+			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
+				ProblemDetails: problemsDetails,
+			}
+		}
 	}
 
 	var listMoviesToAdd []entity.ListMovie
 
-	for _, movieToAdd := range moviesToAdd {
-		newListMovie, newListMovieError := entity.NewListMovie(list.ID, movieToAdd.ID, input.ID)
-		if newListMovieError != nil {
+	if len(moviesToAdd) > 0 {
+		for _, movieToAdd := range moviesToAdd {
+			newListMovie, newListMovieError := entity.NewListMovie(list.ID, movieToAdd.ID, chooser.ID)
+			if newListMovieError != nil {
+				problemsDetails = append(problemsDetails, util.ProblemDetails{
+					Type:     util.TypeValidationError,
+					Title:    "Não foi possível adicioar o filme",
+					Status:   http.StatusBadRequest,
+					Detail:   "Não foi possível adicioar o filme de ID " + movieToAdd.ID + " à lista de ID " + list.ID,
+					Instance: util.RFC404,
+				})
+
+				return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
+					ProblemDetails: problemsDetails,
+				}
+			}
+
+			listMoviesToAdd = append(listMoviesToAdd, *newListMovie)
+		}
+
+		listMoviesToAddError := ul.ListMovieRepository.CreateMany(&listMoviesToAdd)
+		if listMoviesToAddError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     util.TypeValidationError,
-				Title:    "Um ou mais filmes não encontrados",
-				Status:   http.StatusBadRequest,
-				Detail:   "Não foi possível adicioar o filme de ID " + movieToAdd.ID + " à lista de ID " + list.ID,
-				Instance: util.RFC404,
+				Type:     util.TypeInternalServerError,
+				Title:    "Erro ao persistir filmes na lista",
+				Status:   http.StatusInternalServerError,
+				Detail:   listMoviesToAddError.Error(),
+				Instance: util.RFC503,
 			})
+
+			util.NewLoggerError(http.StatusInternalServerError, listMoviesToAddError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
-
-		listMoviesToAdd = append(listMoviesToAdd, *newListMovie)
 	}
 
 	if len(imagesToAdd) > 0 {
@@ -251,30 +274,21 @@ func (ul *UpdateListUseCase) Execute(input UpdateListInputDTO) (ListOutputDTO, u
 		}
 	}
 
-	listMoviesToAddError := ul.ListMovieRepository.Create(&listMoviesToAdd)
-	if listMoviesToAddError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao persistir filmes na lista",
-			Status:   http.StatusInternalServerError,
-			Detail:   listMoviesToAddError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, listMoviesToAddError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
-	}
-
 	listUpdatedError := ul.ListRepository.Update(&list)
 	if listUpdatedError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao persistir uma lista",
+			Title:    "Erro ao atualizar lista",
 			Status:   http.StatusInternalServerError,
 			Detail:   listUpdatedError.Error(),
 			Instance: util.RFC503,
 		})
 
 		util.NewLoggerError(http.StatusInternalServerError, listUpdatedError.Error(), "UpdateListUseCase", "Use Cases", util.TypeInternalServerError)
+
+		return ListOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
 	output := NewListOutputDTO(list)
