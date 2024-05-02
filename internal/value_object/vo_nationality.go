@@ -26,6 +26,7 @@ func NewNationality(countryName, flag string) (*Nationality, []util.ProblemDetai
 
 func ValidateNationality(country, flag string) []util.ProblemDetails {
 	var validationErrors []util.ProblemDetails
+	countries := NewCountries()
 
 	if country == "" || flag == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
