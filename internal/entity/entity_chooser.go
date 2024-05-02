@@ -134,7 +134,7 @@ func (c *Chooser) ChangeBirthDate(ctx context.Context, newBirthDate *valueobject
 	return nil
 }
 
-func (c *Chooser) ChangeImageID(ctx context.Context, newImageID string) []util.ProblemDetails {
+func (c *Chooser) ChangeImage(ctx context.Context, newImageID string) []util.ProblemDetails {
 	c.UpdatedAt = time.Now()
 
 	select {
