@@ -53,9 +53,9 @@ func TestChooserValidator_ChooserNotFound(t *testing.T) {
 		ProblemDetails: []util.ProblemDetails{
 			{
 				Type:     util.TypeNotFound,
-				Title:    "Chooser não encontrado",
+				Title:    "Não encontrado",
 				Status:   http.StatusNotFound,
-				Detail:   "Nenhum chooser com o ID " + chooserID + " foi encontrado",
+				Detail:   "Chooser não encontrado",
 				Instance: util.RFC404,
 			},
 		},
@@ -75,7 +75,7 @@ func TestChooserValidator_ChooserInactive(t *testing.T) {
 
 	name := "John Doe"
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
-	address := &valueobject.Address{City: "City", State: "State", Country: "Country"}
+	address := &valueobject.Address{City: "Aracaju", State: "SE", Country: "Brasil"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
 	imageID := uuid.New().String()
 
@@ -91,9 +91,9 @@ func TestChooserValidator_ChooserInactive(t *testing.T) {
 		ProblemDetails: []util.ProblemDetails{
 			{
 				Type:     util.TypeNotFound,
-				Title:    "Chooser não encontrado",
+				Title:    "Não encontrado",
 				Status:   http.StatusNotFound,
-				Detail:   "O chooser com o ID " + chooserID + " está desativado",
+				Detail:   "O chooser está desativado",
 				Instance: util.RFC404,
 			},
 		},
@@ -111,7 +111,7 @@ func TestChooserValidator_InternalServerError(t *testing.T) {
 	chooserID := "1"
 	useCaseName := "TestChooserValidator"
 
-	internalError := fmt.Errorf("Erro interno ao buscar chooser")
+	internalError := fmt.Errorf("Erro ao resgatar recurso")
 
 	mockChooserRepo.EXPECT().GetByID(chooserID).Return(false, entity.Chooser{}, internalError)
 
@@ -121,7 +121,7 @@ func TestChooserValidator_InternalServerError(t *testing.T) {
 		ProblemDetails: []util.ProblemDetails{
 			{
 				Type:     util.TypeInternalServerError,
-				Title:    "Erro ao resgatar chooser de ID " + chooserID,
+				Title:    "Erro ao resgatar recurso",
 				Status:   http.StatusInternalServerError,
 				Detail:   internalError.Error(),
 				Instance: util.RFC503,

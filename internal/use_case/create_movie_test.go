@@ -48,11 +48,13 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 
 	name := "John Doe"
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
-	address := &valueobject.Address{City: "City", State: "State", Country: "Country"}
+	address := &valueobject.Address{City: "Aracaju", State: "SE", Country: "Brasil"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
 	imageID := uuid.New().String()
 
-	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
+	chooser, chooserErr := entity.NewChooser(name, login, address, birthDate, imageID)
+
+	fmt.Println("5", chooserErr)
 
 	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
 	if myError != nil {
@@ -94,7 +96,7 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 		Month:       10,
 		Year:        1990,
 		CountryName: "Brasil",
-		Flag:        "🇺🇸",
+		Flag:        "🇧🇷",
 		ImageFile:   file2,
 		ImageHandler: &multipart.FileHeader{
 			Filename: "cover.jpg",
@@ -108,7 +110,7 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 		Month:       10,
 		Year:        1990,
 		CountryName: "Brasil",
-		Flag:        "🇺🇸",
+		Flag:        "🇧🇷",
 		ImageFile:   file3,
 		ImageHandler: &multipart.FileHeader{
 			Filename: "cover.jpg",
@@ -122,7 +124,7 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 		Month:       10,
 		Year:        1990,
 		CountryName: "Brasil",
-		Flag:        "🇺🇸",
+		Flag:        "🇧🇷",
 		ImageFile:   file4,
 		ImageHandler: &multipart.FileHeader{
 			Filename: "cover.jpg",
@@ -133,8 +135,8 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 	createMovieInput := usecase.CreateMovieInputDTO{
 		ChooserID:   uuid.NewString(),
 		Title:       "Test Movie",
-		CountryName: "Brazil",
-		Flag:        "🇺🇸",
+		CountryName: "Brasil",
+		Flag:        "🇧🇷",
 		ReleaseYear: 2023,
 		ImageFile:   file5,
 		ImageHandler: &multipart.FileHeader{
@@ -157,6 +159,8 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 	mockMovieRepo.EXPECT().Create(gomock.Any()).Return(nil)
 
 	output, problemDetails := createMovieUC.Execute(createMovieInput)
+
+	fmt.Println(output, problemDetails)
 
 	assert.Empty(t, problemDetails.ProblemDetails)
 	assert.NotNil(t, output)
