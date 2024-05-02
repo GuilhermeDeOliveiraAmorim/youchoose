@@ -31,30 +31,30 @@ func ValidateGenre(name, imageID string) []util.ProblemDetails {
 
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nome do gênero inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do gênero não pode estar vazio.",
+			Detail:   util.GenreErrorDetailEmptyName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nome do gênero inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do gênero não pode ter mais do que 100 caracteres.",
+			Detail:   util.GenreErrorDetailMaxLengthName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "ID de imagem do gênero inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidImageID,
 			Status:   http.StatusBadRequest,
-			Detail:   "O ID de imagem do gênero não pode estar vazio.",
+			Detail:   util.GenreErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}

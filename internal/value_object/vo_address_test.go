@@ -38,7 +38,7 @@ func TestNewAddress_InvalidCity_ReturnsValidationError(t *testing.T) {
 		t.Error("Expected nil address, but got an address instance")
 	}
 
-	expectedErrorMsg := "A cidade não pode estar vazia."
+	expectedErrorMsg := "A cidade não pode estar vazia"
 	if len(err) != 1 || err[0].Detail != expectedErrorMsg {
 		t.Errorf("Expected validation error with detail '%s', but got: %v", expectedErrorMsg, err)
 	}
@@ -57,7 +57,7 @@ func TestNewAddress_InvalidState_ReturnsValidationError(t *testing.T) {
 		t.Error("Expected nil address, but got an address instance")
 	}
 
-	expectedErrorMsg := "O estado não pode estar vazio."
+	expectedErrorMsg := "O estado não pode estar vazio"
 	if len(err) != 1 || err[0].Detail != expectedErrorMsg {
 		t.Errorf("Expected validation error with detail '%s', but got: %v", expectedErrorMsg, err)
 	}
@@ -76,7 +76,7 @@ func TestNewAddress_InvalidCountry_ReturnsValidationError(t *testing.T) {
 		t.Error("Expected nil address, but got an address instance")
 	}
 
-	expectedErrorMsg := "Por favor, forneça um país válido."
+	expectedErrorMsg := "Por favor, forneça um país válido"
 	if len(err) != 1 || err[0].Detail != expectedErrorMsg {
 		t.Errorf("Expected validation error with detail '%s', but got: %v", expectedErrorMsg, err)
 	}

@@ -1,17 +1,13 @@
 package entity
 
 import (
-	"fmt"
 	"testing"
 
 	valueobject "youchoose/internal/value_object"
 )
 
 func TestNewMovie(t *testing.T) {
-	nationality, err := valueobject.NewNationality("United States", "🇺🇸")
-	if err != nil {
-		fmt.Println(err)
-	}
+	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
 	movie, err := NewMovie("Inception", *nationality, 2010, "image123")
 	if err != nil {
@@ -40,20 +36,11 @@ func TestMovie_AddActors(t *testing.T) {
 }
 
 func TestMovie_RemoveDirectors(t *testing.T) {
-	birthDate, err := valueobject.NewBirthDate(15, 5, 2010)
-	if err != nil {
-		fmt.Println(err)
-	}
+	birthDate, _ := valueobject.NewBirthDate(15, 5, 2010)
 
-	nationality, err := valueobject.NewNationality("United States", "🇺🇸")
-	if err != nil {
-		fmt.Println(err)
-	}
+	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	nolan, err := NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
-	if err != nil {
-		fmt.Println(err)
-	}
+	nolan, _ := NewDirector("Christopher Nolan", birthDate, nationality, "nolan_image")
 
 	movie, _ := NewMovie("Inception", *nationality, 2010, "image123")
 

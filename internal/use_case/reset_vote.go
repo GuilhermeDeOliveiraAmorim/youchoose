@@ -33,55 +33,31 @@ func NewResetVoteUseCase(
 }
 
 func (rv *ResetVoteUseCase) Execute(input ResetVoteInputDTO) (ResetVoteOutputDTO, util.ProblemDetailsOutputDTO) {
-	problemsDetails := []util.ProblemDetails{}
-
-	doesTheChooserExist, chooser, getChooserError := rv.ChooserRepository.GetByID(input.ChooserID)
-	if getChooserError != nil {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
-			Title:    "Erro ao resgatar chooser de ID " + input.ChooserID,
-			Status:   http.StatusInternalServerError,
-			Detail:   getChooserError.Error(),
-			Instance: util.RFC503,
-		})
-
-		util.NewLoggerError(http.StatusInternalServerError, getChooserError.Error(), "RegisterVoteUseCase", "Use Cases", "Internal Server Error")
-
-		return ResetVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
-	} else if !doesTheChooserExist || !chooser.Active {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
-			Title:    "Chooser não encontrado",
-			Status:   http.StatusNotFound,
-			Detail:   "Nenhum chooser com o ID " + input.ChooserID + " foi encontrado",
-			Instance: util.RFC404,
-		})
-
-		return ResetVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
-		}
+	_, chooserValidatorProblems := chooserValidator(rv.ChooserRepository, input.ChooserID, "ResetVoteUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return ResetVoteOutputDTO{}, chooserValidatorProblems
 	}
+
+	problemsDetails := []util.ProblemDetails{}
 
 	doesTheVotationExist, votation, getVotationError := rv.VotationRepository.GetByID(input.VotationID)
 	if getVotationError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar voto de ID " + input.VotationID,
 			Status:   http.StatusInternalServerError,
 			Detail:   getVotationError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, getVotationError.Error(), "GetVotationUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, getVotationError.Error(), "GetVotationUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ResetVoteOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if !doesTheVotationExist {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Voto não encontrado",
 			Status:   http.StatusNotFound,
 			Detail:   "Nenhum voto com o ID " + input.VotationID + " foi encontrado",
@@ -98,14 +74,14 @@ func (rv *ResetVoteUseCase) Execute(input ResetVoteInputDTO) (ResetVoteOutputDTO
 	votationUpdatedError := rv.VotationRepository.Update(&votation)
 	if votationUpdatedError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao cancelar um voto",
 			Status:   http.StatusInternalServerError,
 			Detail:   votationUpdatedError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, votationUpdatedError.Error(), "UpdateChooserUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, votationUpdatedError.Error(), "UpdateChooserUseCase", "Use Cases", util.TypeInternalServerError)
 	}
 
 	output := ResetVoteOutputDTO{

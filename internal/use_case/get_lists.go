@@ -6,16 +6,8 @@ import (
 	"youchoose/internal/util"
 )
 
-type GetListsInputDTO struct{}
-
-type ListOutputDTO struct {
-	ID             string `json:"id"`
-	Title          string `json:"title"`
-	Description    string `json:"description"`
-	ChooserID      string `json:"chooser_id"`
-	ProfileImageID string `json:"profile_image_id"`
-	CoverImageID   string `json:"cover_image_id"`
-	Votes          int    `json:"votes"`
+type GetListsInputDTO struct {
+	ChooserID string `json:"chooser_id"`
 }
 
 type GetListsOutputDTO struct {
@@ -23,38 +15,46 @@ type GetListsOutputDTO struct {
 }
 
 type GetListsUseCase struct {
-	ListRepository repositoryinterface.ListRepositoryInterface
+	ChooserRepository repositoryinterface.ChooserRepositoryInterface
+	ListRepository    repositoryinterface.ListRepositoryInterface
 }
 
 func NewGetListsUseCase(
+	ChooserRepository repositoryinterface.ChooserRepositoryInterface,
 	ListRepository repositoryinterface.ListRepositoryInterface,
 ) *GetListsUseCase {
 	return &GetListsUseCase{
-		ListRepository: ListRepository,
+		ChooserRepository: ChooserRepository,
+		ListRepository:    ListRepository,
 	}
 }
 
 func (gl *GetListsUseCase) Execute(input GetListsInputDTO) (GetListsOutputDTO, util.ProblemDetailsOutputDTO) {
+	_, chooserValidatorProblems := chooserValidator(gl.ChooserRepository, input.ChooserID, "GetListsUseCase")
+	if len(chooserValidatorProblems.ProblemDetails) > 0 {
+		return GetListsOutputDTO{}, chooserValidatorProblems
+	}
+
 	problemsDetails := []util.ProblemDetails{}
 
 	allLists, allListsError := gl.ListRepository.GetAll()
 	if allListsError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Internal Server Error",
+			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao resgatar todas as listas",
 			Status:   http.StatusInternalServerError,
 			Detail:   allListsError.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, allListsError.Error(), "GetListsUseCase", "Use Cases", "Internal Server Error")
+		util.NewLoggerError(http.StatusInternalServerError, allListsError.Error(), "GetListsUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return GetListsOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	} else if len(allLists) == 0 {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     "Not Found",
+			Type:     util.TypeNotFound,
 			Title:    "Listas não encontradas",
 			Status:   http.StatusNotFound,
 			Detail:   "Nenhuma lista foi encontrada",
@@ -69,15 +69,9 @@ func (gl *GetListsUseCase) Execute(input GetListsInputDTO) (GetListsOutputDTO, u
 	allGetListsOutputDTO := []ListOutputDTO{}
 
 	for _, list := range allLists {
-		allGetListsOutputDTO = append(allGetListsOutputDTO, ListOutputDTO{
-			ID:             list.ID,
-			Title:          list.Title,
-			Description:    list.Description,
-			ChooserID:      list.ChooserID,
-			ProfileImageID: list.ProfileImageID,
-			CoverImageID:   list.CoverImageID,
-			Votes:          list.Votes,
-		})
+		outputList := NewListOutputDTO(list)
+
+		allGetListsOutputDTO = append(allGetListsOutputDTO, outputList)
 	}
 
 	output := GetListsOutputDTO{

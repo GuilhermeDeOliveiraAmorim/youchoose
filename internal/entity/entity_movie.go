@@ -2,6 +2,7 @@ package entity
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"youchoose/internal/util"
@@ -44,10 +45,32 @@ func ValidateMovie(title string, nationality valueobject.Nationality, releaseYea
 
 	if title == "" || len(title) > 255 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Título do filme inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
 			Detail:   "O título do filme não pode estar vazio e deve ter no máximo 255 caracteres.",
+			Instance: util.RFC400,
+		})
+	}
+
+	yearNow := time.Now().Year()
+
+	if releaseYear < 1800 || releaseYear > yearNow {
+		validationErrors = append(validationErrors, util.ProblemDetails{
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidYear,
+			Status:   http.StatusBadRequest,
+			Detail:   util.MovieErrorDetailInvalidYear + strconv.Itoa(yearNow),
+			Instance: util.RFC400,
+		})
+	}
+
+	if imageID == "" {
+		validationErrors = append(validationErrors, util.ProblemDetails{
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidImageID,
+			Status:   http.StatusBadRequest,
+			Detail:   util.MovieErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}
@@ -170,4 +193,24 @@ func (m *Movie) RemoveGenres(genresToRemove []Genre) {
 		m.UpdatedAt = time.Now()
 		m.Genres = updatedGenres
 	}
+}
+
+func (m *Movie) ChangeNationality(nationality valueobject.Nationality) {
+	m.UpdatedAt = time.Now()
+	m.Nationality = nationality
+}
+
+func (m *Movie) ChangeReleaseYear(releaseYear int) {
+	m.UpdatedAt = time.Now()
+	m.ReleaseYear = releaseYear
+}
+
+func (m *Movie) ChangeImage(imageID string) {
+	m.UpdatedAt = time.Now()
+	m.ImageID = imageID
+}
+
+func (m *Movie) ChangeTitle(title string) {
+	m.UpdatedAt = time.Now()
+	m.Title = title
 }

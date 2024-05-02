@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRegisterVoteUseCase_Success(t *testing.T) {
+func TestRegisterMovieVoteUseCase_Success(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -21,7 +21,7 @@ func TestRegisterVoteUseCase_Success(t *testing.T) {
 	mockVotationRepo := mock.NewMockVotationRepositoryInterface(ctrl)
 	mockMovieRepo := mock.NewMockMovieRepositoryInterface(ctrl)
 
-	registerVoteUC := NewRegisterVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
+	registerVoteUC := NewRegisterMovieVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
 
 	name := "John Doe"
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
@@ -52,7 +52,7 @@ func TestRegisterVoteUseCase_Success(t *testing.T) {
 	movies = append(movies, *movie_2)
 	movies = append(movies, *movie_3)
 
-	input := RegisterVoteInputDTO{
+	input := RegisterMovieVoteInputDTO{
 		ChooserID:     chooser.ID,
 		ListID:        list.ID,
 		FirstMovieID:  movie_1.ID,
@@ -73,7 +73,7 @@ func TestRegisterVoteUseCase_Success(t *testing.T) {
 	assert.NotEmpty(t, output)
 }
 
-func TestRegisterVoteUseCase_ChooserNotFound(t *testing.T) {
+func TestRegisterMovieVoteUseCase_ChooserNotFound(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -82,17 +82,17 @@ func TestRegisterVoteUseCase_ChooserNotFound(t *testing.T) {
 	mockVotationRepo := mock.NewMockVotationRepositoryInterface(ctrl)
 	mockMovieRepo := mock.NewMockMovieRepositoryInterface(ctrl)
 
-	registerVoteUC := NewRegisterVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
+	registerVoteUC := NewRegisterMovieVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
 
-	input := RegisterVoteInputDTO{
+	mockChooserRepo.EXPECT().GetByID(gomock.Any()).Return(false, entity.Chooser{}, nil)
+
+	input := RegisterMovieVoteInputDTO{
 		ChooserID:     "non_existing_chooser_id",
 		ListID:        "list_id",
 		FirstMovieID:  "first_movie_id",
 		SecondMovieID: "second_movie_id",
 		ChosenMovieID: "chosen_movie_id",
 	}
-
-	mockChooserRepo.EXPECT().GetByID(input.ChooserID).Return(false, entity.Chooser{}, nil)
 
 	output, problemDetails := registerVoteUC.Execute(input)
 
@@ -101,7 +101,7 @@ func TestRegisterVoteUseCase_ChooserNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, problemDetails.ProblemDetails[0].Status)
 }
 
-func TestRegisterVoteUseCase_ListNotFound(t *testing.T) {
+func TestRegisterMovieVoteUseCase_ListNotFound(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -110,7 +110,7 @@ func TestRegisterVoteUseCase_ListNotFound(t *testing.T) {
 	mockVotationRepo := mock.NewMockVotationRepositoryInterface(ctrl)
 	mockMovieRepo := mock.NewMockMovieRepositoryInterface(ctrl)
 
-	registerVoteUC := NewRegisterVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
+	registerVoteUC := NewRegisterMovieVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
 
 	name := "John Doe"
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
@@ -128,7 +128,7 @@ func TestRegisterVoteUseCase_ListNotFound(t *testing.T) {
 
 	list.AddMovies([]entity.Movie{*movie1})
 
-	input := RegisterVoteInputDTO{
+	input := RegisterMovieVoteInputDTO{
 		ChooserID:     chooser.ID,
 		ListID:        list.ID,
 		FirstMovieID:  uuid.New().String(),
@@ -146,7 +146,7 @@ func TestRegisterVoteUseCase_ListNotFound(t *testing.T) {
 	assert.Equal(t, http.StatusNotFound, problemDetails.ProblemDetails[0].Status)
 }
 
-func TestRegisterVoteUseCase_VotationAlreadyExists(t *testing.T) {
+func TestRegisterMovieVoteUseCase_VotationAlreadyExists(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -155,7 +155,7 @@ func TestRegisterVoteUseCase_VotationAlreadyExists(t *testing.T) {
 	mockVotationRepo := mock.NewMockVotationRepositoryInterface(ctrl)
 	mockMovieRepo := mock.NewMockMovieRepositoryInterface(ctrl)
 
-	registerVoteUC := NewRegisterVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
+	registerVoteUC := NewRegisterMovieVoteUseCase(mockChooserRepo, mockListRepo, mockVotationRepo, mockMovieRepo)
 
 	name := "John Doe"
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
@@ -186,7 +186,7 @@ func TestRegisterVoteUseCase_VotationAlreadyExists(t *testing.T) {
 	movies = append(movies, *movie_2)
 	movies = append(movies, *movie_3)
 
-	input := RegisterVoteInputDTO{
+	input := RegisterMovieVoteInputDTO{
 		ChooserID:     chooser.ID,
 		ListID:        list.ID,
 		FirstMovieID:  movie_1.ID,

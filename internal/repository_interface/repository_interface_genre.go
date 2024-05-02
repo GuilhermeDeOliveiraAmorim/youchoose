@@ -10,4 +10,5 @@ type GenreRepositoryInterface interface {
 	GetAllByMovieID(movieID string) ([]entity.Genre, error)
 	Deactivate(genre *entity.Genre) error
 	DoTheseGenresExist(genreIDs []string) (bool, []entity.Genre, error)
+	DoTheseGenresAreIncludedInTheMovie(movieID string, genresIDs []string) (bool, []entity.Genre, error)
 }

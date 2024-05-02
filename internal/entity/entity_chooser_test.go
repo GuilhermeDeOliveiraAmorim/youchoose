@@ -48,7 +48,7 @@ func TestChangeImageID(t *testing.T) {
 	newImageID := "a8eeacd9-3e0d-43a5-8422-dda0c6b46aa6"
 	chooser := &Chooser{ImageID: oldImageID}
 
-	err := chooser.ChangeImageID(context.Background(), newImageID)
+	err := chooser.ChangeImage(context.Background(), newImageID)
 
 	if err != nil {
 		t.Errorf("Unexpected error changing image id: %v", err)

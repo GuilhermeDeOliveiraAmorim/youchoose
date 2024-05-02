@@ -9,4 +9,5 @@ type DirectorRepositoryInterface interface {
 	GetAll() ([]entity.Director, error)
 	Deactivate(director *entity.Director) error
 	DoTheseDirectorsExist(directorIDs []string) (bool, []entity.Director, error)
+	DoTheseDirectorsAreIncludedInTheMovie(movieID string, directorsIDs []string) (bool, []entity.Director, error)
 }

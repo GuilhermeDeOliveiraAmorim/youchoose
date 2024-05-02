@@ -9,4 +9,5 @@ type ActorRepositoryInterface interface {
 	GetAll() ([]entity.Actor, error)
 	Deactivate(actor *entity.Actor) error
 	DoTheseActorsExist(actorIDs []string) (bool, []entity.Actor, error)
+	DoTheseActorsAreIncludedInTheMovie(movieID string, actorsIDs []string) (bool, []entity.Actor, error)
 }

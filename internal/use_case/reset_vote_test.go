@@ -13,29 +13,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestResetVoteUseCase_ChooserNotFound(t *testing.T) {
-	ctrl := gomock.NewController(t)
-	defer ctrl.Finish()
-
-	mockChooserRepo := mock.NewMockChooserRepositoryInterface(ctrl)
-	mockVotationRepo := mock.NewMockVotationRepositoryInterface(ctrl)
-
-	resetVoteUC := NewResetVoteUseCase(mockChooserRepo, mockVotationRepo)
-
-	input := ResetVoteInputDTO{
-		ChooserID:  "non_existing_chooser_id",
-		VotationID: "votation_id",
-	}
-
-	mockChooserRepo.EXPECT().GetByID(input.ChooserID).Return(false, entity.Chooser{}, nil)
-
-	output, problemDetails := resetVoteUC.Execute(input)
-
-	assert.Empty(t, output.ID)
-	assert.Equal(t, "Chooser não encontrado", problemDetails.ProblemDetails[0].Title)
-	assert.Equal(t, http.StatusNotFound, problemDetails.ProblemDetails[0].Status)
-}
-
 func TestResetVoteUseCase_VotationNotFound(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()

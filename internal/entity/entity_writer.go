@@ -39,50 +39,50 @@ func ValidateWriter(name string, birthDate *valueobject.BirthDate, nationality *
 
 	if name == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nome do(a) escritor(a) inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do(a) escritor(a) não pode estar vazio.",
+			Detail:   util.WriterErrorDetailEmptyName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if len(name) > 100 {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nome do(a) escritor(a) inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
-			Detail:   "O nome do(a) escritor(a) não pode ter mais do que 100 caracteres.",
+			Detail:   util.WriterErrorDetailMaxLengthName,
 			Instance: util.RFC400,
 		})
 	}
 
 	if birthDate == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Data de nascimento do(a) escritor(a) inválida",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidBirthDate,
 			Status:   http.StatusBadRequest,
-			Detail:   "A data de nascimento do(a) escritor(a) não pode ser nula.",
+			Detail:   util.WriterErrorDetailNotNullBirthDate,
 			Instance: util.RFC400,
 		})
 	}
 
 	if nationality == nil {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "Nacionalidade do(a) escritor(a) inválida",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidNationality,
 			Status:   http.StatusBadRequest,
-			Detail:   "A nacionalidade do(a) escritor(a) não pode ser nula.",
+			Detail:   util.WriterErrorDetailNotNullNationality,
 			Instance: util.RFC400,
 		})
 	}
 
 	if imageID == "" {
 		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     "Validation Error",
-			Title:    "ID de imagem do(a) escritor(a) inválido",
+			Type:     util.TypeValidationError,
+			Title:    util.SharedErrorTitleInvalidImageID,
 			Status:   http.StatusBadRequest,
-			Detail:   "O ID de imagem do(a) escritor(a) não pode estar vazio.",
+			Detail:   util.WriterErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}
