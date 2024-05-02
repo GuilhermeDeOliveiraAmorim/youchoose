@@ -54,3 +54,7 @@ func ValidateNationality(country, flag string) []util.ProblemDetails {
 
 	return validationErrors
 }
+
+func (na *Nationality) Equals(other *Nationality) bool {
+	return na.CountryName == other.CountryName && na.Flag == other.Flag
+}
