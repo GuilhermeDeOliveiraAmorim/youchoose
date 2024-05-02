@@ -40,6 +40,34 @@ type UpdateMovieUseCase struct {
 	WriterRepository        repositoryinterface.WriterRepositoryInterface
 }
 
+func NewUpdateMovieUseCase(
+	ActorRepository repositoryinterface.ActorRepositoryInterface,
+	ChooserRepository repositoryinterface.ChooserRepositoryInterface,
+	DirectorRepository repositoryinterface.DirectorRepositoryInterface,
+	GenreRepository repositoryinterface.GenreRepositoryInterface,
+	ImageRepository repositoryinterface.ImageRepositoryInterface,
+	MovieActorRepository repositoryinterface.MovieActorRepositoryInterface,
+	MovieDirectorRepository repositoryinterface.MovieDirectorRepositoryInterface,
+	MovieGenreRepository repositoryinterface.MovieGenreRepositoryInterface,
+	MovieRepository repositoryinterface.MovieRepositoryInterface,
+	MovieWriterRepository repositoryinterface.MovieWriterRepositoryInterface,
+	WriterRepository repositoryinterface.WriterRepositoryInterface,
+) *UpdateMovieUseCase {
+	return &UpdateMovieUseCase{
+		ActorRepository:         ActorRepository,
+		ChooserRepository:       ChooserRepository,
+		DirectorRepository:      DirectorRepository,
+		GenreRepository:         GenreRepository,
+		ImageRepository:         ImageRepository,
+		MovieActorRepository:    MovieActorRepository,
+		MovieDirectorRepository: MovieDirectorRepository,
+		MovieGenreRepository:    MovieGenreRepository,
+		MovieRepository:         MovieRepository,
+		MovieWriterRepository:   MovieWriterRepository,
+		WriterRepository:        WriterRepository,
+	}
+}
+
 func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO, util.ProblemDetailsOutputDTO) {
 	_, chooserValidatorProblems := chooserValidator(up.ChooserRepository, input.ChooserID, "UpdateMovieUseCase")
 	if len(chooserValidatorProblems.ProblemDetails) > 0 {
