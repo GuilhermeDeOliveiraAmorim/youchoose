@@ -205,7 +205,7 @@ func (m *Movie) ChangeReleaseYear(releaseYear int) {
 	m.ReleaseYear = releaseYear
 }
 
-func (m *Movie) ChangeImageID(imageID string) {
+func (m *Movie) ChangeImage(imageID string) {
 	m.UpdatedAt = time.Now()
 	m.ImageID = imageID
 }
