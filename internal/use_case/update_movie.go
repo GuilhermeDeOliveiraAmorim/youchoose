@@ -115,17 +115,16 @@ func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
-	var movieImageID = input.ImageID
 	var imagesToAdd []entity.Image
 
 	if input.ImageID == "" {
-		_, movieImageName, movieImageExtension, movieImageSize, profileImageError := service.MoveFile(input.ImageFile, input.ImageHandler)
-		if profileImageError != nil {
+		_, newMovieImageProblemName, newMovieImageProblemExtension, newMovieImageProblemSize, newMovieImageProblemError := service.MoveFile(input.ImageFile, input.ImageHandler)
+		if newMovieImageProblemError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     util.TypeInternalServerError,
 				Title:    "Erro ao mover a imagem do filme",
 				Status:   http.StatusInternalServerError,
-				Detail:   profileImageError.Error(),
+				Detail:   newMovieImageProblemError.Error(),
 				Instance: util.RFC503,
 			})
 
@@ -136,20 +135,19 @@ func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO
 			}
 		}
 
-		movieImage, movieImageProblem := entity.NewImage(movieImageName, movieImageExtension, movieImageSize)
-		if len(movieImageProblem) > 0 {
+		newMovieImage, newMovieImageProblem := entity.NewImage(newMovieImageProblemName, newMovieImageProblemExtension, newMovieImageProblemSize)
+		if len(newMovieImageProblem) > 0 {
 			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-				ProblemDetails: movieImageProblem,
+				ProblemDetails: newMovieImageProblem,
 			}
 		}
 
-		movieImageID = movieImage.ID
-		movie.ChangeImageID(movieImageID)
+		movie.ChangeImage(newMovieImage.ID)
 
-		imagesToAdd = append(imagesToAdd, *movieImage)
+		imagesToAdd = append(imagesToAdd, *newMovieImage)
 	}
 
-	validateMovieProblems := entity.ValidateMovie(input.Title, *nationality, input.ReleaseYear, movieImageID)
+	validateMovieProblems := entity.ValidateMovie(input.Title, *nationality, input.ReleaseYear, movie.ImageID)
 	if len(validateMovieProblems) > 0 {
 		problemsDetails = append(problemsDetails, validateMovieProblems...)
 
@@ -158,8 +156,13 @@ func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
-	movie.ChangeTitle(input.Title)
-	movie.ChangeNationality(*nationality)
+	if input.Title != movie.Title {
+		movie.ChangeTitle(input.Title)
+	}
+
+	if !movie.Nationality.Equals(nationality) {
+		movie.ChangeNationality(*nationality)
+	}
 
 	var genresToCheck []string
 	var genresToAdd []GenreDTO
@@ -169,6 +172,20 @@ func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO
 			genresToAdd = append(genresToAdd, genre)
 		} else {
 			genresToCheck = append(genresToCheck, genre.GenreID)
+		}
+	}
+
+	if len(movie.Genres) != len(genresToCheck) {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeBadRequest,
+			Title:    "Gêneros não informados",
+			Status:   http.StatusBadRequest,
+			Detail:   "O filme deve ter todos os gêneros informados",
+			Instance: util.RFC400,
+		})
+
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
 		}
 	}
 
@@ -249,6 +266,20 @@ func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO
 			directorsToAdd = append(directorsToAdd, director)
 		} else {
 			directorsToCheck = append(directorsToCheck, director.DirectorID)
+		}
+	}
+
+	if len(movie.Directors) != len(directorsToCheck) {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeBadRequest,
+			Title:    "Diretores não informados",
+			Status:   http.StatusBadRequest,
+			Detail:   "O filme deve ter todos(as) os(as) diretores(as) informados",
+			Instance: util.RFC400,
+		})
+
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
 		}
 	}
 
@@ -338,6 +369,20 @@ func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
+	if len(movie.Actors) != len(actorsToCheck) {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeBadRequest,
+			Title:    "Atores não informados",
+			Status:   http.StatusBadRequest,
+			Detail:   "O filme deve ter todos(as) os(as) atores(atrizes) informados(as)",
+			Instance: util.RFC400,
+		})
+
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
 	if len(actorsToCheck) > 0 {
 		doTheseActorsAreIncludedInTheMovie, _, doTheseActorsAreIncludedInTheMovieError := up.ActorRepository.DoTheseActorsAreIncludedInTheMovie(movie.ID, actorsToCheck)
 		if doTheseActorsAreIncludedInTheMovieError != nil {
@@ -421,6 +466,20 @@ func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO
 			writersToAdd = append(writersToAdd, writer)
 		} else {
 			writersToCheck = append(writersToCheck, writer.WriterID)
+		}
+	}
+
+	if len(movie.Writers) != len(writersToCheck) {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeBadRequest,
+			Title:    "Escritores não informados",
+			Status:   http.StatusBadRequest,
+			Detail:   "O filme deve ter todos(as) os(as) escritores(escritoras) informados(as)",
+			Instance: util.RFC400,
+		})
+
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
 		}
 	}
 
