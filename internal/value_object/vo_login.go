@@ -1,8 +1,8 @@
 package valueobject
 
 import (
-	"context"
 	"crypto/rand"
+	"encoding/hex"
 	"net/http"
 	"regexp"
 	"strings"
@@ -15,8 +15,8 @@ import (
 type Login struct {
 	Email     string `json:"email"`
 	Password  string `json:"password"`
-	EmailSalt []byte
-	PassSalt  []byte
+	EmailSalt string
+	PasswordSalt  string
 }
 
 func NewLogin(email, password string) (*Login, []util.ProblemDetails) {
@@ -30,11 +30,11 @@ func NewLogin(email, password string) (*Login, []util.ProblemDetails) {
 		Email:     email,
 		Password:  password,
 		EmailSalt: emailSalt,
-		PassSalt:  passSalt,
+		PasswordSalt:  passSalt,
 	}, nil
 }
 
-func ValidateLogin(email, password string) ([]util.ProblemDetails, []byte, []byte) {
+func ValidateLogin(email, password string) ([]util.ProblemDetails, string, string) {
 	var validationErrors []util.ProblemDetails
 
 	if !isValidEmail(email) {
@@ -117,118 +117,73 @@ func hasSpecialCharacter(password string) bool {
 	return strings.ContainsAny(password, specialCharacters)
 }
 
-func (l *Login) EncryptEmail(ctx context.Context) ([]byte, []util.ProblemDetails) {
-	select {
-	case <-ctx.Done():
-		var validationErrors []util.ProblemDetails
-		return nil, append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleEncryptEmail,
-			Status:   http.StatusBadRequest,
-			Detail:   ctx.Err().Error(),
-			Instance: util.RFC400,
-		})
-	default:
-	}
-
-	return hashPassword(ctx, l.Email, l.EmailSalt)
-}
-
-func (l *Login) EncryptPassword(ctx context.Context) ([]byte, []util.ProblemDetails) {
-	select {
-	case <-ctx.Done():
-		var validationErrors []util.ProblemDetails
-		return nil, append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleEncryptPassword,
-			Status:   http.StatusBadRequest,
-			Detail:   ctx.Err().Error(),
-			Instance: util.RFC400,
-		})
-	default:
-	}
-
-	return hashPassword(ctx, l.Password, l.PassSalt)
-}
-
-func (l *Login) DecryptEmail(ctx context.Context, encryptedEmail []byte) (string, context.Context, []util.ProblemDetails) {
-	select {
-	case <-ctx.Done():
-		var validationErrors []util.ProblemDetails
-		return "", ctx, append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleDecryptEmail,
-			Status:   http.StatusBadRequest,
-			Detail:   ctx.Err().Error(),
-			Instance: util.RFC400,
-		})
-	default:
-	}
-
-	return compareAndDecrypt(ctx, l.Email, encryptedEmail, l.EmailSalt)
-}
-
-func (l *Login) DecryptPassword(ctx context.Context, encryptedPassword []byte) (string, context.Context, []util.ProblemDetails) {
-	select {
-	case <-ctx.Done():
-		var validationErrors []util.ProblemDetails
-		return "", ctx, append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleDecryptPassword,
-			Status:   http.StatusBadRequest,
-			Detail:   ctx.Err().Error(),
-			Instance: util.RFC400,
-		})
-	default:
-	}
-
-	return compareAndDecrypt(ctx, l.Password, encryptedPassword, l.PassSalt)
-}
-
-func generateSalt() ([]byte, []util.ProblemDetails) {
-	var validationErrors []util.ProblemDetails
+func generateSalt() (string, error) {
 	salt := make([]byte, 16)
 	_, err := rand.Read(salt)
 	if err != nil {
-		return nil, append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleSaltGeneration,
-			Status:   http.StatusBadRequest,
-			Detail:   util.LoginErrorDetailSaltGeneration,
-			Instance: util.RFC400,
-		})
+		return "", err
 	}
-	return salt, nil
+	return hex.EncodeToString(salt), nil
 }
 
-func hashPassword(_ context.Context, input string, salt []byte) ([]byte, []util.ProblemDetails) {
-	var validationErrors []util.ProblemDetails
-	hash, err := bcrypt.GenerateFromPassword([]byte(input+string(salt)), bcrypt.DefaultCost)
+func hashString(data string, salt string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(data+salt), bcrypt.DefaultCost)
 	if err != nil {
-		return nil, append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleHashGeneration,
-			Status:   http.StatusBadRequest,
-			Detail:   util.LoginErrorDetailHashGeneration,
-			Instance: util.RFC400,
-		})
+		return "", err
 	}
-	return hash, nil
+	return string(hash), nil
 }
 
-func compareAndDecrypt(ctx context.Context, input string, encrypted []byte, salt []byte) (string, context.Context, []util.ProblemDetails) {
-	var validationErrors []util.ProblemDetails
-	err := bcrypt.CompareHashAndPassword(encrypted, []byte(input+string(salt)))
+func (lo *Login) EncryptEmail(email string) (string, string, error) {
+	salt, err := generateSalt()
 	if err != nil {
-		return "", ctx, append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleCompareDecrypt,
-			Status:   http.StatusBadRequest,
-			Detail:   util.LoginErrorDetailCompareDecrypt,
-			Instance: util.RFC400,
-		})
+		return "", "", err
 	}
-	return input, ctx, nil
+	hashedEmail, err := hashString(email, salt)
+	if err != nil {
+		return "", "", err
+	}
+	return hashedEmail, salt, nil
+}
+
+func (lo *Login) EncryptPassword(password string) (string, string, error) {
+	salt, err := generateSalt()
+	if err != nil {
+		return "", "", err
+	}
+	hashedPassword, err := hashString(password, salt)
+	if err != nil {
+		return "", "", err
+	}
+	return hashedPassword, salt, nil
+}
+func compareAndDecrypt(data string, hashedData string, salt string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedData), []byte(data+salt))
+	return err == nil
+}
+
+func (lo *Login) DecryptEmail(email string, hashedEmail string, salt string) string {
+	if compareAndDecrypt(email, hashedEmail, salt) {
+		return email
+	} else {
+		return ""
+	}
+}
+
+func (lo *Login) DecryptPassword(password string, hashedPassword string, salt string) string {
+	if compareAndDecrypt(password, hashedPassword, salt) {
+		return password
+	} else {
+		return ""
+	}
+}
+
+func (lo *Login) ChangeEmail(newEmail string) {
+	lo.Email = newEmail
+}
+
+func (lo *Login) ChangePassword(newPassword string) {
+	lo.Password = newPassword
 }
 
 func (lo *Login) Equals(other *Login) bool {

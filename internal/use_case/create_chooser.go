@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"context"
 	"net/http"
 	"youchoose/internal/entity"
 	repositoryinterface "youchoose/internal/repository_interface"
@@ -92,16 +91,26 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 		problemsDetails = append(problemsDetails, newChooserProblems...)
 	}
 
-	ctx := context.Background()
-
-	_, encryptPasswordProblems := newChooser.Login.EncryptPassword(ctx)
-	if len(encryptPasswordProblems) > 0 {
-		problemsDetails = append(problemsDetails, encryptPasswordProblems...)
+	encryptPassword, _, encryptPasswordProblems := newChooser.Login.EncryptPassword(newLogin.Password)
+	if encryptPasswordProblems != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeValidationError,
+			Title:    util.LoginErrorTitleEncryptPassword,
+			Status:   http.StatusConflict,
+			Detail:   util.LoginErrorDetailInvalidPassword,
+			Instance: util.RFC409,
+		})
 	}
 
-	_, encryptEmailProblems := newChooser.Login.EncryptEmail(ctx)
-	if len(encryptEmailProblems) > 0 {
-		problemsDetails = append(problemsDetails, encryptEmailProblems...)
+	encryptEmail, _, encryptEmailProblems := newChooser.Login.EncryptEmail(newLogin.Email)
+	if encryptEmailProblems != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeValidationError,
+			Title:    util.LoginErrorTitleEncryptEmail,
+			Status:   http.StatusConflict,
+			Detail:   util.LoginErrorDetailInvalidEmail,
+			Instance: util.RFC409,
+		})
 	}
 
 	if len(problemsDetails) > 0 {
@@ -109,6 +118,9 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 			ProblemDetails: problemsDetails,
 		}
 	}
+
+	newChooser.Login.ChangeEmail(encryptEmail)
+	newChooser.Login.ChangePassword(encryptPassword)
 
 	chooserCreationError := cc.ChooserRepository.Create(newChooser)
 	if chooserCreationError != nil {
