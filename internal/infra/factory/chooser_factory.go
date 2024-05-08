@@ -10,6 +10,7 @@ import (
 type ChooserFactory struct {
 	CreateChooser   *usecase.CreateChooserUseCase
 	FindChooserByID *usecase.GetChooserUseCase
+	GetChoosers     *usecase.GetChoosersUseCase
 }
 
 func NewChooserFactory(db *gorm.DB) *ChooserFactory {
@@ -17,9 +18,11 @@ func NewChooserFactory(db *gorm.DB) *ChooserFactory {
 
 	createChooser := usecase.NewCreateChooserUseCase(chooserRepository)
 	findChooserByID := usecase.NewGetChooserUseCase(chooserRepository)
+	getChoosers := usecase.NewGetChoosersUseCase(chooserRepository)
 
 	return &ChooserFactory{
 		CreateChooser:   createChooser,
 		FindChooserByID: findChooserByID,
+		GetChoosers:     getChoosers,
 	}
 }
