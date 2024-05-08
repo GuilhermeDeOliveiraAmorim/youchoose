@@ -1,7 +1,6 @@
 package valueobject
 
 import (
-	"context"
 	"net/http"
 	"testing"
 )
@@ -60,12 +59,12 @@ func TestEncryptAndDecryptEmail(t *testing.T) {
 	password := "Abc123@"
 	login, _ := NewLogin(email, password)
 
-	encryptedEmail, err := login.EncryptEmail(context.Background())
+	encryptedEmail, emailsalt, err := login.EncryptEmail(email)
 	if err != nil {
 		t.Errorf("Erro ao encriptar e-mail: %v", err)
 	}
 
-	decryptedEmail, _, err := login.DecryptEmail(context.Background(), encryptedEmail)
+	decryptedEmail := login.DecryptEmail(email, encryptedEmail, emailsalt)
 	if err != nil {
 		t.Errorf("Erro ao decriptar e-mail: %v", err)
 	}
@@ -80,12 +79,12 @@ func TestEncryptAndDecryptPassword(t *testing.T) {
 	password := "Abc123@"
 	login, _ := NewLogin(email, password)
 
-	encryptedPassword, err := login.EncryptPassword(context.Background())
+	encryptedPassword, passwordSalt, err := login.EncryptPassword(password)
 	if err != nil {
 		t.Errorf("Erro ao encriptar senha: %v", err)
 	}
 
-	decryptedPassword, _, err := login.DecryptPassword(context.Background(), encryptedPassword)
+	decryptedPassword := login.DecryptPassword(password, encryptedPassword, passwordSalt)
 	if err != nil {
 		t.Errorf("Erro ao decriptar senha: %v", err)
 	}
@@ -98,7 +97,7 @@ func TestEncryptAndDecryptPassword(t *testing.T) {
 func TestLogin_Equals(t *testing.T) {
 	login1, _ := NewLogin("meuemail@bol.com.br", "As1@a7")
 	login2, _ := NewLogin("meuemail@bol.com.br", "As1@a7")
-	
+
 	if got := login1.Equals(login2); got != true {
 		t.Errorf("Login.Equals() = %v, want %v", got, login1.Equals(login2))
 	}
