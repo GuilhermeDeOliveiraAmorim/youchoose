@@ -32,6 +32,8 @@ func main() {
 
 	chooserFactory := factory.NewChooserFactory(db)
 
+	fmt.Println("CreateChooser")
+
 	a, b := chooserFactory.CreateChooser.Execute(usecase.CreateChooserInputDTO{
 		ChooserID: "b1c697a4-032f-44d4-b124-b3030ec61462",
 		Name:      "Guilherme Amorim",
@@ -52,10 +54,11 @@ func main() {
 	}
 
 	fmt.Println()
+	fmt.Println("FindChooserByID")
 
 	c, d := chooserFactory.FindChooserByID.Execute(usecase.GetChooserInputDTO{
 		ChooserID:       "b1c697a4-032f-44d4-b124-b3030ec61462",
-		ChooserIDToFind: "f9163039-1faa-4d68-aa42-cd49e7ba4b6a",
+		ChooserIDToFind: "562fa89f-4d02-4c47-b8d8-f386f9c97ab1",
 	})
 	if len(d.ProblemDetails) > 0 {
 		fmt.Println(d.ProblemDetails)
@@ -64,13 +67,27 @@ func main() {
 	}
 
 	fmt.Println()
+	fmt.Println("GetChoosers")
 
 	e, f := chooserFactory.GetChoosers.Execute(usecase.GetChoosersInputDTO{
-		ChooserID: "b1c697a4-032f-44d4-b124-b3030ec61462",
+		ChooserID: "562fa89f-4d02-4c47-b8d8-f386f9c97ab1",
 	})
 	if len(f.ProblemDetails) > 0 {
 		fmt.Println(f.ProblemDetails)
 	} else {
 		fmt.Println(e)
+	}
+
+	fmt.Println()
+	fmt.Println("DeactivateChooser")
+
+	g, h := chooserFactory.DeactivateChooser.Execute(usecase.DeactivateChooserInputDTO{
+		ChooserID:             "b1c697a4-032f-44d4-b124-b3030ec61462",
+		ChooserIDToDeactivate: "562fa89f-4d02-4c47-b8d8-f386f9c97ab1",
+	})
+	if len(h.ProblemDetails) > 0 {
+		fmt.Println(f.ProblemDetails)
+	} else {
+		fmt.Println(g)
 	}
 }
