@@ -62,4 +62,15 @@ func main() {
 	} else {
 		fmt.Println(c)
 	}
+
+	fmt.Println()
+
+	e, f := chooserFactory.GetChoosers.Execute(usecase.GetChoosersInputDTO{
+		ChooserID: "b1c697a4-032f-44d4-b124-b3030ec61462",
+	})
+	if len(f.ProblemDetails) > 0 {
+		fmt.Println(f.ProblemDetails)
+	} else {
+		fmt.Println(e)
+	}
 }
