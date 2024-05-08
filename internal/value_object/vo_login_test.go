@@ -1,6 +1,7 @@
 package valueobject
 
 import (
+	"fmt"
 	"net/http"
 	"testing"
 )
@@ -15,7 +16,7 @@ func TestNewLoginInvalidEmail(t *testing.T) {
 		t.Error("Login com e-mail inválido foi criado.")
 	}
 
-	if err == nil {
+	if len(err) == 0 {
 		t.Error("Erro esperado não foi retornado para e-mail inválido.")
 	} else if len(err) != 1 || err[0].Status != http.StatusBadRequest {
 		t.Errorf("Erro inesperado ao validar e-mail inválido: %v", err)
@@ -28,7 +29,7 @@ func TestNewLoginValid(t *testing.T) {
 
 	login, err := NewLogin(email, password)
 
-	if err != nil {
+	if len(err) > 0 {
 		t.Errorf("Erro inesperado ao criar login válido: %v", err)
 	}
 
@@ -43,11 +44,13 @@ func TestNewLoginInvalidPassword(t *testing.T) {
 
 	login, err := NewLogin(email, password)
 
-	if login != nil {
+	fmt.Println(login, err)
+
+	if len(err) == 0 {
 		t.Error("Login com senha fraca foi criado.")
 	}
 
-	if err == nil {
+	if len(err) == 0 {
 		t.Error("Erro esperado não foi retornado para senha fraca.")
 	} else if len(err) != 1 || err[0].Status != http.StatusBadRequest {
 		t.Errorf("Erro inesperado ao validar senha fraca: %v", err)
@@ -59,12 +62,13 @@ func TestEncryptAndDecryptEmail(t *testing.T) {
 	password := "Abc123@"
 	login, _ := NewLogin(email, password)
 
-	encryptedEmail, emailsalt, err := login.EncryptEmail(email)
+	encryptedEmail, err := login.EncryptEmail(email)
+	fmt.Println(encryptedEmail, err)
 	if err != nil {
 		t.Errorf("Erro ao encriptar e-mail: %v", err)
 	}
 
-	decryptedEmail := login.DecryptEmail(email, encryptedEmail, emailsalt)
+	decryptedEmail := login.DecryptEmail(encryptedEmail, email)
 	if err != nil {
 		t.Errorf("Erro ao decriptar e-mail: %v", err)
 	}
@@ -79,12 +83,12 @@ func TestEncryptAndDecryptPassword(t *testing.T) {
 	password := "Abc123@"
 	login, _ := NewLogin(email, password)
 
-	encryptedPassword, passwordSalt, err := login.EncryptPassword(password)
+	encryptedPassword, err := login.EncryptPassword(password)
 	if err != nil {
 		t.Errorf("Erro ao encriptar senha: %v", err)
 	}
 
-	decryptedPassword := login.DecryptPassword(password, encryptedPassword, passwordSalt)
+	decryptedPassword := login.DecryptPassword(encryptedPassword, password)
 	if err != nil {
 		t.Errorf("Erro ao decriptar senha: %v", err)
 	}
