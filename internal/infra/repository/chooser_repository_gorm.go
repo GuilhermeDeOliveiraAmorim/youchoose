@@ -3,6 +3,7 @@ package gorm
 import (
 	"errors"
 	"youchoose/internal/entity"
+	valueobject "youchoose/internal/value_object"
 
 	"gorm.io/gorm"
 )
@@ -26,9 +27,7 @@ func (cr *ChooserRepository) Create(chooser *entity.Chooser) error {
 		DeactivatedAt: chooser.DeactivatedAt,
 		Name:          chooser.Name,
 		Email:         chooser.Login.Email,
-		EmailSalt:     chooser.Login.EmailSalt,
 		Password:      chooser.Login.Password,
-		PasswordSalt:  chooser.Login.PasswordSalt,
 		City:          chooser.Address.City,
 		State:         chooser.Address.State,
 		Country:       chooser.Address.Country,
@@ -43,20 +42,51 @@ func (cr *ChooserRepository) Create(chooser *entity.Chooser) error {
 	return nil
 }
 
-func (cr *ChooserRepository) ChooserAlreadyExists(chooserEmail string) (bool, error) {
-	var count int64
-	if err := cr.gorm.Model(&Choosers{}).Where("email = ?", chooserEmail).Count(&count).Error; err != nil {
-		return false, err
-	}
-	return count > 0, nil
-}
-
 func (cr *ChooserRepository) Deactivate(chooser *entity.Chooser) error {
 	panic("unimplemented")
 }
 
 func (cr *ChooserRepository) GetAll() ([]entity.Chooser, error) {
-	panic("unimplemented")
+	var choosersModel []Choosers
+	if err := cr.gorm.Find(&choosersModel).Error; err != nil {
+		return nil, err
+	}
+
+	var choosers []entity.Chooser
+
+	if len(choosersModel) > 0 {
+		for _, chooserModel := range choosersModel {
+			chooser := entity.Chooser{
+				SharedEntity: entity.SharedEntity{
+					ID:            chooserModel.ID,
+					Active:        chooserModel.Active,
+					CreatedAt:     chooserModel.CreatedAt,
+					UpdatedAt:     chooserModel.UpdatedAt,
+					DeactivatedAt: chooserModel.DeactivatedAt,
+				},
+				Name: chooserModel.Name,
+				Login: &valueobject.Login{
+					Email:    chooserModel.Email,
+					Password: chooserModel.Password,
+				},
+				Address: &valueobject.Address{
+					City:    chooserModel.City,
+					State:   chooserModel.State,
+					Country: chooserModel.Country,
+				},
+				BirthDate: &valueobject.BirthDate{
+					Day:   chooserModel.Day,
+					Month: chooserModel.Month,
+					Year:  chooserModel.Year,
+				},
+				ImageID: chooserModel.ImageID,
+			}
+
+			choosers = append(choosers, chooser)
+		}
+	}
+
+	return choosers, nil
 }
 
 func (cr *ChooserRepository) GetByEmail(chooserEmail string) (entity.Chooser, error) {
@@ -64,14 +94,41 @@ func (cr *ChooserRepository) GetByEmail(chooserEmail string) (entity.Chooser, er
 }
 
 func (cr *ChooserRepository) GetByID(chooserID string) (bool, entity.Chooser, error) {
-	var chooser entity.Chooser
-	result := cr.gorm.Model(&Choosers{}).Where("id = ?", chooserID).First(&chooser)
+	var chooserModel Choosers
+	result := cr.gorm.Model(&Choosers{}).Where("id = ?", chooserID).First(&chooserModel)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return false, entity.Chooser{}, nil
 		}
 		return false, entity.Chooser{}, result.Error
 	}
+
+	chooser := entity.Chooser{
+		SharedEntity: entity.SharedEntity{
+			ID:            chooserModel.ID,
+			Active:        chooserModel.Active,
+			CreatedAt:     chooserModel.CreatedAt,
+			UpdatedAt:     chooserModel.UpdatedAt,
+			DeactivatedAt: chooserModel.DeactivatedAt,
+		},
+		Name: chooserModel.Name,
+		Login: &valueobject.Login{
+			Email:    chooserModel.Email,
+			Password: chooserModel.Password,
+		},
+		Address: &valueobject.Address{
+			City:    chooserModel.City,
+			State:   chooserModel.State,
+			Country: chooserModel.Country,
+		},
+		BirthDate: &valueobject.BirthDate{
+			Day:   chooserModel.Day,
+			Month: chooserModel.Month,
+			Year:  chooserModel.Year,
+		},
+		ImageID: chooserModel.ImageID,
+	}
+
 	return true, chooser, nil
 }
 
