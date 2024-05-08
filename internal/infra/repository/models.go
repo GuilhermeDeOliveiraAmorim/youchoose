@@ -12,9 +12,7 @@ type Choosers struct {
 	DeactivatedAt time.Time `gorm:"not null"`
 	Name          string    `gorm:"not null"`
 	Email         string    `gorm:"unique;not null"`
-	EmailSalt     string    `gorm:"unique;not null"`
 	Password      string    `gorm:"not null"`
-	PasswordSalt  string    `gorm:"unique;not null"`
 	City          string    `gorm:"not null"`
 	State         string    `gorm:"not null"`
 	Country       string    `gorm:"not null"`
