@@ -77,21 +77,6 @@ func (mr *MockChooserRepositoryInterfaceMockRecorder) GetAll() *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAll", reflect.TypeOf((*MockChooserRepositoryInterface)(nil).GetAll))
 }
 
-// GetByEmail mocks base method.
-func (m *MockChooserRepositoryInterface) GetByEmail(chooserEmail string) (entity.Chooser, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetByEmail", chooserEmail)
-	ret0, _ := ret[0].(entity.Chooser)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetByEmail indicates an expected call of GetByEmail.
-func (mr *MockChooserRepositoryInterfaceMockRecorder) GetByEmail(chooserEmail interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetByEmail", reflect.TypeOf((*MockChooserRepositoryInterface)(nil).GetByEmail), chooserEmail)
-}
-
 // GetByID mocks base method.
 func (m *MockChooserRepositoryInterface) GetByID(chooserID string) (bool, entity.Chooser, error) {
 	m.ctrl.T.Helper()
