@@ -89,10 +89,6 @@ func (cr *ChooserRepository) GetAll() ([]entity.Chooser, error) {
 	return choosers, nil
 }
 
-func (cr *ChooserRepository) GetByEmail(chooserEmail string) (entity.Chooser, error) {
-	panic("unimplemented")
-}
-
 func (cr *ChooserRepository) GetByID(chooserID string) (bool, entity.Chooser, error) {
 	var chooserModel Choosers
 	result := cr.gorm.Model(&Choosers{}).Where("id = ?", chooserID).First(&chooserModel)
