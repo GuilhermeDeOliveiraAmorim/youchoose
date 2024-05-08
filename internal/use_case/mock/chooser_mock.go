@@ -34,21 +34,6 @@ func (m *MockChooserRepositoryInterface) EXPECT() *MockChooserRepositoryInterfac
 	return m.recorder
 }
 
-// ChooserAlreadyExists mocks base method.
-func (m *MockChooserRepositoryInterface) ChooserAlreadyExists(chooserEmail string) (bool, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "ChooserAlreadyExists", chooserEmail)
-	ret0, _ := ret[0].(bool)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// ChooserAlreadyExists indicates an expected call of ChooserAlreadyExists.
-func (mr *MockChooserRepositoryInterfaceMockRecorder) ChooserAlreadyExists(chooserEmail interface{}) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ChooserAlreadyExists", reflect.TypeOf((*MockChooserRepositoryInterface)(nil).ChooserAlreadyExists), chooserEmail)
-}
-
 // Create mocks base method.
 func (m *MockChooserRepositoryInterface) Create(chooser *entity.Chooser) error {
 	m.ctrl.T.Helper()

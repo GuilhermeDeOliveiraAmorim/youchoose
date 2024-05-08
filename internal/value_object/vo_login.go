@@ -1,8 +1,6 @@
 package valueobject
 
 import (
-	"crypto/rand"
-	"encoding/hex"
 	"net/http"
 	"regexp"
 	"strings"
@@ -13,28 +11,24 @@ import (
 )
 
 type Login struct {
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	EmailSalt string
-	PasswordSalt  string
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func NewLogin(email, password string) (*Login, []util.ProblemDetails) {
-	validationErrors, emailSalt, passSalt := ValidateLogin(email, password)
+	validationErrors := ValidateLogin(email, password)
 
 	if len(validationErrors) > 0 {
 		return nil, validationErrors
 	}
 
 	return &Login{
-		Email:     email,
-		Password:  password,
-		EmailSalt: emailSalt,
-		PasswordSalt:  passSalt,
+		Email:    email,
+		Password: password,
 	}, nil
 }
 
-func ValidateLogin(email, password string) ([]util.ProblemDetails, string, string) {
+func ValidateLogin(email, password string) []util.ProblemDetails {
 	var validationErrors []util.ProblemDetails
 
 	if !isValidEmail(email) {
@@ -57,29 +51,7 @@ func ValidateLogin(email, password string) ([]util.ProblemDetails, string, strin
 		})
 	}
 
-	emailSalt, err := generateSalt()
-	if err != nil {
-		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleSaltGeneration,
-			Status:   http.StatusBadRequest,
-			Detail:   util.LoginErrorDetailSaltGeneration,
-			Instance: util.RFC400,
-		})
-	}
-
-	passSalt, err := generateSalt()
-	if err != nil {
-		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.LoginErrorTitleSaltGeneration,
-			Status:   http.StatusBadRequest,
-			Detail:   util.LoginErrorDetailSaltGeneration,
-			Instance: util.RFC400,
-		})
-	}
-
-	return validationErrors, emailSalt, passSalt
+	return validationErrors
 }
 
 func isValidEmail(email string) bool {
@@ -117,61 +89,45 @@ func hasSpecialCharacter(password string) bool {
 	return strings.ContainsAny(password, specialCharacters)
 }
 
-func generateSalt() (string, error) {
-	salt := make([]byte, 16)
-	_, err := rand.Read(salt)
-	if err != nil {
-		return "", err
-	}
-	return hex.EncodeToString(salt), nil
-}
-
-func hashString(data string, salt string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(data+salt), bcrypt.DefaultCost)
+func hashString(data string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(data), bcrypt.DefaultCost)
 	if err != nil {
 		return "", err
 	}
 	return string(hash), nil
 }
 
-func (lo *Login) EncryptEmail(email string) (string, string, error) {
-	salt, err := generateSalt()
-	if err != nil {
-		return "", "", err
-	}
-	hashedEmail, err := hashString(email, salt)
-	if err != nil {
-		return "", "", err
-	}
-	return hashedEmail, salt, nil
-}
-
-func (lo *Login) EncryptPassword(password string) (string, string, error) {
-	salt, err := generateSalt()
-	if err != nil {
-		return "", "", err
-	}
-	hashedPassword, err := hashString(password, salt)
-	if err != nil {
-		return "", "", err
-	}
-	return hashedPassword, salt, nil
-}
-func compareAndDecrypt(data string, hashedData string, salt string) bool {
-	err := bcrypt.CompareHashAndPassword([]byte(hashedData), []byte(data+salt))
+func compareAndDecrypt(hashedData string, data string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hashedData), []byte(data))
 	return err == nil
 }
 
-func (lo *Login) DecryptEmail(email string, hashedEmail string, salt string) string {
-	if compareAndDecrypt(email, hashedEmail, salt) {
+func (lo *Login) EncryptEmail(email string) (string, error) {
+	hashedEmail, err := hashString(email)
+	if err != nil {
+		return "", err
+	}
+	return hashedEmail, nil
+}
+
+func (lo *Login) EncryptPassword(password string) (string, error) {
+	hashedPassword, err := hashString(password)
+	if err != nil {
+		return "", err
+	}
+	return hashedPassword, nil
+}
+
+func (lo *Login) DecryptEmail(hashedEmail string, email string) string {
+	if compareAndDecrypt(hashedEmail, email) {
 		return email
 	} else {
 		return ""
 	}
 }
 
-func (lo *Login) DecryptPassword(password string, hashedPassword string, salt string) string {
-	if compareAndDecrypt(password, hashedPassword, salt) {
+func (lo *Login) DecryptPassword(hashedPassword string, password string) string {
+	if compareAndDecrypt(hashedPassword, password) {
 		return password
 	} else {
 		return ""

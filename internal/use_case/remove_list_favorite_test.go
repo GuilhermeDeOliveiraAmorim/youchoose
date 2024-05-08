@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"testing"
 	"youchoose/internal/entity"
 	"youchoose/internal/use_case/mock"
@@ -45,8 +44,6 @@ func TestRemoveListFavoriteUseCase_Execute(t *testing.T) {
 	mockListRepository.EXPECT().Update(gomock.Any()).Return(nil)
 
 	output, problemDetails := removeListFavoriteUseCase.Execute(input)
-
-	fmt.Println(output, problemDetails)
 
 	assert.Empty(t, problemDetails.ProblemDetails)
 	assert.Equal(t, output.ID, listFavorite.ID)

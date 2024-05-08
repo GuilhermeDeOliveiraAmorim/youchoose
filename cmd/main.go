@@ -32,10 +32,10 @@ func main() {
 
 	chooserFactory := factory.NewChooserFactory(db)
 
-	chooserFactory.CreateChooser.Execute(usecase.CreateChooserInputDTO{
+	a, b := chooserFactory.CreateChooser.Execute(usecase.CreateChooserInputDTO{
 		ChooserID: "b1c697a4-032f-44d4-b124-b3030ec61462",
 		Name:      "Guilherme Amorim",
-		Email:     "guilherme.o.a.ufal@gmail.com",
+		Email:     "guilherme.o.a.ufal@ig.com.br",
 		Password:  "Abc123@",
 		City:      "Aracaju",
 		State:     "Sergipe",
@@ -45,4 +45,21 @@ func main() {
 		Year:      1986,
 		ImageID:   uuid.NewString(),
 	})
+	if len(b.ProblemDetails) > 0 {
+		fmt.Println(b.ProblemDetails)
+	} else {
+		fmt.Println(a)
+	}
+
+	fmt.Println()
+
+	c, d := chooserFactory.FindChooserByID.Execute(usecase.GetChooserInputDTO{
+		ChooserID:       "b1c697a4-032f-44d4-b124-b3030ec61462",
+		ChooserIDToFind: "f9163039-1faa-4d68-aa42-cd49e7ba4b6a",
+	})
+	if len(d.ProblemDetails) > 0 {
+		fmt.Println(d.ProblemDetails)
+	} else {
+		fmt.Println(c)
+	}
 }

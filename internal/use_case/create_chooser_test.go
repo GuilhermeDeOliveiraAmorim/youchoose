@@ -18,19 +18,22 @@ func TestCreateChooser(t *testing.T) {
 	createChooserUseCase := NewCreateChooserUseCase(mockRepository)
 
 	name := "John Doe"
-	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
+	login_1 := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
+	login_2 := &valueobject.Login{Email: "johnjohn@example.com", Password: "P@ssw0rd"}
 	address := &valueobject.Address{City: "City", State: "State", Country: "Country"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
 	imageID := uuid.New().String()
 
-	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
+	chooser_1, _ := entity.NewChooser(name, login_1, address, birthDate, imageID)
+	chooser_2, _ := entity.NewChooser(name, login_2, address, birthDate, imageID)
 
-	mockRepository.EXPECT().GetByID(gomock.Any()).Return(true, *chooser, nil)
+	var choosers []entity.Chooser
 
-	mockRepository.EXPECT().
-		ChooserAlreadyExists(gomock.Eq("john.doe@example.com")).
-		Return(false, nil).
-		Times(1)
+	choosers = append(choosers, *chooser_1)
+	choosers = append(choosers, *chooser_2)
+
+	mockRepository.EXPECT().GetByID(gomock.Any()).Return(true, *chooser_1, nil)
+	mockRepository.EXPECT().GetAll().Return(choosers, nil)
 
 	mockRepository.EXPECT().
 		Create(gomock.Any()).
@@ -38,7 +41,7 @@ func TestCreateChooser(t *testing.T) {
 		Times(1)
 
 	input := CreateChooserInputDTO{
-		ChooserID: chooser.ID,
+		ChooserID: chooser_1.ID,
 		Name:      "John Doe",
 		Email:     "john.doe@example.com",
 		Password:  "QWqw@#456",

@@ -42,32 +42,36 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 
 	problemsDetails := []util.ProblemDetails{}
 
-	chooserAlreadyExists, chooserAlreadyExistsError := cc.ChooserRepository.ChooserAlreadyExists(input.Email)
-	if chooserAlreadyExistsError != nil {
+	allChoosers, allChoosersProblem := cc.ChooserRepository.GetAll()
+	if allChoosersProblem != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
-			Title:    "Erro ao resgatar um chooser através do e-mail",
+			Title:    "Erro ao resgatar todos os choosers",
 			Status:   http.StatusInternalServerError,
-			Detail:   chooserAlreadyExistsError.Error(),
+			Detail:   allChoosersProblem.Error(),
 			Instance: util.RFC503,
 		})
 
-		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar um chooser através do e-mail", "CreateChooserUseCase", "Use Cases", util.TypeInternalServerError)
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao resgatar todos os choosers", "CreateChooserUseCase", "Use Cases", util.TypeInternalServerError)
 
 		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
-	} else if chooserAlreadyExists {
-		problemsDetails = append(problemsDetails, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    "E-mail já está em uso",
-			Status:   http.StatusConflict,
-			Detail:   "O e-mail fornecido já está sendo utilizado por outro chooser.",
-			Instance: util.RFC409,
-		})
+	}
 
-		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
-			ProblemDetails: problemsDetails,
+	for _, allChooser := range allChoosers {
+		if allChooser.Login.DecryptEmail(allChooser.Login.Email, input.Email) == input.Email {
+			problemsDetails = append(problemsDetails, util.ProblemDetails{
+				Type:     util.TypeValidationError,
+				Title:    "E-mail já está em uso",
+				Status:   http.StatusConflict,
+				Detail:   "O e-mail fornecido já está sendo utilizado por outro chooser.",
+				Instance: util.RFC409,
+			})
+
+			return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+				ProblemDetails: problemsDetails,
+			}
 		}
 	}
 
@@ -91,7 +95,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 		problemsDetails = append(problemsDetails, newChooserProblems...)
 	}
 
-	encryptPassword, _, encryptPasswordProblems := newChooser.Login.EncryptPassword(newLogin.Password)
+	encryptPassword, encryptPasswordProblems := newChooser.Login.EncryptPassword(newLogin.Password)
 	if encryptPasswordProblems != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeValidationError,
@@ -102,7 +106,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 		})
 	}
 
-	encryptEmail, _, encryptEmailProblems := newChooser.Login.EncryptEmail(newLogin.Email)
+	encryptEmail, encryptEmailProblems := newChooser.Login.EncryptEmail(newLogin.Email)
 	if encryptEmailProblems != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeValidationError,
