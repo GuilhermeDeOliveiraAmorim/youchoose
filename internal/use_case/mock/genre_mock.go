@@ -48,6 +48,20 @@ func (mr *MockGenreRepositoryInterfaceMockRecorder) Create(genre interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockGenreRepositoryInterface)(nil).Create), genre)
 }
 
+// CreateMany mocks base method.
+func (m *MockGenreRepositoryInterface) CreateMany(genres *[]entity.Genre) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateMany", genres)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateMany indicates an expected call of CreateMany.
+func (mr *MockGenreRepositoryInterfaceMockRecorder) CreateMany(genres interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMany", reflect.TypeOf((*MockGenreRepositoryInterface)(nil).CreateMany), genres)
+}
+
 // Deactivate mocks base method.
 func (m *MockGenreRepositoryInterface) Deactivate(genre *entity.Genre) error {
 	m.ctrl.T.Helper()

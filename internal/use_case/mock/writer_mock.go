@@ -48,6 +48,20 @@ func (mr *MockWriterRepositoryInterfaceMockRecorder) Create(writer interface{}) 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockWriterRepositoryInterface)(nil).Create), writer)
 }
 
+// CreateMany mocks base method.
+func (m *MockWriterRepositoryInterface) CreateMany(writers *[]entity.Writer) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateMany", writers)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateMany indicates an expected call of CreateMany.
+func (mr *MockWriterRepositoryInterfaceMockRecorder) CreateMany(writers interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMany", reflect.TypeOf((*MockWriterRepositoryInterface)(nil).CreateMany), writers)
+}
+
 // Deactivate mocks base method.
 func (m *MockWriterRepositoryInterface) Deactivate(writer *entity.Writer) error {
 	m.ctrl.T.Helper()

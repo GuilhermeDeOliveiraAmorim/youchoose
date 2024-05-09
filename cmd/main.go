@@ -21,7 +21,14 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	if err := db.AutoMigrate(repository.Choosers{}, repository.Images{}); err != nil {
+	if err := db.AutoMigrate(
+		repository.Choosers{},
+		repository.Images{},
+		repository.Actors{},
+		repository.Genres{},
+		repository.Directors{},
+		repository.Writers{},
+	); err != nil {
 		fmt.Println("Erro durante a migração:", err)
 		return
 	}
