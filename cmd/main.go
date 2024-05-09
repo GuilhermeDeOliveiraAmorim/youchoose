@@ -26,7 +26,7 @@ func main() {
 		return
 	}
 	fmt.Println("Migração bem-sucedida!")
-
+  
 	//chooserFactory := factory.NewChooserFactory(db)
 
 	// file, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
