@@ -4,6 +4,7 @@ import "youchoose/internal/entity"
 
 type WriterRepositoryInterface interface {
 	Create(writer *entity.Writer) error
+	CreateMany(writers *[]entity.Writer) error
 	Update(writer *entity.Writer) error
 	GetByID(writerID string) (entity.Writer, error)
 	GetAll() ([]entity.Writer, error)

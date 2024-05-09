@@ -48,6 +48,20 @@ func (mr *MockDirectorRepositoryInterfaceMockRecorder) Create(director interface
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Create", reflect.TypeOf((*MockDirectorRepositoryInterface)(nil).Create), director)
 }
 
+// CreateMany mocks base method.
+func (m *MockDirectorRepositoryInterface) CreateMany(directors *[]entity.Director) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateMany", directors)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// CreateMany indicates an expected call of CreateMany.
+func (mr *MockDirectorRepositoryInterfaceMockRecorder) CreateMany(directors interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateMany", reflect.TypeOf((*MockDirectorRepositoryInterface)(nil).CreateMany), directors)
+}
+
 // Deactivate mocks base method.
 func (m *MockDirectorRepositoryInterface) Deactivate(director *entity.Director) error {
 	m.ctrl.T.Helper()

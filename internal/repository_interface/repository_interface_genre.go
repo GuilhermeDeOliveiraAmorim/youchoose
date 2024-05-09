@@ -4,6 +4,7 @@ import "youchoose/internal/entity"
 
 type GenreRepositoryInterface interface {
 	Create(genre *entity.Genre) error
+	CreateMany(genres *[]entity.Genre) error
 	Update(genre *entity.Genre) error
 	GetByID(genreID string) (entity.Genre, error)
 	GetAll() ([]entity.Genre, error)
