@@ -92,12 +92,13 @@ func (mr *MockImageRepositoryInterfaceMockRecorder) GetAll() *gomock.Call {
 }
 
 // GetByID mocks base method.
-func (m *MockImageRepositoryInterface) GetByID(imageID string) (entity.Image, error) {
+func (m *MockImageRepositoryInterface) GetByID(imageID string) (bool, entity.Image, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetByID", imageID)
-	ret0, _ := ret[0].(entity.Image)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret0, _ := ret[0].(bool)
+	ret1, _ := ret[1].(entity.Image)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetByID indicates an expected call of GetByID.
