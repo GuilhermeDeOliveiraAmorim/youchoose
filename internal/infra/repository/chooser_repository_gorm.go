@@ -36,7 +36,7 @@ func (cr *ChooserRepository) Create(chooser *entity.Chooser) error {
 		Year:          chooser.BirthDate.Year,
 		ImageID:       chooser.ImageID,
 	}).Error; err != nil {
-		return errors.New("failed to create chooser: " + err.Error())
+		return errors.New(err.Error())
 	}
 
 	return nil
@@ -95,6 +95,7 @@ func (cr *ChooserRepository) GetByEmail(chooserEmail string) (entity.Chooser, er
 
 func (cr *ChooserRepository) GetByID(chooserID string) (bool, entity.Chooser, error) {
 	var chooserModel Choosers
+
 	result := cr.gorm.Model(&Choosers{}).Where("id = ?", chooserID).First(&chooserModel)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
@@ -141,5 +142,22 @@ func (cr *ChooserRepository) GetVotations(chooserID string) ([]entity.Votation, 
 }
 
 func (cr *ChooserRepository) Update(chooser *entity.Chooser) error {
-	panic("unimplemented")
+	result := cr.gorm.Model(&Choosers{}).Where("id", chooser.ID).Updates(Choosers{
+		ID:        chooser.ID,
+		UpdatedAt: chooser.UpdatedAt,
+		Name:      chooser.Name,
+		City:      chooser.Address.City,
+		State:     chooser.Address.State,
+		Country:   chooser.Address.Country,
+		Day:       chooser.BirthDate.Day,
+		Month:     chooser.BirthDate.Month,
+		Year:      chooser.BirthDate.Year,
+		ImageID:   chooser.ImageID,
+	})
+
+	if result.Error != nil {
+		return errors.New(result.Error.Error())
+	}
+
+	return nil
 }
