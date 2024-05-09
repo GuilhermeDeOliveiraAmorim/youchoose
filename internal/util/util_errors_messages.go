@@ -30,6 +30,7 @@ const (
 const (
 	ChooserErrorDetailEmptyName     = "O nome do Chooser não pode estar vazio"
 	ChooserErrorDetailMaxLengthName = "O nome do Chooser não pode ter mais do que 100 caracteres"
+	ChooserErrorDetailEmptyImageID  = "O ID de imagem do chooser não pode estar vazio"
 )
 
 const (
@@ -55,8 +56,10 @@ const (
 )
 
 const (
-	ImageErrorDetailEmptyName = "O nome da imagem não pode estar vazio"
-	ImageErrorDetailImageSize = "O tamanho da imagem deve estar entre 1 e 100000 bytes"
+	ImageErrorDetailEmptyName  = "O nome da imagem não pode estar vazio"
+	ImageErrorDetailImageSize  = "O tamanho da imagem deve estar entre 1 e 100000 bytes"
+	ImageErrorDetailNotFound   = "Imagem não encontrada"
+	ImageErrorDetailDeactivate = "A imagem está desativada"
 )
 
 const (

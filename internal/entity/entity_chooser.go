@@ -66,7 +66,7 @@ func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 			Type:     util.TypeValidationError,
 			Title:    util.SharedErrorTitleInvalidImageID,
 			Status:   http.StatusBadRequest,
-			Detail:   util.ActorErrorDetailEmptyImageID,
+			Detail:   util.ChooserErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}

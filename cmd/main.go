@@ -3,11 +3,8 @@ package main
 import (
 	"fmt"
 	"youchoose/configs"
-	"youchoose/internal/infra/factory"
 	repository "youchoose/internal/infra/repository"
-	usecase "youchoose/internal/use_case"
 
-	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -24,70 +21,107 @@ func main() {
 		panic("failed to connect database")
 	}
 
-	if err := db.AutoMigrate(repository.Choosers{}); err != nil {
+	if err := db.AutoMigrate(repository.Choosers{}, repository.Images{}); err != nil {
 		fmt.Println("Erro durante a migração:", err)
 		return
 	}
 	fmt.Println("Migração bem-sucedida!")
+  
+	//chooserFactory := factory.NewChooserFactory(db)
 
-	chooserFactory := factory.NewChooserFactory(db)
+	// file, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	// fileStat, _ := file.Stat()
 
-	fmt.Println("CreateChooser")
+	// input := usecase.CreateChooserInputDTO{
+	// 	ChooserID: "721b8eee-9586-4771-bf50-0543d8bfbacc",
+	// 	Name:      "Guilherme Amorim",
+	// 	Email:     "guilherme.a.ufal@bol.com.br",
+	// 	Password:  "Abc123@",
+	// 	City:      "Aracaju",
+	// 	State:     "Sergipe",
+	// 	Country:   "Brasil",
+	// 	Day:       20,
+	// 	Month:     10,
+	// 	Year:      1986,
+	// 	ImageFile: file,
+	// 	ImageHandler: &multipart.FileHeader{
+	// 		Filename: file.Name(),
+	// 		Size:     fileStat.Size(),
+	// 	},
+	// }
 
-	a, b := chooserFactory.CreateChooser.Execute(usecase.CreateChooserInputDTO{
-		ChooserID: "b1c697a4-032f-44d4-b124-b3030ec61462",
-		Name:      "Guilherme Amorim",
-		Email:     "guilherme.o.a.ufal@ig.com.br",
-		Password:  "Abc123@",
-		City:      "Aracaju",
-		State:     "Sergipe",
-		Country:   "Brasil",
-		Day:       20,
-		Month:     10,
-		Year:      1986,
-		ImageID:   uuid.NewString(),
-	})
-	if len(b.ProblemDetails) > 0 {
-		fmt.Println(b.ProblemDetails)
-	} else {
-		fmt.Println(a)
-	}
+	// a, b := chooserFactory.CreateChooser.Execute(input)
+	// if len(b.ProblemDetails) > 0 {
+	// 	fmt.Println(b.ProblemDetails)
+	// } else {
+	// 	fmt.Println(a)
+	// }
 
-	fmt.Println()
-	fmt.Println("FindChooserByID")
+	// fmt.Println()
 
-	c, d := chooserFactory.FindChooserByID.Execute(usecase.GetChooserInputDTO{
-		ChooserID:       "b1c697a4-032f-44d4-b124-b3030ec61462",
-		ChooserIDToFind: "562fa89f-4d02-4c47-b8d8-f386f9c97ab1",
-	})
-	if len(d.ProblemDetails) > 0 {
-		fmt.Println(d.ProblemDetails)
-	} else {
-		fmt.Println(c)
-	}
+	// c, d := chooserFactory.FindChooserByID.Execute(usecase.GetChooserInputDTO{
+	// 	ChooserID:       "721b8eee-9586-4771-bf50-0543d8bfbacc",
+	// 	ChooserIDToFind: "c4ad0428-13e2-47bc-bf0f-22939694962f",
+	// })
+	// if len(d.ProblemDetails) > 0 {
+	// 	fmt.Println(d.ProblemDetails)
+	// } else {
+	// 	fmt.Println(c)
+	// }
 
-	fmt.Println()
-	fmt.Println("GetChoosers")
+	// fmt.Println()
 
-	e, f := chooserFactory.GetChoosers.Execute(usecase.GetChoosersInputDTO{
-		ChooserID: "562fa89f-4d02-4c47-b8d8-f386f9c97ab1",
-	})
-	if len(f.ProblemDetails) > 0 {
-		fmt.Println(f.ProblemDetails)
-	} else {
-		fmt.Println(e)
-	}
+	// e, f := chooserFactory.GetChoosers.Execute(usecase.GetChoosersInputDTO{
+	// 	ChooserID: "721b8eee-9586-4771-bf50-0543d8bfbacc",
+	// })
+	// if len(f.ProblemDetails) > 0 {
+	// 	fmt.Println(f.ProblemDetails)
+	// } else {
+	// 	fmt.Println(e)
+	// }
 
-	fmt.Println()
-	fmt.Println("DeactivateChooser")
+	// fmt.Println()
 
-	g, h := chooserFactory.DeactivateChooser.Execute(usecase.DeactivateChooserInputDTO{
-		ChooserID:             "b1c697a4-032f-44d4-b124-b3030ec61462",
-		ChooserIDToDeactivate: "562fa89f-4d02-4c47-b8d8-f386f9c97ab1",
-	})
-	if len(h.ProblemDetails) > 0 {
-		fmt.Println(f.ProblemDetails)
-	} else {
-		fmt.Println(g)
-	}
+	// g, h := chooserFactory.UpdateChooser.Execute(usecase.UpdateChooserInputDTO{
+	// 	ChooserID: "c9f6c34a-a2fa-43df-bc33-7f0b9fb5ecf8",
+	// 	Name:      "Novo Nome",
+	// 	City:      "Maceió",
+	// 	State:     "Alagoas",
+	// 	Country:   "Brasil",
+	// 	Day:       11,
+	// 	Month:     12,
+	// 	Year:      1986,
+	// 	ImageID:   "",
+	// 	ImageFile: file,
+	// 	ImageHandler: &multipart.FileHeader{
+	// 		Filename: file.Name(),
+	// 		Size:     fileStat.Size(),
+	// 	},
+	// })
+	// if len(h.ProblemDetails) > 0 {
+	// 	fmt.Println(h.ProblemDetails)
+	// } else {
+	// 	fmt.Println(g)
+	// }
+
+	// fmt.Println()
+
+	// i, j := chooserFactory.UpdateChooser.Execute(usecase.UpdateChooserInputDTO{
+	// 	ChooserID:    "c9f6c34a-a2fa-43df-bc33-7f0b9fb5ecf8",
+	// 	Name:         "Novo Novo Nome Do Guilherme",
+	// 	City:         "Recife",
+	// 	State:        "Pernambuco",
+	// 	Country:      "Brasil",
+	// 	Day:          20,
+	// 	Month:        10,
+	// 	Year:         1986,
+	// 	ImageID:      "3b50916b-bb23-438e-8896-1cbc44273cc4",
+	// 	ImageFile:    nil,
+	// 	ImageHandler: nil,
+	// })
+	// if len(j.ProblemDetails) > 0 {
+	// 	fmt.Println(j.ProblemDetails)
+	// } else {
+	// 	fmt.Println(i)
+	// }
 }

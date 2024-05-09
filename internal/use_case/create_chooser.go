@@ -1,36 +1,42 @@
 package usecase
 
 import (
+	"mime/multipart"
 	"net/http"
 	"youchoose/internal/entity"
 	repositoryinterface "youchoose/internal/repository_interface"
+	"youchoose/internal/service"
 	"youchoose/internal/util"
 	valueobject "youchoose/internal/value_object"
 )
 
 type CreateChooserInputDTO struct {
-	ChooserID string `json:"chooser_id"`
-	Name      string `json:"name"`
-	Email     string `json:"email"`
-	Password  string `json:"password"`
-	City      string `json:"city"`
-	State     string `json:"state"`
-	Country   string `json:"country"`
-	Day       int    `json:"day"`
-	Month     int    `json:"month"`
-	Year      int    `json:"year"`
-	ImageID   string `json:"image_id"`
+	ChooserID    string                `json:"chooser_id"`
+	Name         string                `json:"name"`
+	Email        string                `json:"email"`
+	Password     string                `json:"password"`
+	City         string                `json:"city"`
+	State        string                `json:"state"`
+	Country      string                `json:"country"`
+	Day          int                   `json:"day"`
+	Month        int                   `json:"month"`
+	Year         int                   `json:"year"`
+	ImageFile    multipart.File        `json:"chooser_image_file"`
+	ImageHandler *multipart.FileHeader `json:"chooser_image_handler"`
 }
 
 type CreateChooserUseCase struct {
 	ChooserRepository repositoryinterface.ChooserRepositoryInterface
+	ImageRepository   repositoryinterface.ImageRepositoryInterface
 }
 
 func NewCreateChooserUseCase(
 	ChooserRepository repositoryinterface.ChooserRepositoryInterface,
+	ImageRepository repositoryinterface.ImageRepositoryInterface,
 ) *CreateChooserUseCase {
 	return &CreateChooserUseCase{
 		ChooserRepository: ChooserRepository,
+		ImageRepository:   ImageRepository,
 	}
 }
 
@@ -90,7 +96,29 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 		problemsDetails = append(problemsDetails, newBirthdateProblems...)
 	}
 
-	newChooser, newChooserProblems := entity.NewChooser(input.Name, newLogin, newAddress, newBirthdate, input.ImageID)
+	_, chooserImageName, chooserImageExtension, chooserImageSize, chooserImageError := service.MoveFile(input.ImageFile, input.ImageHandler)
+	if chooserImageError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao mover a imagem do chooser",
+			Status:   http.StatusInternalServerError,
+			Detail:   chooserImageError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem de profile do chooser", "CreateListUseCase", "Use Cases", util.TypeInternalServerError)
+
+		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
+	newChooserImage, newProfileImageNameProblems := entity.NewImage(chooserImageName, chooserImageExtension, chooserImageSize)
+	if len(newProfileImageNameProblems) > 0 {
+		problemsDetails = append(problemsDetails, newProfileImageNameProblems...)
+	}
+
+	newChooser, newChooserProblems := entity.NewChooser(input.Name, newLogin, newAddress, newBirthdate, newChooserImage.ID)
 	if len(newChooserProblems) > 0 {
 		problemsDetails = append(problemsDetails, newChooserProblems...)
 	}
@@ -118,6 +146,23 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 	}
 
 	if len(problemsDetails) > 0 {
+		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
+
+	chooserImageCreationError := cc.ImageRepository.Create(newChooserImage)
+	if chooserImageCreationError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao persistir a imagem do chooser",
+			Status:   http.StatusInternalServerError,
+			Detail:   chooserImageCreationError.Error(),
+			Instance: util.RFC503,
+		})
+
+		util.NewLoggerError(http.StatusInternalServerError, chooserImageCreationError.Error(), "CreateChooserUseCase", "Use Cases", util.TypeInternalServerError)
+
 		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}

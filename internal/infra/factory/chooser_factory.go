@@ -8,24 +8,25 @@ import (
 )
 
 type ChooserFactory struct {
-	CreateChooser     *usecase.CreateChooserUseCase
-	FindChooserByID   *usecase.GetChooserUseCase
-	GetChoosers       *usecase.GetChoosersUseCase
-	DeactivateChooser *usecase.DeactivateChooserUseCase
+	CreateChooser   *usecase.CreateChooserUseCase
+	FindChooserByID *usecase.GetChooserUseCase
+	GetChoosers     *usecase.GetChoosersUseCase
+	UpdateChooser   *usecase.UpdateChooserUseCase
 }
 
 func NewChooserFactory(db *gorm.DB) *ChooserFactory {
 	chooserRepository := repository.NewChooserRepository(db)
+	imageRepository := repository.NewImageRepository(db)
 
-	createChooser := usecase.NewCreateChooserUseCase(chooserRepository)
+	createChooser := usecase.NewCreateChooserUseCase(chooserRepository, imageRepository)
 	findChooserByID := usecase.NewGetChooserUseCase(chooserRepository)
 	getChoosers := usecase.NewGetChoosersUseCase(chooserRepository)
-	deactivateChooser := usecase.NewDeactivateChooserUseCase(chooserRepository)
+	updateChooser := usecase.NewUpdateChooserUseCase(chooserRepository, imageRepository)
 
 	return &ChooserFactory{
-		CreateChooser:     createChooser,
-		FindChooserByID:   findChooserByID,
-		GetChoosers:       getChoosers,
-		DeactivateChooser: deactivateChooser,
+		CreateChooser:   createChooser,
+		FindChooserByID: findChooserByID,
+		GetChoosers:     getChoosers,
+		UpdateChooser:   updateChooser,
 	}
 }

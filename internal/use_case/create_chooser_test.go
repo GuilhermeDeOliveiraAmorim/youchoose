@@ -1,6 +1,10 @@
 package usecase
 
 import (
+	"fmt"
+	"mime/multipart"
+	"os"
+	"path/filepath"
 	"testing"
 	"youchoose/internal/entity"
 	"youchoose/internal/use_case/mock"
@@ -15,7 +19,8 @@ func TestCreateChooser(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockRepository := mock.NewMockChooserRepositoryInterface(ctrl)
-	createChooserUseCase := NewCreateChooserUseCase(mockRepository)
+	mockImageRepository := mock.NewMockImageRepositoryInterface(ctrl)
+	createChooserUseCase := NewCreateChooserUseCase(mockRepository, mockImageRepository)
 
 	name := "John Doe"
 	login_1 := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
@@ -23,6 +28,11 @@ func TestCreateChooser(t *testing.T) {
 	address := &valueobject.Address{City: "City", State: "State", Country: "Country"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
 	imageID := uuid.New().String()
+
+	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	if myError != nil {
+		t.Errorf("Erro ao file1: %v", myError)
+	}
 
 	chooser_1, _ := entity.NewChooser(name, login_1, address, birthDate, imageID)
 	chooser_2, _ := entity.NewChooser(name, login_2, address, birthDate, imageID)
@@ -34,7 +44,7 @@ func TestCreateChooser(t *testing.T) {
 
 	mockRepository.EXPECT().GetByID(gomock.Any()).Return(true, *chooser_1, nil)
 	mockRepository.EXPECT().GetAll().Return(choosers, nil)
-
+	mockImageRepository.EXPECT().Create(gomock.Any()).Return(nil)
 	mockRepository.EXPECT().
 		Create(gomock.Any()).
 		Return(nil).
@@ -51,7 +61,11 @@ func TestCreateChooser(t *testing.T) {
 		Day:       1,
 		Month:     1,
 		Year:      1990,
-		ImageID:   uuid.New().String(),
+		ImageFile: file1,
+		ImageHandler: &multipart.FileHeader{
+			Filename: "profile.jpg",
+			Size:     100,
+		},
 	}
 
 	output, problemDetailsOutputDTO := createChooserUseCase.Execute(input)
@@ -62,5 +76,26 @@ func TestCreateChooser(t *testing.T) {
 
 	if output.ID == "" {
 		t.Error("Expected non-empty ID in output")
+	}
+
+	dirPath := "/home/guilherme/Workspace/youchoose/internal/upload/"
+
+	fileError := filepath.Walk(dirPath, func(path string, info os.FileInfo, fileError error) error {
+		if fileError != nil {
+			return fileError
+		}
+
+		if !info.IsDir() {
+			deleteErr := os.Remove(path)
+			if deleteErr != nil {
+				fmt.Println("Erro ao excluir arquivo:", deleteErr)
+			}
+		}
+
+		return nil
+	})
+
+	if fileError != nil {
+		fmt.Println("Erro ao percorrer o diretório:", fileError)
 	}
 }
