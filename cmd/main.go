@@ -26,7 +26,7 @@ func main() {
 		return
 	}
 	fmt.Println("Migração bem-sucedida!")
-  
+
 	//chooserFactory := factory.NewChooserFactory(db)
 
 	// file, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
@@ -123,5 +123,17 @@ func main() {
 	// 	fmt.Println(j.ProblemDetails)
 	// } else {
 	// 	fmt.Println(i)
+	// }
+
+	// fmt.Println()
+
+	// k, l := chooserFactory.DeactivateChooser.Execute(usecase.DeactivateChooserInputDTO{
+	// 	ChooserID:             "c4ad0428-13e2-47bc-bf0f-22939694962f",
+	// 	ChooserIDToDeactivate: "721b8eee-9586-4771-bf50-0543d8bfbacc",
+	// })
+	// if len(l.ProblemDetails) > 0 {
+	// 	fmt.Println(l.ProblemDetails)
+	// } else {
+	// 	fmt.Println(k)
 	// }
 }
