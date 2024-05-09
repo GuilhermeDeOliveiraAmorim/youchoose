@@ -2,9 +2,12 @@ package usecase
 
 import (
 	"errors"
+	"mime/multipart"
 	"net/http"
+	"os"
 	"testing"
 	"youchoose/internal/entity"
+	"youchoose/internal/service"
 	"youchoose/internal/use_case/mock"
 	"youchoose/internal/util"
 	valueobject "youchoose/internal/value_object"
@@ -22,18 +25,28 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 	mockImageRepository := mock.NewMockImageRepositoryInterface(ctrl)
 	updateChooserUseCase := NewUpdateChooserUseCase(mockRepository, mockImageRepository)
 
-	imageID := uuid.New().String()
+	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	if myError != nil {
+		t.Errorf("Erro ao file1: %v", myError)
+	}
 
 	createChooserInputDTO := CreateChooserInputDTO{
-		Name:    "John Doe",
-		City:    "Aracaju",
-		State:   "Sergipe",
-		Country: "Brasil",
-		Day:     10,
-		Month:   5,
-		Year:    1990,
-		ImageID: imageID,
+		Name:      "John Doe",
+		City:      "Aracaju",
+		State:     "Sergipe",
+		Country:   "Brasil",
+		Day:       10,
+		Month:     5,
+		Year:      1990,
+		ImageFile: file1,
+		ImageHandler: &multipart.FileHeader{
+			Filename: "profile.jpg",
+			Size:     100,
+		},
 	}
+
+	_, chooserImageName, chooserImageExtension, chooserImageSize, _ := service.MoveFile(createChooserInputDTO.ImageFile, createChooserInputDTO.ImageHandler)
+	newChooserImageName, _ := entity.NewImage(chooserImageName, chooserImageExtension, chooserImageSize)
 
 	login, _ := valueobject.NewLogin("emailvalido@email.com", "AS12a@@56")
 	address, _ := valueobject.NewAddress(createChooserInputDTO.City, createChooserInputDTO.State, createChooserInputDTO.Country)
@@ -44,7 +57,7 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 		login,
 		address,
 		birthDate,
-		createChooserInputDTO.ImageID,
+		newChooserImageName.ID,
 	)
 
 	chooserID := existingUser.ID
@@ -62,7 +75,7 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 		assert.Equal(t, createChooserInputDTO.Day, user.BirthDate.Day)
 		assert.Equal(t, createChooserInputDTO.Month, user.BirthDate.Month)
 		assert.Equal(t, createChooserInputDTO.Year, user.BirthDate.Year)
-		assert.Equal(t, createChooserInputDTO.ImageID, user.ImageID)
+		assert.Equal(t, newChooserImageName.ID, user.ImageID)
 	})
 
 	updateChooserInputDTO := UpdateChooserInputDTO{
@@ -74,7 +87,7 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 		Day:       10,
 		Month:     5,
 		Year:      1990,
-		ImageID:   imageID,
+		ImageID:   newChooserImageName.ID,
 	}
 
 	output, problems := updateChooserUseCase.Execute(updateChooserInputDTO)
@@ -89,7 +102,7 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 		Day:       10,
 		Month:     5,
 		Year:      1990,
-		ImageID:   imageID,
+		ImageID:   newChooserImageName.ID,
 	}
 
 	assert.Equal(t, expectedOutput, output)

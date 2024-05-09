@@ -50,11 +50,6 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOut
 
 	ctx := context.Background()
 
-	validateChooserProblems := entity.ValidateChooser(input.Name, input.ImageID)
-	if len(validateChooserProblems) > 0 {
-		problemsDetails = append(problemsDetails, validateChooserProblems...)
-	}
-
 	newAddress, newAddressProblems := valueobject.NewAddress(input.City, input.State, input.Country)
 	if len(newAddressProblems) > 0 {
 		problemsDetails = append(problemsDetails, newAddressProblems...)
@@ -65,7 +60,7 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOut
 		problemsDetails = append(problemsDetails, newBirthdateProblems...)
 	}
 
-	if input.ImageID == "" && (input.ImageFile == nil || input.ImageHandler == nil) {
+	if (input.ImageID == "" && (input.ImageFile == nil || input.ImageHandler == nil)) || (input.ImageID != "" && (input.ImageID != chooser.ImageID)) {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeBadRequest,
 			Title:    "Imagem não informada",
@@ -73,7 +68,6 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOut
 			Detail:   "O chooser deve ter uma imagem",
 			Instance: util.RFC400,
 		})
-
 	}
 
 	if len(problemsDetails) > 0 {
@@ -109,9 +103,18 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOut
 			}
 		}
 
-		chooser.ChangeImage(ctx, newChooserImage.ID)
-
 		imagesToAdd = append(imagesToAdd, *newChooserImage)
+	} else {
+		validateChooserProblems := entity.ValidateChooser(input.Name, input.ImageID)
+		if len(validateChooserProblems) > 0 {
+			problemsDetails = append(problemsDetails, validateChooserProblems...)
+		}
+	}
+
+	if len(problemsDetails) > 0 {
+		return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
 	if chooser.Name != input.Name {
@@ -127,22 +130,76 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOut
 	}
 
 	if len(imagesToAdd) > 0 {
-		imagesToAddError := uc.ImageRepository.CreateMany(&imagesToAdd)
+		imagesToAddError := uc.ImageRepository.Create(&imagesToAdd[0])
 		if imagesToAddError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     util.TypeInternalServerError,
-				Title:    "Erro ao criar imagem",
+				Title:    "Erro ao atualizar imagem",
 				Status:   http.StatusInternalServerError,
 				Detail:   imagesToAddError.Error(),
 				Instance: util.RFC503,
 			})
 
-			util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar a imagem do chooser", "UpdateChooserUseCase", "Use Cases", util.TypeInternalServerError)
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao atualizar a imagem do chooser", "UpdateChooserUseCase", "Use Cases", util.TypeInternalServerError)
 
 			return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
+
+		doesTheImageExist, imageToDeactivate, getImageError := uc.ImageRepository.GetByID(chooser.ImageID)
+		if getImageError != nil {
+			problemsDetails = append(problemsDetails, util.ProblemDetails{
+				Type:     util.TypeInternalServerError,
+				Title:    "Erro ao buscar imagem",
+				Status:   http.StatusInternalServerError,
+				Detail:   getImageError.Error(),
+				Instance: util.RFC503,
+			})
+
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao buscar a imagem antiga do chooser", "UpdateChooserUseCase", "Use Cases", util.TypeInternalServerError)
+
+			return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+				ProblemDetails: problemsDetails,
+			}
+		} else if !doesTheImageExist {
+			problemsDetails = append(problemsDetails, util.ProblemDetails{
+				Type:     util.TypeNotFound,
+				Title:    util.SharedErrorTitleNotFound,
+				Status:   http.StatusNotFound,
+				Detail:   util.ImageErrorDetailNotFound,
+				Instance: util.RFC404,
+			})
+		} else if !chooser.Active {
+			problemsDetails = append(problemsDetails, util.ProblemDetails{
+				Type:     util.TypeNotFound,
+				Title:    util.SharedErrorTitleNotFound,
+				Status:   http.StatusNotFound,
+				Detail:   util.ImageErrorDetailDeactivate,
+				Instance: util.RFC404,
+			})
+		}
+
+		imageToDeactivate.Deactivate()
+
+		imageDeactivatedError := uc.ImageRepository.Deactivate(&imageToDeactivate)
+		if imageDeactivatedError != nil {
+			problemsDetails = append(problemsDetails, util.ProblemDetails{
+				Type:     util.TypeInternalServerError,
+				Title:    "Erro ao desativar imagem",
+				Status:   http.StatusInternalServerError,
+				Detail:   imageDeactivatedError.Error(),
+				Instance: util.RFC503,
+			})
+
+			util.NewLoggerError(http.StatusInternalServerError, "Erro ao desativar a imagem antiga do chooser", "UpdateChooserUseCase", "Use Cases", util.TypeInternalServerError)
+
+			return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
+				ProblemDetails: problemsDetails,
+			}
+		}
+
+		chooser.ChangeImage(ctx, imagesToAdd[0].ID)
 	}
 
 	chooserUpdatedError := uc.ChooserRepository.Update(&chooser)
