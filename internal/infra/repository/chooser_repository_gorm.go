@@ -43,9 +43,15 @@ func (cr *ChooserRepository) Create(chooser *entity.Chooser) error {
 }
 
 func (cr *ChooserRepository) Deactivate(chooser *entity.Chooser) error {
-	if err := cr.gorm.Model(&Choosers{}).Where("id = ?", chooser.ID).Update("active", false).Error; err != nil {
+	err := cr.gorm.Model(&Choosers{}).Where("id = ?", chooser.ID).Updates(map[string]interface{}{
+		"Active":        chooser.Active,
+		"DeactivatedAt": chooser.DeactivatedAt,
+	}).Error
+
+	if err != nil {
 		return err
 	}
+
 	return nil
 }
 
