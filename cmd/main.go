@@ -25,9 +25,14 @@ func main() {
 		repository.Choosers{},
 		repository.Images{},
 		repository.Actors{},
-		repository.Genres{},
 		repository.Directors{},
+		repository.Genres{},
 		repository.Writers{},
+        repository.MovieActors{},
+        repository.MovieDirectors{},
+        repository.MovieGenres{},
+        repository.MovieWriters{},
+		repository.Movies{},
 	); err != nil {
 		fmt.Println("Erro durante a migração:", err)
 		return
