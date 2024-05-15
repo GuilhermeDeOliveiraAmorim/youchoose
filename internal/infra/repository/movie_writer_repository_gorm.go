@@ -1,56 +1,68 @@
 package gorm
 
 import (
-	"gorm.io/gorm"
+	"errors"
 	"youchoose/internal/entity"
+
+	"gorm.io/gorm"
 )
 
 type MovieWriterRepository struct {
 	gorm *gorm.DB
 }
 
-// Create implements repositoryinterface.MovieWriterRepositoryInterface.
-func (m *MovieWriterRepository) Create(movieWriter *entity.MovieWriter) error {
-	panic("unimplemented")
-}
-
-// CreateMany implements repositoryinterface.MovieWriterRepositoryInterface.
-func (m *MovieWriterRepository) CreateMany(movieWriters *[]entity.MovieWriter) error {
-	panic("unimplemented")
-}
-
-// Deactivate implements repositoryinterface.MovieWriterRepositoryInterface.
-func (m *MovieWriterRepository) Deactivate(movieWriter *entity.MovieWriter) error {
-	panic("unimplemented")
-}
-
-// GetAll implements repositoryinterface.MovieWriterRepositoryInterface.
-func (m *MovieWriterRepository) GetAll() ([]entity.MovieWriter, error) {
-	panic("unimplemented")
-}
-
-// GetAllByMovieID implements repositoryinterface.MovieWriterRepositoryInterface.
-func (m *MovieWriterRepository) GetAllByMovieID(movieID string) ([]entity.MovieWriter, error) {
-	panic("unimplemented")
-}
-
-// GetAllByWriterID implements repositoryinterface.MovieWriterRepositoryInterface.
-func (m *MovieWriterRepository) GetAllByWriterID(writerID string) ([]entity.MovieWriter, error) {
-	panic("unimplemented")
-}
-
-// GetByID implements repositoryinterface.MovieWriterRepositoryInterface.
-func (m *MovieWriterRepository) GetByID(movieWriterID string) (entity.MovieWriter, error) {
-	panic("unimplemented")
-}
-
-// Update implements repositoryinterface.MovieWriterRepositoryInterface.
-func (m *MovieWriterRepository) Update(movieWriter *entity.MovieWriter) error {
-	panic("unimplemented")
-}
-
 func NewMovieWriterRepository(gorm *gorm.DB) *MovieWriterRepository {
 	return &MovieWriterRepository{
 		gorm: gorm,
 	}
+}
+
+func (m *MovieWriterRepository) Create(movieWriter *entity.MovieWriter) error {
+	panic("unimplemented")
+}
+
+func (m *MovieWriterRepository) CreateMany(movieWriters *[]entity.MovieWriter) error {
+	var movieWritersModel []MovieWriters
+
+	for _, movieWriter := range *movieWriters {
+		movieWritersModel = append(movieWritersModel, MovieWriters{
+			ID:            movieWriter.ID,
+			Active:        movieWriter.Active,
+			CreatedAt:     movieWriter.CreatedAt,
+			UpdatedAt:     movieWriter.UpdatedAt,
+			DeactivatedAt: movieWriter.DeactivatedAt,
+			MovieID:       movieWriter.MovieID,
+			WriterID:      movieWriter.WriterID,
+		})
+	}
+
+	if err := m.gorm.Create(movieWritersModel).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
+}
+
+func (m *MovieWriterRepository) Deactivate(movieWriter *entity.MovieWriter) error {
+	panic("unimplemented")
+}
+
+func (m *MovieWriterRepository) GetAll() ([]entity.MovieWriter, error) {
+	panic("unimplemented")
+}
+
+func (m *MovieWriterRepository) GetAllByMovieID(movieID string) ([]entity.MovieWriter, error) {
+	panic("unimplemented")
+}
+
+func (m *MovieWriterRepository) GetAllByWriterID(writerID string) ([]entity.MovieWriter, error) {
+	panic("unimplemented")
+}
+
+func (m *MovieWriterRepository) GetByID(movieWriterID string) (entity.MovieWriter, error) {
+	panic("unimplemented")
+}
+
+func (m *MovieWriterRepository) Update(movieWriter *entity.MovieWriter) error {
+	panic("unimplemented")
 }
