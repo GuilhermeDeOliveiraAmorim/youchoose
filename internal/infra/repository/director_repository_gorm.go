@@ -1,6 +1,7 @@
 package gorm
 
 import (
+	"errors"
 	"youchoose/internal/entity"
 	valueobject "youchoose/internal/value_object"
 
@@ -18,7 +19,24 @@ func NewDirectorRepository(gorm *gorm.DB) *DirectorRepository {
 }
 
 func (d *DirectorRepository) Create(director *entity.Director) error {
-	panic("unimplemented")
+	if err := d.gorm.Create(&Directors{
+		ID:            director.ID,
+		Active:        director.Active,
+		CreatedAt:     director.CreatedAt,
+		UpdatedAt:     director.UpdatedAt,
+		DeactivatedAt: director.DeactivatedAt,
+		Name:          director.Name,
+		Day:           director.BirthDate.Day,
+		Month:         director.BirthDate.Month,
+		Year:          director.BirthDate.Year,
+		CountryName:   director.Nationality.CountryName,
+		Flag:          director.Nationality.Flag,
+		ImageID:       director.ImageID,
+	}).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
 }
 
 func (d *DirectorRepository) CreateMany(directors *[]entity.Director) error {

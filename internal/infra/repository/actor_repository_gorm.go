@@ -1,6 +1,7 @@
 package gorm
 
 import (
+	"errors"
 	"youchoose/internal/entity"
 	valueobject "youchoose/internal/value_object"
 
@@ -11,27 +12,45 @@ type ActorRepository struct {
 	gorm *gorm.DB
 }
 
-// Create implements repositoryinterface.ActorRepositoryInterface.
-func (a *ActorRepository) Create(actor *entity.Actor) error {
-	panic("unimplemented")
+func NewActorRepository(gorm *gorm.DB) *ActorRepository {
+	return &ActorRepository{
+		gorm: gorm,
+	}
 }
 
-// CreateMany implements repositoryinterface.ActorRepositoryInterface.
+func (a *ActorRepository) Create(actor *entity.Actor) error {
+	if err := a.gorm.Create(&Actors{
+		ID:            actor.ID,
+		Active:        actor.Active,
+		CreatedAt:     actor.CreatedAt,
+		UpdatedAt:     actor.UpdatedAt,
+		DeactivatedAt: actor.DeactivatedAt,
+		Name:          actor.Name,
+		Day:           actor.BirthDate.Day,
+		Month:         actor.BirthDate.Month,
+		Year:          actor.BirthDate.Year,
+		CountryName:   actor.Nationality.CountryName,
+		Flag:          actor.Nationality.Flag,
+		ImageID:       actor.ImageID,
+	}).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
+}
+
 func (a *ActorRepository) CreateMany(actors *[]entity.Actor) error {
 	panic("unimplemented")
 }
 
-// Deactivate implements repositoryinterface.ActorRepositoryInterface.
 func (a *ActorRepository) Deactivate(actor *entity.Actor) error {
 	panic("unimplemented")
 }
 
-// DoTheseActorsAreIncludedInTheMovie implements repositoryinterface.ActorRepositoryInterface.
 func (a *ActorRepository) DoTheseActorsAreIncludedInTheMovie(movieID string, actorsIDs []string) (bool, []entity.Actor, error) {
 	panic("unimplemented")
 }
 
-// DoTheseActorsExist implements repositoryinterface.ActorRepositoryInterface.
 func (a *ActorRepository) DoTheseActorsExist(actorIDs []string) (bool, []entity.Actor, error) {
 	var actorsModel []Actors
 	result := a.gorm.Where("id IN ?", actorIDs).Find(&actorsModel)
@@ -72,23 +91,14 @@ func (a *ActorRepository) DoTheseActorsExist(actorIDs []string) (bool, []entity.
 	return true, actors, nil
 }
 
-// GetAll implements repositoryinterface.ActorRepositoryInterface.
 func (a *ActorRepository) GetAll() ([]entity.Actor, error) {
 	panic("unimplemented")
 }
 
-// GetByID implements repositoryinterface.ActorRepositoryInterface.
 func (a *ActorRepository) GetByID(actorID string) (entity.Actor, error) {
 	panic("unimplemented")
 }
 
-// Update implements repositoryinterface.ActorRepositoryInterface.
 func (a *ActorRepository) Update(actor *entity.Actor) error {
 	panic("unimplemented")
-}
-
-func NewActorRepository(gorm *gorm.DB) *ActorRepository {
-	return &ActorRepository{
-		gorm: gorm,
-	}
 }

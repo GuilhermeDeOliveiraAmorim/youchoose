@@ -1,6 +1,7 @@
 package gorm
 
 import (
+	"errors"
 	"youchoose/internal/entity"
 
 	"gorm.io/gorm"
@@ -10,27 +11,34 @@ type GenreRepository struct {
 	gorm *gorm.DB
 }
 
-// Create implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) Create(genre *entity.Genre) error {
-	panic("unimplemented")
+	if err := g.gorm.Create(&Genres{
+		ID:            genre.ID,
+		Active:        genre.Active,
+		CreatedAt:     genre.CreatedAt,
+		UpdatedAt:     genre.UpdatedAt,
+		DeactivatedAt: genre.DeactivatedAt,
+		Name:          genre.Name,
+		ImageID:       genre.ImageID,
+	}).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
 }
 
-// CreateMany implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) CreateMany(genres *[]entity.Genre) error {
 	panic("unimplemented")
 }
 
-// Deactivate implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) Deactivate(genre *entity.Genre) error {
 	panic("unimplemented")
 }
 
-// DoTheseGenresAreIncludedInTheMovie implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) DoTheseGenresAreIncludedInTheMovie(movieID string, genresIDs []string) (bool, []entity.Genre, error) {
 	panic("unimplemented")
 }
 
-// DoTheseGenresExist implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) DoTheseGenresExist(genreIDs []string) (bool, []entity.Genre, error) {
 	var genresModel []Genres
 	result := g.gorm.Where("id IN ?", genreIDs).Find(&genresModel)
@@ -62,22 +70,18 @@ func (g *GenreRepository) DoTheseGenresExist(genreIDs []string) (bool, []entity.
 	return true, genres, nil
 }
 
-// GetAll implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) GetAll() ([]entity.Genre, error) {
 	panic("unimplemented")
 }
 
-// GetAllByMovieID implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) GetAllByMovieID(movieID string) ([]entity.Genre, error) {
 	panic("unimplemented")
 }
 
-// GetByID implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) GetByID(genreID string) (entity.Genre, error) {
 	panic("unimplemented")
 }
 
-// Update implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) Update(genre *entity.Genre) error {
 	panic("unimplemented")
 }
