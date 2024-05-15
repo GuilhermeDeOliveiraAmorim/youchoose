@@ -1,8 +1,9 @@
 package gorm
 
 import (
-	"gorm.io/gorm"
 	"youchoose/internal/entity"
+
+	"gorm.io/gorm"
 )
 
 type GenreRepository struct {
@@ -31,7 +32,34 @@ func (g *GenreRepository) DoTheseGenresAreIncludedInTheMovie(movieID string, gen
 
 // DoTheseGenresExist implements repositoryinterface.GenreRepositoryInterface.
 func (g *GenreRepository) DoTheseGenresExist(genreIDs []string) (bool, []entity.Genre, error) {
-	panic("unimplemented")
+	var genresModel []Genres
+	result := g.gorm.Where("id IN ?", genreIDs).Find(&genresModel)
+
+	if result.Error != nil {
+		return false, nil, result.Error
+	}
+
+	var genres []entity.Genre
+
+	if result.RowsAffected != int64(len(genreIDs)) {
+		return false, genres, nil
+	}
+
+	for _, genreModel := range genresModel {
+		genres = append(genres, entity.Genre{
+			SharedEntity: entity.SharedEntity{
+				ID:            genreModel.ID,
+				Active:        genreModel.Active,
+				CreatedAt:     genreModel.CreatedAt,
+				UpdatedAt:     genreModel.UpdatedAt,
+				DeactivatedAt: genreModel.DeactivatedAt,
+			},
+			Name:    genreModel.Name,
+			ImageID: genreModel.ImageID,
+		})
+	}
+
+	return true, genres, nil
 }
 
 // GetAll implements repositoryinterface.GenreRepositoryInterface.
