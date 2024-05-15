@@ -1,8 +1,10 @@
 package gorm
 
 import (
-	"gorm.io/gorm"
 	"youchoose/internal/entity"
+	valueobject "youchoose/internal/value_object"
+
+	"gorm.io/gorm"
 )
 
 type ActorRepository struct {
@@ -31,7 +33,43 @@ func (a *ActorRepository) DoTheseActorsAreIncludedInTheMovie(movieID string, act
 
 // DoTheseActorsExist implements repositoryinterface.ActorRepositoryInterface.
 func (a *ActorRepository) DoTheseActorsExist(actorIDs []string) (bool, []entity.Actor, error) {
-	panic("unimplemented")
+	var actorsModel []Actors
+	result := a.gorm.Where("id IN ?", actorIDs).Find(&actorsModel)
+
+	if result.Error != nil {
+		return false, nil, result.Error
+	}
+
+	var actors []entity.Actor
+
+	if result.RowsAffected != int64(len(actorIDs)) {
+		return false, actors, nil
+	}
+
+	for _, actorModel := range actorsModel {
+		actors = append(actors, entity.Actor{
+			SharedEntity: entity.SharedEntity{
+				ID:            actorModel.ID,
+				Active:        actorModel.Active,
+				CreatedAt:     actorModel.CreatedAt,
+				UpdatedAt:     actorModel.UpdatedAt,
+				DeactivatedAt: actorModel.DeactivatedAt,
+			},
+			Name:    actorModel.Name,
+			ImageID: actorModel.ImageID,
+			BirthDate: &valueobject.BirthDate{
+				Day:   actorModel.Day,
+				Month: actorModel.Month,
+				Year:  actorModel.Year,
+			},
+			Nationality: &valueobject.Nationality{
+				CountryName: actorModel.CountryName,
+				Flag:        actorModel.Flag,
+			},
+		})
+	}
+
+	return true, actors, nil
 }
 
 // GetAll implements repositoryinterface.ActorRepositoryInterface.
