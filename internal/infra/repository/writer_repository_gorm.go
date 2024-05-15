@@ -40,7 +40,30 @@ func (w *WriterRepository) Create(writer *entity.Writer) error {
 }
 
 func (w *WriterRepository) CreateMany(writers *[]entity.Writer) error {
-	panic("unimplemented")
+	var writersModel []Actors
+
+	for _, writer := range *writers {
+		writersModel = append(writersModel, Actors{
+			ID:            writer.ID,
+			Active:        writer.Active,
+			CreatedAt:     writer.CreatedAt,
+			UpdatedAt:     writer.UpdatedAt,
+			DeactivatedAt: writer.DeactivatedAt,
+			Name:          writer.Name,
+			Day:           writer.BirthDate.Day,
+			Month:         writer.BirthDate.Month,
+			Year:          writer.BirthDate.Year,
+			CountryName:   writer.Nationality.CountryName,
+			Flag:          writer.Nationality.Flag,
+			ImageID:       writer.ImageID,
+		})
+	}
+
+	if err := w.gorm.Create(writersModel).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
 }
 
 func (w *WriterRepository) Deactivate(writer *entity.Writer) error {

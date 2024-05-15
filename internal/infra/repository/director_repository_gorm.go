@@ -40,7 +40,30 @@ func (d *DirectorRepository) Create(director *entity.Director) error {
 }
 
 func (d *DirectorRepository) CreateMany(directors *[]entity.Director) error {
-	panic("unimplemented")
+	var directorsModel []Directors
+
+	for _, director := range *directors {
+		directorsModel = append(directorsModel, Directors{
+			ID:            director.ID,
+			Active:        director.Active,
+			CreatedAt:     director.CreatedAt,
+			UpdatedAt:     director.UpdatedAt,
+			DeactivatedAt: director.DeactivatedAt,
+			Name:          director.Name,
+			Day:           director.BirthDate.Day,
+			Month:         director.BirthDate.Month,
+			Year:          director.BirthDate.Year,
+			CountryName:   director.Nationality.CountryName,
+			Flag:          director.Nationality.Flag,
+			ImageID:       director.ImageID,
+		})
+	}
+
+	if err := d.gorm.Create(directorsModel).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
 }
 
 func (d *DirectorRepository) Deactivate(director *entity.Director) error {

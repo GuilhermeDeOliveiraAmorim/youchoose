@@ -28,7 +28,25 @@ func (g *GenreRepository) Create(genre *entity.Genre) error {
 }
 
 func (g *GenreRepository) CreateMany(genres *[]entity.Genre) error {
-	panic("unimplemented")
+	var genresModel []Genres
+
+	for _, genre := range *genres {
+		genresModel = append(genresModel, Genres{
+			ID:            genre.ID,
+			Active:        genre.Active,
+			CreatedAt:     genre.CreatedAt,
+			UpdatedAt:     genre.UpdatedAt,
+			DeactivatedAt: genre.DeactivatedAt,
+			Name:          genre.Name,
+			ImageID:       genre.ImageID,
+		})
+	}
+
+	if err := g.gorm.Create(genresModel).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
 }
 
 func (g *GenreRepository) Deactivate(genre *entity.Genre) error {
