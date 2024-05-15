@@ -40,7 +40,30 @@ func (a *ActorRepository) Create(actor *entity.Actor) error {
 }
 
 func (a *ActorRepository) CreateMany(actors *[]entity.Actor) error {
-	panic("unimplemented")
+	var actorsModel []Actors
+
+	for _, actor := range *actors {
+		actorsModel = append(actorsModel, Actors{
+			ID:            actor.ID,
+			Active:        actor.Active,
+			CreatedAt:     actor.CreatedAt,
+			UpdatedAt:     actor.UpdatedAt,
+			DeactivatedAt: actor.DeactivatedAt,
+			Name:          actor.Name,
+			Day:           actor.BirthDate.Day,
+			Month:         actor.BirthDate.Month,
+			Year:          actor.BirthDate.Year,
+			CountryName:   actor.Nationality.CountryName,
+			Flag:          actor.Nationality.Flag,
+			ImageID:       actor.ImageID,
+		})
+	}
+
+	if err := a.gorm.Create(actorsModel).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
 }
 
 func (a *ActorRepository) Deactivate(actor *entity.Actor) error {
