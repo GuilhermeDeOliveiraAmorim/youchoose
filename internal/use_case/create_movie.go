@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"fmt"
 	"mime/multipart"
 	"net/http"
 	"youchoose/internal/entity"
@@ -201,9 +202,22 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
-	var imagesToAdd []entity.Image
+	movieImageError := cm.ImageRepository.Create(movieImage)
+	if movieImageError != nil {
+		problemsDetails = append(problemsDetails, util.ProblemDetails{
+			Type:     util.TypeInternalServerError,
+			Title:    "Erro ao criar imagem",
+			Status:   http.StatusInternalServerError,
+			Detail:   movieImageError.Error(),
+			Instance: util.RFC503,
+		})
 
-	imagesToAdd = append(imagesToAdd, *movieImage)
+		util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar a imagem do filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+		return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
+	}
 
 	newMovieError := cm.MovieRepository.Create(newMovie)
 	if newMovieError != nil {
@@ -222,29 +236,18 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
-	_, imagesToAdd, newMovie = TreatmentGenres(input.Genres, cm, imagesToAdd, newMovie)
-	_, imagesToAdd, newMovie = TreatmentActors(input.Actors, cm, imagesToAdd, newMovie)
-	_, imagesToAdd, newMovie = TreatmentDirectors(input.Directors, cm, imagesToAdd, newMovie)
-	_, imagesToAdd, newMovie = TreatmentWriters(input.Writers, cm, imagesToAdd, newMovie)
+	fmt.Println("aposdjpadpoapdjaodjpasjdpasojdpaosdj")
+	fmt.Println(newMovie)
+	fmt.Println("aposdjpadpoapdjaodjpasjdpasojdpaosdj")
 
-	if len(imagesToAdd) > 0 {
-		imagesToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
-		if imagesToAddError != nil {
-			problemsDetails = append(problemsDetails, util.ProblemDetails{
-				Type:     util.TypeInternalServerError,
-				Title:    "Erro ao criar as imagens",
-				Status:   http.StatusInternalServerError,
-				Detail:   imagesToAddError.Error(),
-				Instance: util.RFC503,
-			})
+	_, newMovie = TreatmentGenres(input.Genres, cm, newMovie)
+	_, newMovie = TreatmentActors(input.Actors, cm, newMovie)
+	_, newMovie = TreatmentDirectors(input.Directors, cm, newMovie)
+	_, newMovie = TreatmentWriters(input.Writers, cm, newMovie)
 
-			util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
-
-			return MovieOutputDTO{}, util.ProblemDetailsOutputDTO{
-				ProblemDetails: problemsDetails,
-			}
-		}
-	}
+	fmt.Println("aposdjpadpoapdjaodjpasjdpasojdpaosdj")
+	fmt.Println(newMovie)
+	fmt.Println("aposdjpadpoapdjaodjpasjdpasojdpaosdj")
 
 	output := NewMovieOutputDTO(*newMovie)
 
@@ -253,10 +256,11 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 	}
 }
 
-func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, imagesToAdd []entity.Image, newMovie *entity.Movie) (util.ProblemDetailsOutputDTO, []entity.Image, *entity.Movie) {
+func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, newMovie *entity.Movie) (util.ProblemDetailsOutputDTO, *entity.Movie) {
 	var genresToCheck []string
 	var genresToAdd []GenreDTO
 	var problemsDetails []util.ProblemDetails
+	var imagesToAdd []entity.Image
 
 	for _, genre := range inputGenres {
 		if genre.GenreID == "" {
@@ -281,7 +285,7 @@ func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, imagesToAdd
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		} else if !doTheseGenresExist {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     util.TypeValidationError,
@@ -293,7 +297,7 @@ func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, imagesToAdd
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		}
 
 		if len(existingGenres) > 0 {
@@ -319,7 +323,7 @@ func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, imagesToAdd
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			genreToAddImage, genreToAddImageProblem := entity.NewImage(genreToAddName, genreToAddExtension, genreToAddSize)
@@ -335,11 +339,30 @@ func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, imagesToAdd
 			if len(problemsDetails) > 0 {
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			imagesToAdd = append(imagesToAdd, *genreToAddImage)
 			newGenres = append(newGenres, *newGenre)
+		}
+
+		if len(imagesToAdd) > 0 {
+			imageGenresToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
+			if imageGenresToAddError != nil {
+				problemsDetails = append(problemsDetails, util.ProblemDetails{
+					Type:     util.TypeInternalServerError,
+					Title:    "Erro ao criar imagens",
+					Status:   http.StatusInternalServerError,
+					Detail:   imageGenresToAddError.Error(),
+					Instance: util.RFC503,
+				})
+
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens dos gêneros", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+				return util.ProblemDetailsOutputDTO{
+					ProblemDetails: problemsDetails,
+				}, nil
+			}
 		}
 
 		if len(newGenres) > 0 {
@@ -357,7 +380,7 @@ func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, imagesToAdd
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			newMovie.AddGenres(newGenres)
@@ -389,16 +412,17 @@ func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, imagesToAdd
 
 		return util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
-		}, nil, nil
+		}, nil
 	}
 
-	return util.ProblemDetailsOutputDTO{}, imagesToAdd, newMovie
+	return util.ProblemDetailsOutputDTO{}, newMovie
 }
 
-func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, imagesToAdd []entity.Image, newMovie *entity.Movie) (util.ProblemDetailsOutputDTO, []entity.Image, *entity.Movie) {
+func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, newMovie *entity.Movie) (util.ProblemDetailsOutputDTO, *entity.Movie) {
 	var actorsToCheck []string
 	var actorsToAdd []ActorDTO
 	var problemsDetails []util.ProblemDetails
+	var imagesToAdd []entity.Image
 
 	for _, actor := range inputActors {
 		if actor.ActorID == "" {
@@ -423,7 +447,7 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, imagesToAdd
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		} else if !doTheseActorsExist {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     util.TypeValidationError,
@@ -435,7 +459,7 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, imagesToAdd
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		}
 
 		if len(existingActors) > 0 {
@@ -461,7 +485,7 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, imagesToAdd
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			newActorBirthday, newActorBirthdayProblem := valueobject.NewBirthDate(actorToAdd.Day, actorToAdd.Month, actorToAdd.Year)
@@ -487,11 +511,30 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, imagesToAdd
 			if len(problemsDetails) > 0 {
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			imagesToAdd = append(imagesToAdd, *actorToAddImage)
 			newActors = append(newActors, *newActor)
+		}
+
+		if len(imagesToAdd) > 0 {
+			imageGenresToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
+			if imageGenresToAddError != nil {
+				problemsDetails = append(problemsDetails, util.ProblemDetails{
+					Type:     util.TypeInternalServerError,
+					Title:    "Erro ao criar imagens",
+					Status:   http.StatusInternalServerError,
+					Detail:   imageGenresToAddError.Error(),
+					Instance: util.RFC503,
+				})
+
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens do(a)s atores(atrizes)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+				return util.ProblemDetailsOutputDTO{
+					ProblemDetails: problemsDetails,
+				}, nil
+			}
 		}
 
 		if len(newActors) > 0 {
@@ -509,7 +552,7 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, imagesToAdd
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			newMovie.AddActors(newActors)
@@ -542,17 +585,18 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, imagesToAdd
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		}
 	}
 
-	return util.ProblemDetailsOutputDTO{}, imagesToAdd, newMovie
+	return util.ProblemDetailsOutputDTO{}, newMovie
 }
 
-func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, imagesToAdd []entity.Image, newMovie *entity.Movie) (util.ProblemDetailsOutputDTO, []entity.Image, *entity.Movie) {
+func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, newMovie *entity.Movie) (util.ProblemDetailsOutputDTO, *entity.Movie) {
 	var directorsToCheck []string
 	var directorsToAdd []DirectorDTO
 	var problemsDetails []util.ProblemDetails
+	var imagesToAdd []entity.Image
 
 	for _, director := range inputDirectors {
 		if director.DirectorID == "" {
@@ -577,7 +621,7 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, im
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		} else if !doTheseDirectorsExist {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     util.TypeValidationError,
@@ -589,7 +633,7 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, im
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		}
 
 		if len(existingDirectors) > 0 {
@@ -615,7 +659,7 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, im
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			newDirectorBirthday, newDirectorBirthdayProblem := valueobject.NewBirthDate(directorToAdd.Day, directorToAdd.Month, directorToAdd.Year)
@@ -641,11 +685,30 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, im
 			if len(problemsDetails) > 0 {
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			imagesToAdd = append(imagesToAdd, *directorToAddImage)
 			newDirectors = append(newDirectors, *newDirector)
+		}
+
+		if len(imagesToAdd) > 0 {
+			imageGenresToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
+			if imageGenresToAddError != nil {
+				problemsDetails = append(problemsDetails, util.ProblemDetails{
+					Type:     util.TypeInternalServerError,
+					Title:    "Erro ao criar imagens",
+					Status:   http.StatusInternalServerError,
+					Detail:   imageGenresToAddError.Error(),
+					Instance: util.RFC503,
+				})
+
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens do(a)s diretores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+				return util.ProblemDetailsOutputDTO{
+					ProblemDetails: problemsDetails,
+				}, nil
+			}
 		}
 
 		if len(newDirectors) > 0 {
@@ -663,7 +726,7 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, im
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			newMovie.AddDirectors(newDirectors)
@@ -696,17 +759,18 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, im
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		}
 	}
 
-	return util.ProblemDetailsOutputDTO{}, imagesToAdd, newMovie
+	return util.ProblemDetailsOutputDTO{}, newMovie
 }
 
-func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesToAdd []entity.Image, newMovie *entity.Movie) (util.ProblemDetailsOutputDTO, []entity.Image, *entity.Movie) {
+func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie *entity.Movie) (util.ProblemDetailsOutputDTO, *entity.Movie) {
 	var writersToCheck []string
 	var writersToAdd []WriterDTO
 	var problemsDetails []util.ProblemDetails
+	var imagesToAdd []entity.Image
 
 	for _, writer := range inputWriters {
 		if writer.WriterID == "" {
@@ -731,7 +795,7 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesTo
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		} else if !doTheseWritersExist {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     util.TypeValidationError,
@@ -743,7 +807,7 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesTo
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		}
 
 		if len(existingWriters) > 0 {
@@ -769,7 +833,7 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesTo
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			newWriterBirthday, newWriterBirthdayProblem := valueobject.NewBirthDate(writerToAdd.Day, writerToAdd.Month, writerToAdd.Year)
@@ -795,12 +859,35 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesTo
 			if len(problemsDetails) > 0 {
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			imagesToAdd = append(imagesToAdd, *writerToAddImage)
 			newWriters = append(newWriters, *newWriter)
 		}
+
+		if len(imagesToAdd) > 0 {
+			imageGenresToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
+			if imageGenresToAddError != nil {
+				problemsDetails = append(problemsDetails, util.ProblemDetails{
+					Type:     util.TypeInternalServerError,
+					Title:    "Erro ao criar imagens",
+					Status:   http.StatusInternalServerError,
+					Detail:   imageGenresToAddError.Error(),
+					Instance: util.RFC503,
+				})
+
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens do(a)s escritores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+				return util.ProblemDetailsOutputDTO{
+					ProblemDetails: problemsDetails,
+				}, nil
+			}
+		}
+
+		fmt.Println("28")
+		fmt.Println(newWriters)
+		fmt.Println("29")
 
 		if len(newWriters) > 0 {
 			writersToAddError := cm.WriterRepository.CreateMany(&newWriters)
@@ -813,11 +900,11 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesTo
 					Instance: util.RFC503,
 				})
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o(a)s escritores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o(a)s escritores(as) do filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
-				}, nil, nil
+				}, nil
 			}
 
 			newMovie.AddWriters(newWriters)
@@ -825,6 +912,10 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesTo
 	}
 
 	var movieWriters []entity.MovieWriter
+
+	fmt.Println("23")
+	fmt.Println(newMovie.Writers)
+	fmt.Println("24")
 
 	for _, writer := range newMovie.Writers {
 		newMovieWriter, newMovieWriterError := entity.NewMovieWriter(newMovie.ID, writer.ID)
@@ -834,6 +925,10 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesTo
 
 		movieWriters = append(movieWriters, *newMovieWriter)
 	}
+
+	fmt.Println("25")
+	fmt.Println(movieWriters)
+	fmt.Println("26")
 
 	if len(movieWriters) > 0 {
 		movieWritersToAddError := cm.MovieWriterRepository.CreateMany(&movieWriters)
@@ -850,9 +945,9 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, imagesTo
 
 			return util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
-			}, nil, nil
+			}, nil
 		}
 	}
 
-	return util.ProblemDetailsOutputDTO{}, imagesToAdd, newMovie
+	return util.ProblemDetailsOutputDTO{}, newMovie
 }

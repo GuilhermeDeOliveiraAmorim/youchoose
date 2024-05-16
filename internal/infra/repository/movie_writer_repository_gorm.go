@@ -2,6 +2,7 @@ package gorm
 
 import (
 	"errors"
+	"fmt"
 	"youchoose/internal/entity"
 
 	"gorm.io/gorm"
@@ -22,6 +23,9 @@ func (m *MovieWriterRepository) Create(movieWriter *entity.MovieWriter) error {
 }
 
 func (m *MovieWriterRepository) CreateMany(movieWriters *[]entity.MovieWriter) error {
+	fmt.Println("---")
+	fmt.Println(movieWriters)
+	fmt.Println("---")
 	var movieWritersModel []MovieWriters
 
 	for _, movieWriter := range *movieWriters {
@@ -35,8 +39,13 @@ func (m *MovieWriterRepository) CreateMany(movieWriters *[]entity.MovieWriter) e
 			WriterID:      movieWriter.WriterID,
 		})
 	}
+	
+	for _, v := range movieWritersModel {
+		fmt.Println(v)
+	}
 
 	if err := m.gorm.Create(movieWritersModel).Error; err != nil {
+		fmt.Println("OPA")
 		return errors.New(err.Error())
 	}
 
