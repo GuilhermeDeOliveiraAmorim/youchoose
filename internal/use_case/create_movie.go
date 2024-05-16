@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"fmt"
 	"mime/multipart"
 	"net/http"
 	"youchoose/internal/entity"
@@ -236,18 +235,10 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
-	fmt.Println("aposdjpadpoapdjaodjpasjdpasojdpaosdj")
-	fmt.Println(newMovie)
-	fmt.Println("aposdjpadpoapdjaodjpasjdpasojdpaosdj")
-
 	_, newMovie = TreatmentGenres(input.Genres, cm, newMovie)
 	_, newMovie = TreatmentActors(input.Actors, cm, newMovie)
 	_, newMovie = TreatmentDirectors(input.Directors, cm, newMovie)
 	_, newMovie = TreatmentWriters(input.Writers, cm, newMovie)
-
-	fmt.Println("aposdjpadpoapdjaodjpasjdpasojdpaosdj")
-	fmt.Println(newMovie)
-	fmt.Println("aposdjpadpoapdjaodjpasjdpasojdpaosdj")
 
 	output := NewMovieOutputDTO(*newMovie)
 
@@ -885,10 +876,6 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie
 			}
 		}
 
-		fmt.Println("28")
-		fmt.Println(newWriters)
-		fmt.Println("29")
-
 		if len(newWriters) > 0 {
 			writersToAddError := cm.WriterRepository.CreateMany(&newWriters)
 			if writersToAddError != nil {
@@ -913,10 +900,6 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie
 
 	var movieWriters []entity.MovieWriter
 
-	fmt.Println("23")
-	fmt.Println(newMovie.Writers)
-	fmt.Println("24")
-
 	for _, writer := range newMovie.Writers {
 		newMovieWriter, newMovieWriterError := entity.NewMovieWriter(newMovie.ID, writer.ID)
 		if newMovieWriterError != nil {
@@ -925,10 +908,6 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie
 
 		movieWriters = append(movieWriters, *newMovieWriter)
 	}
-
-	fmt.Println("25")
-	fmt.Println(movieWriters)
-	fmt.Println("26")
 
 	if len(movieWriters) > 0 {
 		movieWritersToAddError := cm.MovieWriterRepository.CreateMany(&movieWriters)
