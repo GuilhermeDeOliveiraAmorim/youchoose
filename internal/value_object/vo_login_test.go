@@ -1,7 +1,6 @@
 package valueobject
 
 import (
-	"fmt"
 	"net/http"
 	"testing"
 )
@@ -42,9 +41,7 @@ func TestNewLoginInvalidPassword(t *testing.T) {
 	email := "user@example.com"
 	password := "weak"
 
-	login, err := NewLogin(email, password)
-
-	fmt.Println(login, err)
+	_, err := NewLogin(email, password)
 
 	if len(err) == 0 {
 		t.Error("Login com senha fraca foi criado.")
@@ -63,7 +60,6 @@ func TestEncryptAndDecryptEmail(t *testing.T) {
 	login, _ := NewLogin(email, password)
 
 	encryptedEmail, err := login.EncryptEmail(email)
-	fmt.Println(encryptedEmail, err)
 	if err != nil {
 		t.Errorf("Erro ao encriptar e-mail: %v", err)
 	}

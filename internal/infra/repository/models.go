@@ -148,16 +148,20 @@ type MovieWriters struct {
 }
 
 type Movies struct {
-	ID          string           `gorm:"primaryKey;not null"`
-	Title       string           `gorm:"not null"`
-	CountryName string           `gorm:"not null"`
-	Flag        string           `gorm:"not null"`
-	ReleaseYear int              `gorm:"not null"`
-	ImageID     string           `gorm:"not null"`
-	Votes       int              `gorm:"not null"`
-	Image       Images           `gorm:"foreignKey:ImageID"`
-	Actors      []MovieActors    `gorm:"foreignKey:MovieID"`
-	Directors   []MovieDirectors `gorm:"foreignKey:MovieID"`
-	Genres      []MovieGenres    `gorm:"foreignKey:MovieID"`
-	Writers     []MovieWriters   `gorm:"foreignKey:MovieID"`
+	ID            string           `gorm:"primaryKey;not null"`
+	Active        bool             `gorm:"not null"`
+	CreatedAt     time.Time        `gorm:"not null"`
+	UpdatedAt     time.Time        `gorm:"not null"`
+	DeactivatedAt time.Time        `gorm:"not null"`
+	Title         string           `gorm:"not null"`
+	CountryName   string           `gorm:"not null"`
+	Flag          string           `gorm:"not null"`
+	ReleaseYear   int              `gorm:"not null"`
+	ImageID       string           `gorm:"not null"`
+	Votes         int              `gorm:"not null"`
+	Image         Images           `gorm:"foreignKey:ImageID"`
+	Actors        []MovieActors    `gorm:"foreignKey:MovieID"`
+	Directors     []MovieDirectors `gorm:"foreignKey:MovieID"`
+	Genres        []MovieGenres    `gorm:"foreignKey:MovieID"`
+	Writers       []MovieWriters   `gorm:"foreignKey:MovieID"`
 }

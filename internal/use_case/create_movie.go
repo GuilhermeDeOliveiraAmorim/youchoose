@@ -887,7 +887,7 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie
 					Instance: util.RFC503,
 				})
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o(a)s escritores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar o(a)s escritores(as) do filme", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
