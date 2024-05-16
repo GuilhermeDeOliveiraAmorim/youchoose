@@ -1,6 +1,7 @@
 package gorm
 
 import (
+	"errors"
 	"youchoose/internal/entity"
 
 	"gorm.io/gorm"
@@ -16,52 +17,58 @@ func NewMovieRepository(gorm *gorm.DB) *MovieRepository {
 	}
 }
 
-// Create implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) Create(movie *entity.Movie) error {
-	panic("unimplemented")
+	if err := m.gorm.Create(&Movies{
+		ID:            movie.ID,
+		Active:        movie.Active,
+		CreatedAt:     movie.CreatedAt,
+		UpdatedAt:     movie.UpdatedAt,
+		DeactivatedAt: movie.DeactivatedAt,
+		Title:         movie.Title,
+		CountryName:   movie.Nationality.CountryName,
+		Flag:          movie.Nationality.Flag,
+		ReleaseYear:   movie.ReleaseYear,
+		ImageID:       movie.ImageID,
+		Votes:         movie.Votes,
+	}).Error; err != nil {
+		return errors.New(err.Error())
+	}
+
+	return nil
 }
 
-// Deactivate implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) Deactivate(movie *entity.Movie) error {
 	panic("unimplemented")
 }
 
-// DoTheseMoviesExist implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) DoTheseMoviesExist(movieIDs []string) (bool, []entity.Movie, error) {
 	panic("unimplemented")
 }
 
-// GetAll implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) GetAll() ([]entity.Movie, error) {
 	panic("unimplemented")
 }
 
-// GetByActorID implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) GetByActorID(actorID string) ([]entity.Movie, error) {
 	panic("unimplemented")
 }
 
-// GetByDirectorID implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) GetByDirectorID(directorID string) ([]entity.Movie, error) {
 	panic("unimplemented")
 }
 
-// GetByGenreID implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) GetByGenreID(genreID string) ([]entity.Movie, error) {
 	panic("unimplemented")
 }
 
-// GetByID implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) GetByID(movieID string) (bool, entity.Movie, error) {
 	panic("unimplemented")
 }
 
-// GetByWriterID implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) GetByWriterID(writerID string) ([]entity.Movie, error) {
 	panic("unimplemented")
 }
 
-// Update implements repositoryinterface.MovieRepositoryInterface.
 func (m *MovieRepository) Update(movie *entity.Movie) error {
 	panic("unimplemented")
 }

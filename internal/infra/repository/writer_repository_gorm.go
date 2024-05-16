@@ -40,10 +40,10 @@ func (w *WriterRepository) Create(writer *entity.Writer) error {
 }
 
 func (w *WriterRepository) CreateMany(writers *[]entity.Writer) error {
-	var writersModel []Actors
+	var writersModel []Writers
 
 	for _, writer := range *writers {
-		writersModel = append(writersModel, Actors{
+		writersModel = append(writersModel, Writers{
 			ID:            writer.ID,
 			Active:        writer.Active,
 			CreatedAt:     writer.CreatedAt,
