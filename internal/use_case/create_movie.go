@@ -201,13 +201,13 @@ func (cm *CreateMovieUseCase) Execute(input CreateMovieInputDTO) (MovieOutputDTO
 		}
 	}
 
-	movieImageError := cm.ImageRepository.Create(movieImage)
-	if movieImageError != nil {
+	movieImageToAddError := cm.ImageRepository.Create(movieImage)
+	if movieImageToAddError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
 			Title:    "Erro ao criar imagem",
 			Status:   http.StatusInternalServerError,
-			Detail:   movieImageError.Error(),
+			Detail:   movieImageToAddError.Error(),
 			Instance: util.RFC503,
 		})
 
@@ -338,13 +338,13 @@ func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, newMovie *e
 		}
 
 		if len(imagesToAdd) > 0 {
-			imageGenresToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
-			if imageGenresToAddError != nil {
+			imagesToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
+			if imagesToAddError != nil {
 				problemsDetails = append(problemsDetails, util.ProblemDetails{
 					Type:     util.TypeInternalServerError,
 					Title:    "Erro ao criar imagens",
 					Status:   http.StatusInternalServerError,
-					Detail:   imageGenresToAddError.Error(),
+					Detail:   imagesToAddError.Error(),
 					Instance: util.RFC503,
 				})
 
@@ -510,13 +510,13 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, newMovie *e
 		}
 
 		if len(imagesToAdd) > 0 {
-			imageGenresToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
-			if imageGenresToAddError != nil {
+			imagesToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
+			if imagesToAddError != nil {
 				problemsDetails = append(problemsDetails, util.ProblemDetails{
 					Type:     util.TypeInternalServerError,
 					Title:    "Erro ao criar imagens",
 					Status:   http.StatusInternalServerError,
-					Detail:   imageGenresToAddError.Error(),
+					Detail:   imagesToAddError.Error(),
 					Instance: util.RFC503,
 				})
 
@@ -684,17 +684,17 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, ne
 		}
 
 		if len(imagesToAdd) > 0 {
-			imageGenresToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
-			if imageGenresToAddError != nil {
+			imagesToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
+			if imagesToAddError != nil {
 				problemsDetails = append(problemsDetails, util.ProblemDetails{
 					Type:     util.TypeInternalServerError,
 					Title:    "Erro ao criar imagens",
 					Status:   http.StatusInternalServerError,
-					Detail:   imageGenresToAddError.Error(),
+					Detail:   imagesToAddError.Error(),
 					Instance: util.RFC503,
 				})
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens do(a)s diretores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens dos(as) diretores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
@@ -858,17 +858,17 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie
 		}
 
 		if len(imagesToAdd) > 0 {
-			imageGenresToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
-			if imageGenresToAddError != nil {
+			imagesToAddError := cm.ImageRepository.CreateMany(&imagesToAdd)
+			if imagesToAddError != nil {
 				problemsDetails = append(problemsDetails, util.ProblemDetails{
 					Type:     util.TypeInternalServerError,
 					Title:    "Erro ao criar imagens",
 					Status:   http.StatusInternalServerError,
-					Detail:   imageGenresToAddError.Error(),
+					Detail:   imagesToAddError.Error(),
 					Instance: util.RFC503,
 				})
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens do(a)s escritores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+				util.NewLoggerError(http.StatusInternalServerError, "Erro ao criar as imagens dos(as) escritores(as)", "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
 
 				return util.ProblemDetailsOutputDTO{
 					ProblemDetails: problemsDetails,
