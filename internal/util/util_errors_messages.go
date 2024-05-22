@@ -10,6 +10,7 @@ const (
 
 const (
 	SharedErrorTitleInvalidName            = "Nome inválido"
+	SharedErrorTitleInvalidID              = "ID inválido"
 	SharedErrorTitleInvalidBirthDate       = "Data de nascimento inválida"
 	SharedErrorTitleInvalidNationality     = "Nacionalidade inválida"
 	SharedErrorTitleInvalidImageID         = "ID de imagem inválido"
@@ -134,4 +135,8 @@ const (
 const (
 	NationalityErrorTitleCountryOrFlagEmpty  = "Nome do país ou bandeira não informados"
 	NationalityErrorDetailCountryOrFlagEmpty = "O nome do país ou a bandeira não foram informados"
+)
+
+const (
+	IMDBErrorDetailEmptyID = "O ID do IMDB é necessário"
 )
