@@ -9,6 +9,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -26,9 +27,9 @@ func TestGetMoviesUseCase_Execute(t *testing.T) {
 
 	nationality, _ := valueobject.NewNationality("United States", "🇺🇸")
 
-	movie_1, _ := entity.NewMovie("Inception", *nationality, 2010, uuid.NewString())
-	movie_2, _ := entity.NewMovie("Inception", *nationality, 2015, uuid.NewString())
-	movie_3, _ := entity.NewMovie("Inception", *nationality, 2020, uuid.NewString())
+	movie_1, _ := entity.NewMovie("Inception", *nationality, 2010, ulid.Make().String())
+	movie_2, _ := entity.NewMovie("Inception", *nationality, 2015, ulid.Make().String())
+	movie_3, _ := entity.NewMovie("Inception", *nationality, 2020, ulid.Make().String())
 
 	var movies []entity.Movie
 

@@ -3,7 +3,7 @@ package entity
 import (
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 )
 
 type SharedEntity struct {
@@ -18,7 +18,7 @@ func NewSharedEntity() *SharedEntity {
 	timeNow := time.Now()
 
 	return &SharedEntity{
-		ID:            uuid.New().String(),
+		ID:            ulid.Make().String(),
 		Active:        true,
 		CreatedAt:     timeNow,
 		UpdatedAt:     timeNow,

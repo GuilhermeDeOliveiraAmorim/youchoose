@@ -10,6 +10,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -47,8 +48,8 @@ func TestUpdateListUseCase_Execute(t *testing.T) {
 	imageType := "jpeg"
 	size := int64(50000)
 
-	image_1, _ := entity.NewImage(uuid.NewString(), imageType, size)
-	image_2, _ := entity.NewImage(uuid.NewString(), imageType, size)
+	image_1, _ := entity.NewImage(ulid.Make().String(), imageType, size)
+	image_2, _ := entity.NewImage(ulid.Make().String(), imageType, size)
 
 	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
 	if myError != nil {
@@ -71,12 +72,12 @@ func TestUpdateListUseCase_Execute(t *testing.T) {
 		Description:      "Descrição da nova Lista",
 		ProfileImageFile: file1,
 		ProfileImageHandler: &multipart.FileHeader{
-			Filename: uuid.NewString(),
+			Filename: ulid.Make().String(),
 			Size:     100,
 		},
 		CoverImageFile: file2,
 		CoverImageHandler: &multipart.FileHeader{
-			Filename: uuid.NewString(),
+			Filename: ulid.Make().String(),
 			Size:     150,
 		},
 		Movies: []string{movie_1.ID, movie_2.ID, movie_3.ID},

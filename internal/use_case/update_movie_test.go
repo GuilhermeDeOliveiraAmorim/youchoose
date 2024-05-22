@@ -8,7 +8,7 @@ import (
 	valueobject "youchoose/internal/value_object"
 
 	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -46,7 +46,7 @@ func TestUpdateMovieUseCase_Execute(t *testing.T) {
 	login := &valueobject.Login{Email: "john@example.com", Password: "P@ssw0rd"}
 	address := &valueobject.Address{City: "Aracaju", State: "SE", Country: "Brasil"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
-	imageID := uuid.New().String()
+	imageID := ulid.Make().String()
 
 	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
 
@@ -54,10 +54,10 @@ func TestUpdateMovieUseCase_Execute(t *testing.T) {
 
 	movie, _ := entity.NewMovie("Inception", *nationality, 2010, imageID)
 
-	genreID := uuid.NewString()
-	directorID := uuid.NewString()
-	actorID := uuid.NewString()
-	writerID := uuid.NewString()
+	genreID := ulid.Make().String()
+	directorID := ulid.Make().String()
+	actorID := ulid.Make().String()
+	writerID := ulid.Make().String()
 
 	var genres []entity.Genre
 	var directors []entity.Director

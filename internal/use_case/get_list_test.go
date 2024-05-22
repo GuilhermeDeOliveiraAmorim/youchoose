@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -27,7 +28,7 @@ func TestGetListUseCase_Execute(t *testing.T) {
 
 	chooser, _ := entity.NewChooser(name, login, address, birthDate, imageID)
 
-	list, _ := entity.NewList("Minha Lista 1", "Descrição da Lista 1", uuid.NewString(), uuid.NewString(), chooser.ID)
+	list, _ := entity.NewList("Minha Lista 1", "Descrição da Lista 1", ulid.Make().String(), ulid.Make().String(), chooser.ID)
 
 	input := GetListInputDTO{
 		ChooserID: chooser.ID,

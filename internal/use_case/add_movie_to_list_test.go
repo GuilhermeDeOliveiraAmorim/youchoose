@@ -8,6 +8,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 )
 
 func TestAddMovieToList_Success(t *testing.T) {
@@ -49,9 +50,9 @@ func TestAddMovieToList_Success(t *testing.T) {
 	mockListMovieRepo.EXPECT().CreateMany(gomock.Any()).Return(nil)
 
 	input := AddMovieToListInputDTO{
-		ChooserID: uuid.NewString(),
-		MovieID:   uuid.NewString(),
-		ListID:    uuid.NewString(),
+		ChooserID: ulid.Make().String(),
+		MovieID:   ulid.Make().String(),
+		ListID:    ulid.Make().String(),
 	}
 
 	output, problemsDetails := usecase.Execute(input)
