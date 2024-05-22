@@ -37,6 +37,7 @@ func main() {
 		repository.MovieGenres{},
 		repository.MovieWriters{},
 		repository.Movies{},
+		repository.IMDBs{},
 	); err != nil {
 		fmt.Println("Erro durante a migração:", err)
 		return
