@@ -3,12 +3,12 @@ package entity
 import (
 	"testing"
 
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 )
 
 func TestListMovieEquals(t *testing.T) {
-	lm1, _ := NewListMovie("oaishydf", "pposjddd", uuid.NewString())
-	lm2, _ := NewListMovie("oaishydf", "pposjddd", uuid.NewString())
+	lm1, _ := NewListMovie("oaishydf", "pposjddd", ulid.Make().String())
+	lm2, _ := NewListMovie("oaishydf", "pposjddd", ulid.Make().String())
 
 	if !lm1.Equals(lm2) {
 		t.Errorf("Os ListMovies deveriam ser iguais, mas não são.")

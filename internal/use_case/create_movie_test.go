@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/mock/gomock"
 	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -131,7 +132,7 @@ func TestCreateMovieUseCase_Execute(t *testing.T) {
 	}
 
 	createMovieInput := usecase.CreateMovieInputDTO{
-		ChooserID:   uuid.NewString(),
+		ChooserID:   ulid.Make().String(),
 		Title:       "Test Movie",
 		CountryName: "Brasil",
 		Flag:        "🇧🇷",

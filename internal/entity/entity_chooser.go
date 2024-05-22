@@ -8,8 +8,6 @@ import (
 	"youchoose/internal/util"
 
 	valueobject "youchoose/internal/value_object"
-
-	"github.com/google/uuid"
 )
 
 type Chooser struct {
@@ -57,16 +55,6 @@ func ValidateChooser(name string, imageID string) []util.ProblemDetails {
 			Title:    util.SharedErrorTitleInvalidName,
 			Status:   http.StatusBadRequest,
 			Detail:   util.ChooserErrorDetailMaxLengthName,
-			Instance: util.RFC400,
-		})
-	}
-
-	if uuid.Validate(imageID) != nil {
-		validationErrors = append(validationErrors, util.ProblemDetails{
-			Type:     util.TypeValidationError,
-			Title:    util.SharedErrorTitleInvalidImageID,
-			Status:   http.StatusBadRequest,
-			Detail:   util.ChooserErrorDetailEmptyImageID,
 			Instance: util.RFC400,
 		})
 	}

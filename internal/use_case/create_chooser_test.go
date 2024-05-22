@@ -11,7 +11,7 @@ import (
 	valueobject "youchoose/internal/value_object"
 
 	"github.com/golang/mock/gomock"
-	"github.com/google/uuid"
+	"github.com/oklog/ulid/v2"
 )
 
 func TestCreateChooser(t *testing.T) {
@@ -27,7 +27,7 @@ func TestCreateChooser(t *testing.T) {
 	login_2 := &valueobject.Login{Email: "johnjohn@example.com", Password: "P@ssw0rd"}
 	address := &valueobject.Address{City: "City", State: "State", Country: "Country"}
 	birthDate := &valueobject.BirthDate{Day: 1, Month: 1, Year: 2000}
-	imageID := uuid.New().String()
+	imageID := ulid.Make().String()
 
 	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
 	if myError != nil {
