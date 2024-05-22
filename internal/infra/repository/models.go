@@ -165,3 +165,12 @@ type Movies struct {
 	Genres        []MovieGenres    `gorm:"foreignKey:MovieID"`
 	Writers       []MovieWriters   `gorm:"foreignKey:MovieID"`
 }
+
+type IMDBs struct {
+	ID            string    `gorm:"primaryKey;not null"`
+	Active        bool      `gorm:"not null"`
+	CreatedAt     time.Time `gorm:"not null"`
+	UpdatedAt     time.Time `gorm:"not null"`
+	DeactivatedAt time.Time `gorm:"not null"`
+	IMDBID        string    `gorm:"not null"`
+}
