@@ -27,7 +27,6 @@ type AddMovieToListUseCase struct {
 }
 
 func (am *AddMovieToListUseCase) Execute(input AddMovieToListInputDTO) (AddMovieToListOutputDTO, util.ProblemDetailsOutputDTO) {
-
 	_, chooserValidatorProblems := chooserValidator(am.ChooserRepository, input.ChooserID, "AddMovieToListUseCase")
 	if len(chooserValidatorProblems.ProblemDetails) > 0 {
 		return AddMovieToListOutputDTO{}, chooserValidatorProblems

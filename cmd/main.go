@@ -2,12 +2,10 @@ package main
 
 import (
 	"fmt"
-	"mime/multipart"
-	"os"
 	"youchoose/configs"
 	"youchoose/internal/infra/factory"
 	repository "youchoose/internal/infra/repository"
-	usecase "youchoose/internal/use_case"
+	"youchoose/internal/service"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -151,121 +149,132 @@ func main() {
 	// 	fmt.Println(k)
 	// }
 
-	file1, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
-	fileStat1, _ := file1.Stat()
+	// file1, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	// fileStat1, _ := file1.Stat()
 
-	file2, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
-	fileStat2, _ := file2.Stat()
+	// file2, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	// fileStat2, _ := file2.Stat()
 
-	file3, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
-	fileStat3, _ := file3.Stat()
+	// file3, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	// fileStat3, _ := file3.Stat()
 
-	file4, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
-	fileStat4, _ := file4.Stat()
+	// file4, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	// fileStat4, _ := file4.Stat()
 
-	file5, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
-	fileStat5, _ := file5.Stat()
+	// file5, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	// fileStat5, _ := file5.Stat()
 
-	file6, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
-	fileStat6, _ := file6.Stat()
+	// file6, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	// fileStat6, _ := file6.Stat()
 
-	file7, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
-	fileStat7, _ := file7.Stat()
+	// file7, _ := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
+	// fileStat7, _ := file7.Stat()
+
+	// movieFactory := factory.NewMovieFactory(db)
+
+	// m, n := movieFactory.CreateMovie.Execute(usecase.CreateMovieInputDTO{
+	// 	ChooserID:   "721b8eee-9586-4771-bf50-0543d8bfbacc",
+	// 	Title:       "Mirai",
+	// 	CountryName: "Japan",
+	// 	Flag:        "🇯🇵",
+	// 	ReleaseYear: 2018,
+	// 	ImageFile:   file1,
+	// 	ImageHandler: &multipart.FileHeader{
+	// 		Filename: file1.Name(),
+	// 		Size:     fileStat1.Size(),
+	// 	},
+	// 	Genres: []usecase.GenreDTO{
+	// 		{
+	// 			GenreID:   "",
+	// 			Name:      "Animação",
+	// 			ImageFile: file2,
+	// 			ImageHandler: &multipart.FileHeader{
+	// 				Filename: file2.Name(),
+	// 				Size:     fileStat2.Size(),
+	// 			},
+	// 		},
+	// 		{
+	// 			GenreID:   "",
+	// 			Name:      "Aventura",
+	// 			ImageFile: file3,
+	// 			ImageHandler: &multipart.FileHeader{
+	// 				Filename: file3.Name(),
+	// 				Size:     fileStat3.Size(),
+	// 			},
+	// 		},
+	// 		{
+	// 			GenreID:   "",
+	// 			Name:      "Drama",
+	// 			ImageFile: file4,
+	// 			ImageHandler: &multipart.FileHeader{
+	// 				Filename: file4.Name(),
+	// 				Size:     fileStat4.Size(),
+	// 			},
+	// 		},
+	// 	},
+	// 	Directors: []usecase.DirectorDTO{
+	// 		{
+	// 			DirectorID:  "",
+	// 			Name:        "Mamoru Hosoda",
+	// 			Day:         19,
+	// 			Month:       9,
+	// 			Year:        1967,
+	// 			CountryName: "Japan",
+	// 			Flag:        "🇯🇵",
+	// 			ImageFile:   file5,
+	// 			ImageHandler: &multipart.FileHeader{
+	// 				Filename: file5.Name(),
+	// 				Size:     fileStat5.Size(),
+	// 			},
+	// 		},
+	// 	},
+	// 	Actors: []usecase.ActorDTO{
+	// 		{
+	// 			ActorID:     "",
+	// 			Name:        "John Cho",
+	// 			Day:         16,
+	// 			Month:       6,
+	// 			Year:        1972,
+	// 			CountryName: "Korea, Republic of",
+	// 			Flag:        "🇰🇷",
+	// 			ImageFile:   file6,
+	// 			ImageHandler: &multipart.FileHeader{
+	// 				Filename: file6.Name(),
+	// 				Size:     fileStat6.Size(),
+	// 			},
+	// 		},
+	// 	},
+	// 	Writers: []usecase.WriterDTO{
+	// 		{
+	// 			WriterID:    "",
+	// 			Name:        "Mamoru Hosoda",
+	// 			Day:         19,
+	// 			Month:       9,
+	// 			Year:        1967,
+	// 			CountryName: "Japan",
+	// 			Flag:        "🇯🇵",
+	// 			ImageFile:   file7,
+	// 			ImageHandler: &multipart.FileHeader{
+	// 				Filename: file7.Name(),
+	// 				Size:     fileStat7.Size(),
+	// 			},
+	// 		},
+	// 	},
+	// })
+	// if len(n.ProblemDetails) > 0 {
+	// 	fmt.Println(n.ProblemDetails)
+	// } else {
+	// 	fmt.Println(m)
+	// }
 
 	movieFactory := factory.NewMovieFactory(db)
 
-	m, n := movieFactory.CreateMovie.Execute(usecase.CreateMovieInputDTO{
-		ChooserID:   "721b8eee-9586-4771-bf50-0543d8bfbacc",
-		Title:       "Mirai",
-		CountryName: "Japan",
-		Flag:        "🇯🇵",
-		ReleaseYear: 2018,
-		ImageFile:   file1,
-		ImageHandler: &multipart.FileHeader{
-			Filename: file1.Name(),
-			Size:     fileStat1.Size(),
-		},
-		Genres: []usecase.GenreDTO{
-			{
-				GenreID:   "",
-				Name:      "Animação",
-				ImageFile: file2,
-				ImageHandler: &multipart.FileHeader{
-					Filename: file2.Name(),
-					Size:     fileStat2.Size(),
-				},
-			},
-			{
-				GenreID:   "",
-				Name:      "Aventura",
-				ImageFile: file3,
-				ImageHandler: &multipart.FileHeader{
-					Filename: file3.Name(),
-					Size:     fileStat3.Size(),
-				},
-			},
-			{
-				GenreID:   "",
-				Name:      "Drama",
-				ImageFile: file4,
-				ImageHandler: &multipart.FileHeader{
-					Filename: file4.Name(),
-					Size:     fileStat4.Size(),
-				},
-			},
-		},
-		Directors: []usecase.DirectorDTO{
-			{
-				DirectorID:  "",
-				Name:        "Mamoru Hosoda",
-				Day:         19,
-				Month:       9,
-				Year:        1967,
-				CountryName: "Japan",
-				Flag:        "🇯🇵",
-				ImageFile:   file5,
-				ImageHandler: &multipart.FileHeader{
-					Filename: file5.Name(),
-					Size:     fileStat5.Size(),
-				},
-			},
-		},
-		Actors: []usecase.ActorDTO{
-			{
-				ActorID:     "",
-				Name:        "John Cho",
-				Day:         16,
-				Month:       6,
-				Year:        1972,
-				CountryName: "Korea, Republic of",
-				Flag:        "🇰🇷",
-				ImageFile:   file6,
-				ImageHandler: &multipart.FileHeader{
-					Filename: file6.Name(),
-					Size:     fileStat6.Size(),
-				},
-			},
-		},
-		Writers: []usecase.WriterDTO{
-			{
-				WriterID:    "",
-				Name:        "Mamoru Hosoda",
-				Day:         19,
-				Month:       9,
-				Year:        1967,
-				CountryName: "Japan",
-				Flag:        "🇯🇵",
-				ImageFile:   file7,
-				ImageHandler: &multipart.FileHeader{
-					Filename: file7.Name(),
-					Size:     fileStat7.Size(),
-				},
-			},
-		},
+	o, p := movieFactory.CreateMovieWithIMDB.Execute(service.CreateMovieWithIMDBIdServiceInputDTO{
+		IMDBID: "tt11389872",
 	})
-	if len(n.ProblemDetails) > 0 {
-		fmt.Println(n.ProblemDetails)
+	if len(p.ProblemDetails) > 0 {
+		fmt.Println(p.ProblemDetails)
 	} else {
-		fmt.Println(m)
+		fmt.Println(o)
 	}
 }

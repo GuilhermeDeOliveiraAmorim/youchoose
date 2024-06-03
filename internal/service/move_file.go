@@ -7,12 +7,18 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"youchoose/configs"
 
 	"github.com/google/uuid"
 )
 
 func MoveFile(file multipart.File, handler *multipart.FileHeader) (int64, string, string, int64, error) {
-	path := "/home/guilherme/Workspace/youchoose/internal/upload/"
+	configs, err := configs.LoadConfig(".")
+	if err != nil {
+		panic(err)
+	}
+
+	path := configs.LocalImagePath
 
 	extension := filepath.Ext(handler.Filename)
 
