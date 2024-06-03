@@ -2,13 +2,15 @@ package factory
 
 import (
 	repository "youchoose/internal/infra/repository"
+	"youchoose/internal/service"
 	usecase "youchoose/internal/use_case"
 
 	"gorm.io/gorm"
 )
 
 type MovieFactory struct {
-	CreateMovie *usecase.CreateMovieUseCase
+	CreateMovie         *usecase.CreateMovieUseCase
+	CreateMovieWithIMDB *service.CreateMovieWithIMDBIdService
 }
 
 func NewMovieFactory(db *gorm.DB) *MovieFactory {
@@ -23,22 +25,28 @@ func NewMovieFactory(db *gorm.DB) *MovieFactory {
 	movieDirectorRepository := repository.NewMovieDirectorRepository(db)
 	movieActorRepository := repository.NewMovieActorRepository(db)
 	movieWriterRepository := repository.NewMovieWriterRepository(db)
+	imdbRepository := repository.NewIMDBRepository(db)
 
 	createMovie := usecase.NewCreateMovieUseCase(
 		chooserRepository,
 		movieRepository,
 		imageRepository,
 		genreRepository,
-        directorRepository,
-        actorRepository,
-        writerRepository,
-        movieGenreRepository,
+		directorRepository,
+		actorRepository,
+		writerRepository,
+		movieGenreRepository,
 		movieDirectorRepository,
 		movieActorRepository,
-        movieWriterRepository,
+		movieWriterRepository,
+	)
+
+	createMovieWithIMDB := service.NewCreateMovieWithIMDBIdService(
+		imdbRepository,
 	)
 
 	return &MovieFactory{
-		CreateMovie: createMovie,
+		CreateMovie:         createMovie,
+		CreateMovieWithIMDB: createMovieWithIMDB,
 	}
 }
