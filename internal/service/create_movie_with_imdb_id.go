@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"youchoose/configs"
+	"youchoose/internal/entity"
 	repositoryinterface "youchoose/internal/repository_interface"
 	"youchoose/internal/util"
 	valueobject "youchoose/internal/value_object"
@@ -83,7 +84,7 @@ func NewCreateMovieWithIMDBIdService(
 	}
 }
 
-func (cm *CreateMovieWithIMDBIdService) Execute(input CreateMovieWithIMDBIdServiceInputDTO) (CreateMovieWithIMDBIdServiceOutputDTO, util.ProblemDetailsOutputDTO) {
+func scrapingIMDB(IMDBID string) (string, string, string, string, int, []string, []string, []string, util.ProblemDetailsOutputDTO) {
 	problemsDetails := []util.ProblemDetails{}
 	imdbLink := "https://www.imdb.com"
 
@@ -92,9 +93,6 @@ func (cm *CreateMovieWithIMDBIdService) Execute(input CreateMovieWithIMDBIdServi
 
 	var title, poster, country string
 	var directors, writers, actors, releaseYears []string
-	var directorsDTO []DirectorDTO
-	var actorsDTO []ActorDTO
-	var writersDTO []WriterDTO
 
 	c.OnHTML("span.hero__primary-text[data-testid='hero__primary-text']", func(e *colly.HTMLElement) {
 		title = e.Text
@@ -159,34 +157,49 @@ func (cm *CreateMovieWithIMDBIdService) Execute(input CreateMovieWithIMDBIdServi
 		r.Abort()
 	})
 
-	c.Visit(imdbLink + "/title/" + input.IMDBID)
+	c.Visit(imdbLink + "/title/" + IMDBID)
 	c.Wait()
 
 	flag, err := getFlagFromCountry(country)
 	if err != nil {
-		return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+		var nothing []string
+		return "", "", "", "", 0, nothing, nothing, nothing, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
 
 	imageName, err := loadImageFromURL(poster)
 	if err != nil {
-		return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+		var nothing []string
+		return "", "", "", "", 0, nothing, nothing, nothing, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
 
 	releaseYear, err := strconv.Atoi(releaseYears[1])
 	if err != nil {
-		return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+		var nothing []string
+		return "", "", "", "", 0, nothing, nothing, nothing, util.ProblemDetailsOutputDTO{
 			ProblemDetails: problemsDetails,
 		}
 	}
 
+	return title, country, flag, imageName, releaseYear, directors, writers, actors, util.ProblemDetailsOutputDTO{
+		ProblemDetails: problemsDetails,
+	}
+}
+
+func personsTreatment(directors, actors, writers []string) ([]DirectorDTO, []ActorDTO, []WriterDTO, util.ProblemDetailsOutputDTO) {
+	problemsDetails := []util.ProblemDetails{}
+
+	var directorsDTO []DirectorDTO
+	var actorsDTO []ActorDTO
+	var writersDTO []WriterDTO
+
 	for _, director := range directors {
 		newDirector, err := getDirector(director)
 		if err != nil {
-			return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return []DirectorDTO{}, []ActorDTO{}, []WriterDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -196,7 +209,7 @@ func (cm *CreateMovieWithIMDBIdService) Execute(input CreateMovieWithIMDBIdServi
 	for _, actor := range actors {
 		newActor, err := getActor(actor)
 		if err != nil {
-			return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return []DirectorDTO{}, []ActorDTO{}, []WriterDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
@@ -206,11 +219,59 @@ func (cm *CreateMovieWithIMDBIdService) Execute(input CreateMovieWithIMDBIdServi
 	for _, writer := range writers {
 		newWriter, err := getWriter(writer)
 		if err != nil {
-			return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+			return []DirectorDTO{}, []ActorDTO{}, []WriterDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: problemsDetails,
 			}
 		}
 		writersDTO = append(writersDTO, newWriter)
+	}
+
+	return directorsDTO, actorsDTO, writersDTO, util.ProblemDetailsOutputDTO{
+		ProblemDetails: problemsDetails,
+	}
+}
+
+func (cm *CreateMovieWithIMDBIdService) Execute(input CreateMovieWithIMDBIdServiceInputDTO) (CreateMovieWithIMDBIdServiceOutputDTO, util.ProblemDetailsOutputDTO) {
+	problemsDetails := []util.ProblemDetails{}
+
+	title, country, flag, imageName, releaseYear, directors, writers, actors, problemsDetailsOutput := scrapingIMDB(input.IMDBID)
+	if len(problemsDetailsOutput.ProblemDetails) > 0 {
+		return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetailsOutput.ProblemDetails,
+		}
+	}
+
+	var imdbIDs []string
+	var imdbs []entity.IMDB
+
+	imdbIDs = append(imdbIDs, directors...)
+	imdbIDs = append(imdbIDs, actors...)
+	imdbIDs = append(imdbIDs, writers...)
+	imdbIDs = append(imdbIDs, input.IMDBID)
+
+	directorsDTO, actorsDTO, writersDTO, problemsDetailsOutput := personsTreatment(directors, actors, writers)
+	if len(problemsDetailsOutput.ProblemDetails) > 0 {
+		return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetailsOutput.ProblemDetails,
+		}
+	}
+
+	for _, imdbID := range imdbIDs {
+		newIMDB, err := entity.NewIMDB(imdbID)
+		if err != nil {
+			return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+				ProblemDetails: problemsDetails,
+			}
+		}
+
+		imdbs = append(imdbs, *newIMDB)
+	}
+
+	err := cm.IMDBRepository.CreateMany(&imdbs)
+	if err != nil {
+		return CreateMovieWithIMDBIdServiceOutputDTO{}, util.ProblemDetailsOutputDTO{
+			ProblemDetails: problemsDetails,
+		}
 	}
 
 	newMovie := CreateMovieWithIMDBIdServiceOutputDTO{
