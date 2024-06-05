@@ -13,6 +13,7 @@ import (
 type GenreDTO struct {
 	GenreID      string                `json:"genre_id"`
 	Name         string                `json:"name"`
+	ImageID      string                `json:"image_id"`
 	ImageFile    multipart.File        `json:"genre_image_file"`
 	ImageHandler *multipart.FileHeader `json:"genre_image_handler"`
 }
@@ -25,6 +26,7 @@ type DirectorDTO struct {
 	Year         int                   `json:"year"`
 	CountryName  string                `json:"country_name"`
 	Flag         string                `json:"flag"`
+	ImageID      string                `json:"image_id"`
 	ImageFile    multipart.File        `json:"director_image_file"`
 	ImageHandler *multipart.FileHeader `json:"director_image_handler"`
 }
@@ -37,6 +39,7 @@ type ActorDTO struct {
 	Year         int                   `json:"year"`
 	CountryName  string                `json:"country_name"`
 	Flag         string                `json:"flag"`
+	ImageID      string                `json:"image_id"`
 	ImageFile    multipart.File        `json:"actor_image_file"`
 	ImageHandler *multipart.FileHeader `json:"actor_image_handler"`
 }
@@ -49,6 +52,7 @@ type WriterDTO struct {
 	Year         int                   `json:"year"`
 	CountryName  string                `json:"country_name"`
 	Flag         string                `json:"flag"`
+	ImageID      string                `json:"image_id"`
 	ImageFile    multipart.File        `json:"writer_image_file"`
 	ImageHandler *multipart.FileHeader `json:"writer_image_handler"`
 }
@@ -462,21 +466,33 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, newMovie *e
 
 	if len(actorsToAdd) > 0 {
 		for _, actorToAdd := range actorsToAdd {
-			_, actorToAddName, actorToAddExtension, actorToAddSize, profileImageError := service.MoveFile(actorToAdd.ImageFile, actorToAdd.ImageHandler)
-			if profileImageError != nil {
-				problemsDetails = append(problemsDetails, util.ProblemDetails{
-					Type:     util.TypeInternalServerError,
-					Title:    "Erro ao mover a imagem do(a) ator(atriz): " + actorToAdd.Name,
-					Status:   http.StatusInternalServerError,
-					Detail:   profileImageError.Error(),
-					Instance: util.RFC503,
-				})
+			var actorToAddImageName = actorToAdd.ImageID
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) ator(atriz): "+actorToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+			if actorToAddImageName == "" {
+				_, actorToAddName, actorToAddExtension, actorToAddSize, profileImageError := service.MoveFile(actorToAdd.ImageFile, actorToAdd.ImageHandler)
+				if profileImageError != nil {
+					problemsDetails = append(problemsDetails, util.ProblemDetails{
+						Type:     util.TypeInternalServerError,
+						Title:    "Erro ao mover a imagem do(a) ator(atriz): " + actorToAdd.Name,
+						Status:   http.StatusInternalServerError,
+						Detail:   profileImageError.Error(),
+						Instance: util.RFC503,
+					})
 
-				return util.ProblemDetailsOutputDTO{
-					ProblemDetails: problemsDetails,
-				}, nil
+					util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) ator(atriz): "+actorToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+					return util.ProblemDetailsOutputDTO{
+						ProblemDetails: problemsDetails,
+					}, nil
+				}
+
+				actorToAddImage, actorToAddImageProblem := entity.NewImage(actorToAddName, actorToAddExtension, actorToAddSize)
+				if len(actorToAddImageProblem) > 0 {
+					problemsDetails = append(problemsDetails, actorToAddImageProblem...)
+				}
+
+				actorToAddImageName = actorToAddImage.ID
+				imagesToAdd = append(imagesToAdd, *actorToAddImage)
 			}
 
 			newActorBirthday, newActorBirthdayProblem := valueobject.NewBirthDate(actorToAdd.Day, actorToAdd.Month, actorToAdd.Year)
@@ -489,12 +505,7 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, newMovie *e
 				problemsDetails = append(problemsDetails, newActorNationalityProblem...)
 			}
 
-			actorToAddImage, actorToAddImageProblem := entity.NewImage(actorToAddName, actorToAddExtension, actorToAddSize)
-			if len(actorToAddImageProblem) > 0 {
-				problemsDetails = append(problemsDetails, actorToAddImageProblem...)
-			}
-
-			newActor, newActorProblem := entity.NewActor(actorToAdd.Name, newActorBirthday, newActorNationality, actorToAddImage.ID)
+			newActor, newActorProblem := entity.NewActor(actorToAdd.Name, newActorBirthday, newActorNationality, actorToAddImageName)
 			if len(newActorProblem) > 0 {
 				problemsDetails = append(problemsDetails, newActorProblem...)
 			}
@@ -505,7 +516,6 @@ func TreatmentActors(inputActors []ActorDTO, cm *CreateMovieUseCase, newMovie *e
 				}, nil
 			}
 
-			imagesToAdd = append(imagesToAdd, *actorToAddImage)
 			newActors = append(newActors, *newActor)
 		}
 
@@ -636,21 +646,33 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, ne
 
 	if len(directorsToAdd) > 0 {
 		for _, directorToAdd := range directorsToAdd {
-			_, directorToAddName, directorToAddExtension, directorToAddSize, profileImageError := service.MoveFile(directorToAdd.ImageFile, directorToAdd.ImageHandler)
-			if profileImageError != nil {
-				problemsDetails = append(problemsDetails, util.ProblemDetails{
-					Type:     util.TypeInternalServerError,
-					Title:    "Erro ao mover a imagem do(a) diretor(a): " + directorToAdd.Name,
-					Status:   http.StatusInternalServerError,
-					Detail:   profileImageError.Error(),
-					Instance: util.RFC503,
-				})
+			var directorToAddImageName = directorToAdd.ImageID
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) diretor(a): "+directorToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+			if directorToAddImageName == "" {
+				_, directorToAddName, directorToAddExtension, directorToAddSize, profileImageError := service.MoveFile(directorToAdd.ImageFile, directorToAdd.ImageHandler)
+				if profileImageError != nil {
+					problemsDetails = append(problemsDetails, util.ProblemDetails{
+						Type:     util.TypeInternalServerError,
+						Title:    "Erro ao mover a imagem do(a) diretor(a): " + directorToAdd.Name,
+						Status:   http.StatusInternalServerError,
+						Detail:   profileImageError.Error(),
+						Instance: util.RFC503,
+					})
 
-				return util.ProblemDetailsOutputDTO{
-					ProblemDetails: problemsDetails,
-				}, nil
+					util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) diretor(a): "+directorToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+					return util.ProblemDetailsOutputDTO{
+						ProblemDetails: problemsDetails,
+					}, nil
+				}
+
+				directorToAddImage, directorToAddImageProblem := entity.NewImage(directorToAddName, directorToAddExtension, directorToAddSize)
+				if len(directorToAddImageProblem) > 0 {
+					problemsDetails = append(problemsDetails, directorToAddImageProblem...)
+				}
+
+				directorToAddImageName = directorToAddImage.ID
+				imagesToAdd = append(imagesToAdd, *directorToAddImage)
 			}
 
 			newDirectorBirthday, newDirectorBirthdayProblem := valueobject.NewBirthDate(directorToAdd.Day, directorToAdd.Month, directorToAdd.Year)
@@ -663,12 +685,7 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, ne
 				problemsDetails = append(problemsDetails, newDirectorNationalityProblem...)
 			}
 
-			directorToAddImage, directorToAddImageProblem := entity.NewImage(directorToAddName, directorToAddExtension, directorToAddSize)
-			if len(directorToAddImageProblem) > 0 {
-				problemsDetails = append(problemsDetails, directorToAddImageProblem...)
-			}
-
-			newDirector, newDirectorProblem := entity.NewDirector(directorToAdd.Name, newDirectorBirthday, newDirectorNationality, directorToAddImage.ID)
+			newDirector, newDirectorProblem := entity.NewDirector(directorToAdd.Name, newDirectorBirthday, newDirectorNationality, directorToAddImageName)
 			if len(newDirectorProblem) > 0 {
 				problemsDetails = append(problemsDetails, newDirectorProblem...)
 			}
@@ -679,7 +696,6 @@ func TreatmentDirectors(inputDirectors []DirectorDTO, cm *CreateMovieUseCase, ne
 				}, nil
 			}
 
-			imagesToAdd = append(imagesToAdd, *directorToAddImage)
 			newDirectors = append(newDirectors, *newDirector)
 		}
 
@@ -810,21 +826,33 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie
 
 	if len(writersToAdd) > 0 {
 		for _, writerToAdd := range writersToAdd {
-			_, writerToAddName, writerToAddExtension, writerToAddSize, profileImageError := service.MoveFile(writerToAdd.ImageFile, writerToAdd.ImageHandler)
-			if profileImageError != nil {
-				problemsDetails = append(problemsDetails, util.ProblemDetails{
-					Type:     util.TypeInternalServerError,
-					Title:    "Erro ao mover a imagem do(a) escritor(a): " + writerToAdd.Name,
-					Status:   http.StatusInternalServerError,
-					Detail:   profileImageError.Error(),
-					Instance: util.RFC503,
-				})
+			var writerToAddImageName = writerToAdd.ImageID
 
-				util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) escritor(a): "+writerToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+			if writerToAddImageName == "" {
+				_, writerToAddName, writerToAddExtension, writerToAddSize, profileImageError := service.MoveFile(writerToAdd.ImageFile, writerToAdd.ImageHandler)
+				if profileImageError != nil {
+					problemsDetails = append(problemsDetails, util.ProblemDetails{
+						Type:     util.TypeInternalServerError,
+						Title:    "Erro ao mover a imagem do(a) escritor(a): " + writerToAdd.Name,
+						Status:   http.StatusInternalServerError,
+						Detail:   profileImageError.Error(),
+						Instance: util.RFC503,
+					})
 
-				return util.ProblemDetailsOutputDTO{
-					ProblemDetails: problemsDetails,
-				}, nil
+					util.NewLoggerError(http.StatusInternalServerError, "Erro ao mover a imagem do(a) escritor(a): "+writerToAdd.Name, "CreateMovieUseCase", "Use Cases", util.TypeInternalServerError)
+
+					return util.ProblemDetailsOutputDTO{
+						ProblemDetails: problemsDetails,
+					}, nil
+				}
+
+				writerToAddImage, writerToAddImageProblem := entity.NewImage(writerToAddName, writerToAddExtension, writerToAddSize)
+				if len(writerToAddImageProblem) > 0 {
+					problemsDetails = append(problemsDetails, writerToAddImageProblem...)
+				}
+
+				writerToAddImageName = writerToAddImage.ID
+				imagesToAdd = append(imagesToAdd, *writerToAddImage)
 			}
 
 			newWriterBirthday, newWriterBirthdayProblem := valueobject.NewBirthDate(writerToAdd.Day, writerToAdd.Month, writerToAdd.Year)
@@ -837,12 +865,7 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie
 				problemsDetails = append(problemsDetails, newWriterNationalityProblem...)
 			}
 
-			writerToAddImage, writerToAddImageProblem := entity.NewImage(writerToAddName, writerToAddExtension, writerToAddSize)
-			if len(writerToAddImageProblem) > 0 {
-				problemsDetails = append(problemsDetails, writerToAddImageProblem...)
-			}
-
-			newWriter, newWriterProblem := entity.NewWriter(writerToAdd.Name, newWriterBirthday, newWriterNationality, writerToAddImage.ID)
+			newWriter, newWriterProblem := entity.NewWriter(writerToAdd.Name, newWriterBirthday, newWriterNationality, writerToAddImageName)
 			if len(newWriterProblem) > 0 {
 				problemsDetails = append(problemsDetails, newWriterProblem...)
 			}
@@ -853,7 +876,6 @@ func TreatmentWriters(inputWriters []WriterDTO, cm *CreateMovieUseCase, newMovie
 				}, nil
 			}
 
-			imagesToAdd = append(imagesToAdd, *writerToAddImage)
 			newWriters = append(newWriters, *newWriter)
 		}
 
