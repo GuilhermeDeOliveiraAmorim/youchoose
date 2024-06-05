@@ -19,7 +19,6 @@ func (g *GenreRepository) Create(genre *entity.Genre) error {
 		UpdatedAt:     genre.UpdatedAt,
 		DeactivatedAt: genre.DeactivatedAt,
 		Name:          genre.Name,
-		ImageID:       genre.ImageID,
 	}).Error; err != nil {
 		return errors.New(err.Error())
 	}
@@ -38,7 +37,6 @@ func (g *GenreRepository) CreateMany(genres *[]entity.Genre) error {
 			UpdatedAt:     genre.UpdatedAt,
 			DeactivatedAt: genre.DeactivatedAt,
 			Name:          genre.Name,
-			ImageID:       genre.ImageID,
 		})
 	}
 
@@ -80,8 +78,7 @@ func (g *GenreRepository) DoTheseGenresExist(genreIDs []string) (bool, []entity.
 				UpdatedAt:     genreModel.UpdatedAt,
 				DeactivatedAt: genreModel.DeactivatedAt,
 			},
-			Name:    genreModel.Name,
-			ImageID: genreModel.ImageID,
+			Name: genreModel.Name,
 		})
 	}
 

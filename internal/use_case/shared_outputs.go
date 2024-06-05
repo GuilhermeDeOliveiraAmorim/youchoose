@@ -89,7 +89,6 @@ func NewMovieOutputDTO(movie entity.Movie) MovieOutputDTO {
 			ID:        genre.ID,
 			CreatedAt: genre.CreatedAt,
 			Name:      genre.Name,
-			ImageID:   genre.ImageID,
 		})
 	}
 

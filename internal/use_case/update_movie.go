@@ -274,7 +274,7 @@ func (up *UpdateMovieUseCase) Execute(input UpdateMovieInputDTO) (MovieOutputDTO
 				problemsDetails = append(problemsDetails, genreToAddImageProblem...)
 			}
 
-			newGenre, newGenreProblem := entity.NewGenre(genreToAdd.Name, genreToAddImage.ID)
+			newGenre, newGenreProblem := entity.NewGenre(genreToAdd.Name)
 			if len(newGenreProblem) > 0 {
 				problemsDetails = append(problemsDetails, newGenreProblem...)
 			}

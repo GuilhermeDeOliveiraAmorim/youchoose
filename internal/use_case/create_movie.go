@@ -326,7 +326,7 @@ func TreatmentGenres(inputGenres []GenreDTO, cm *CreateMovieUseCase, newMovie *e
 				problemsDetails = append(problemsDetails, genreToAddImageProblem...)
 			}
 
-			newGenre, newGenreProblem := entity.NewGenre(genreToAdd.Name, genreToAddImage.ID)
+			newGenre, newGenreProblem := entity.NewGenre(genreToAdd.Name)
 			if len(newGenreProblem) > 0 {
 				problemsDetails = append(problemsDetails, newGenreProblem...)
 			}

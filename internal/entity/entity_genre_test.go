@@ -5,7 +5,7 @@ import (
 )
 
 func TestNewGenre(t *testing.T) {
-	genre, err := NewGenre("GenreName", "ImageID")
+	genre, err := NewGenre("GenreName")
 
 	if err != nil {
 		t.Errorf("Erro inesperado ao criar gênero válido: %v", err)
@@ -15,7 +15,7 @@ func TestNewGenre(t *testing.T) {
 		t.Error("O gênero não deveria ser nulo para um gênero válido")
 	}
 
-	invalidGenre, err := NewGenre("", "ImageID")
+	invalidGenre, err := NewGenre("")
 
 	if err == nil {
 		t.Error("Esperava-se um erro ao criar um gênero inválido (sem nome)")
@@ -27,13 +27,13 @@ func TestNewGenre(t *testing.T) {
 }
 
 func TestValidateGenre(t *testing.T) {
-	validationErrors := ValidateGenre("GenreName", "ImageID")
+	validationErrors := ValidateGenre("GenreName")
 
 	if len(validationErrors) > 0 {
 		t.Errorf("Erro inesperado ao validar gênero válido: %v", validationErrors)
 	}
 
-	validationErrors = ValidateGenre("", "ImageID")
+	validationErrors = ValidateGenre("")
 
 	if len(validationErrors) == 0 {
 		t.Error("Esperava-se erros ao validar um gênero inválido (sem nome)")
@@ -41,7 +41,7 @@ func TestValidateGenre(t *testing.T) {
 }
 
 func TestValidateGenre_NameLength(t *testing.T) {
-	validationErrors := ValidateGenre("GenreWithValidName", "ImageID")
+	validationErrors := ValidateGenre("GenreWithValidName")
 
 	if len(validationErrors) > 0 {
 		t.Errorf("Erro inesperado ao validar gênero com nome dentro do limite: %v", validationErrors)
@@ -50,7 +50,7 @@ func TestValidateGenre_NameLength(t *testing.T) {
 	longName := "GenreNameWithMoreThan100CharactersForTestingValidation" +
 		"GenreNameWithMoreThan100CharactersForTestingValidation" +
 		"GenreNameWithMoreThan100CharactersForTestingValidation"
-	validationErrors = ValidateGenre(longName, "ImageID")
+	validationErrors = ValidateGenre(longName)
 
 	if len(validationErrors) == 0 {
 		t.Error("Esperava-se erros ao validar um gênero com nome ultrapassando o limite")

@@ -35,7 +35,6 @@ type Images struct {
 	Choosers      []Choosers  `gorm:"foreignKey:ImageID"`
 	Actors        []Actors    `gorm:"foreignKey:ImageID"`
 	Directors     []Directors `gorm:"foreignKey:ImageID"`
-	Genres        []Genres    `gorm:"foreignKey:ImageID"`
 	Writers       []Writers   `gorm:"foreignKey:ImageID"`
 	Movies        []Movies    `gorm:"foreignKey:ImageID"`
 }
@@ -79,8 +78,6 @@ type Genres struct {
 	UpdatedAt     time.Time `gorm:"not null"`
 	DeactivatedAt time.Time `gorm:"not null"`
 	Name          string    `gorm:"not null"`
-	ImageID       string    `gorm:"not null"`
-	Image         Images    `gorm:"foreignKey:ImageID"`
 }
 
 type Writers struct {

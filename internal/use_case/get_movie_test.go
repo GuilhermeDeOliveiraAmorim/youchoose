@@ -46,7 +46,6 @@ func TestGetMovieUseCase_Execute(t *testing.T) {
 			ID:        genre.ID,
 			CreatedAt: genre.CreatedAt,
 			Name:      genre.Name,
-			ImageID:   genre.ImageID,
 		})
 	}
 
