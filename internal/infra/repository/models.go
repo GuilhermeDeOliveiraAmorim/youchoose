@@ -31,7 +31,6 @@ type Images struct {
 	DeactivatedAt time.Time   `gorm:"not null"`
 	Name          string      `gorm:"not null"`
 	Type          string      `gorm:"not null"`
-	Size          int64       `gorm:"not null"`
 	Choosers      []Choosers  `gorm:"foreignKey:ImageID"`
 	Actors        []Actors    `gorm:"foreignKey:ImageID"`
 	Directors     []Directors `gorm:"foreignKey:ImageID"`

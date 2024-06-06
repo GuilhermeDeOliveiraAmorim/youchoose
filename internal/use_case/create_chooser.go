@@ -96,7 +96,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 		problemsDetails = append(problemsDetails, newBirthdateProblems...)
 	}
 
-	_, chooserImageName, chooserImageExtension, chooserImageSize, chooserImageError := service.MoveFile(input.ImageFile, input.ImageHandler)
+	_, chooserImageName, chooserImageExtension, _, chooserImageError := service.MoveFile(input.ImageFile, input.ImageHandler)
 	if chooserImageError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
@@ -113,7 +113,7 @@ func (cc *CreateChooserUseCase) Execute(input CreateChooserInputDTO) (ChooserOut
 		}
 	}
 
-	newChooserImage, newProfileImageNameProblems := entity.NewImage(chooserImageName, chooserImageExtension, chooserImageSize)
+	newChooserImage, newProfileImageNameProblems := entity.NewImage(chooserImageName, chooserImageExtension)
 	if len(newProfileImageNameProblems) > 0 {
 		problemsDetails = append(problemsDetails, newProfileImageNameProblems...)
 	}

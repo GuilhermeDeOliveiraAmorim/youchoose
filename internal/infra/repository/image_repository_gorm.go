@@ -26,7 +26,6 @@ func (i *ImageRepository) Create(image *entity.Image) error {
 		DeactivatedAt: image.DeactivatedAt,
 		Name:          image.Name,
 		Type:          image.Type,
-		Size:          image.Size,
 	}).Error; err != nil {
 		return errors.New(err.Error())
 	}
@@ -46,7 +45,6 @@ func (i *ImageRepository) CreateMany(images *[]entity.Image) error {
 			DeactivatedAt: image.DeactivatedAt,
 			Name:          image.Name,
 			Type:          image.Type,
-			Size:          image.Size,
 		})
 	}
 
@@ -94,7 +92,6 @@ func (i *ImageRepository) GetByID(imageID string) (bool, entity.Image, error) {
 		},
 		Name: imageModel.Name,
 		Type: imageModel.Type,
-		Size: imageModel.Size,
 	}
 
 	return true, image, nil

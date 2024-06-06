@@ -45,8 +45,8 @@ func TestUpdateChooserUseCase_Execute(t *testing.T) {
 		},
 	}
 
-	_, chooserImageName, chooserImageExtension, chooserImageSize, _ := service.MoveFile(createChooserInputDTO.ImageFile, createChooserInputDTO.ImageHandler)
-	newChooserImageName, _ := entity.NewImage(chooserImageName, chooserImageExtension, chooserImageSize)
+	_, chooserImageName, chooserImageExtension, _, _ := service.MoveFile(createChooserInputDTO.ImageFile, createChooserInputDTO.ImageHandler)
+	newChooserImageName, _ := entity.NewImage(chooserImageName, chooserImageExtension)
 
 	login, _ := valueobject.NewLogin("emailvalido@email.com", "AS12a@@56")
 	address, _ := valueobject.NewAddress(createChooserInputDTO.City, createChooserInputDTO.State, createChooserInputDTO.Country)

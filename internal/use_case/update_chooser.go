@@ -79,7 +79,7 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOut
 	var imagesToAdd []entity.Image
 
 	if input.ImageID == "" {
-		_, newChooserImageProblemName, newChooserImageProblemExtension, newChooserImageProblemSize, newChooserImageProblemError := service.MoveFile(input.ImageFile, input.ImageHandler)
+		_, newChooserImageProblemName, newChooserImageProblemExtension, _, newChooserImageProblemError := service.MoveFile(input.ImageFile, input.ImageHandler)
 		if newChooserImageProblemError != nil {
 			problemsDetails = append(problemsDetails, util.ProblemDetails{
 				Type:     util.TypeInternalServerError,
@@ -96,7 +96,7 @@ func (uc *UpdateChooserUseCase) Execute(input UpdateChooserInputDTO) (ChooserOut
 			}
 		}
 
-		newChooserImage, newChooserImageProblem := entity.NewImage(newChooserImageProblemName, newChooserImageProblemExtension, newChooserImageProblemSize)
+		newChooserImage, newChooserImageProblem := entity.NewImage(newChooserImageProblemName, newChooserImageProblemExtension)
 		if len(newChooserImageProblem) > 0 {
 			return ChooserOutputDTO{}, util.ProblemDetailsOutputDTO{
 				ProblemDetails: newChooserImageProblem,

@@ -7,9 +7,8 @@ import (
 func TestNewImageValid(t *testing.T) {
 	name := "example.jpg"
 	imageType := "jpeg"
-	size := int64(50000)
 
-	image, err := NewImage(name, imageType, size)
+	image, err := NewImage(name, imageType)
 
 	if err != nil {
 		t.Errorf("Erro inesperado ao criar a imagem: %v", err)
@@ -23,9 +22,8 @@ func TestNewImageValid(t *testing.T) {
 func TestNewImageInvalidName(t *testing.T) {
 	name := ""
 	imageType := "jpeg"
-	size := int64(50000)
 
-	image, err := NewImage(name, imageType, size)
+	image, err := NewImage(name, imageType)
 
 	if err == nil {
 		t.Error("Esperava um erro ao criar a imagem com nome inválido")
@@ -43,9 +41,8 @@ func TestNewImageInvalidName(t *testing.T) {
 func TestNewImageInvalidSize(t *testing.T) {
 	name := "example.jpg"
 	imageType := "jpeg"
-	size := int64(200000)
 
-	image, err := NewImage(name, imageType, size)
+	image, err := NewImage(name, imageType)
 
 	if err == nil {
 		t.Error("Esperava um erro ao criar a imagem com tamanho inválido")

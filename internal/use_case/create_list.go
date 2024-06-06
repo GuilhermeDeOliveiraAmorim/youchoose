@@ -81,7 +81,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 		}
 	}
 
-	_, profileImageName, profileImageExtension, profileImageSize, profileImageError := service.MoveFile(input.ProfileImageFile, input.ProfileImageHandler)
+	_, profileImageName, profileImageExtension, _, profileImageError := service.MoveFile(input.ProfileImageFile, input.ProfileImageHandler)
 	if profileImageError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
@@ -98,7 +98,7 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 		}
 	}
 
-	_, coverImageName, coverImageExtension, coverImageSize, coverImageError := service.MoveFile(input.CoverImageFile, input.CoverImageHandler)
+	_, coverImageName, coverImageExtension, _, coverImageError := service.MoveFile(input.CoverImageFile, input.CoverImageHandler)
 	if coverImageError != nil {
 		problemsDetails = append(problemsDetails, util.ProblemDetails{
 			Type:     util.TypeInternalServerError,
@@ -115,12 +115,12 @@ func (cl *CreateListUseCase) Execute(input CreateListInputDTO) (ListOutputDTO, u
 		}
 	}
 
-	newProfileImageName, newProfileImageNameProblems := entity.NewImage(profileImageName, profileImageExtension, profileImageSize)
+	newProfileImageName, newProfileImageNameProblems := entity.NewImage(profileImageName, profileImageExtension)
 	if len(newProfileImageNameProblems) > 0 {
 		problemsDetails = append(problemsDetails, newProfileImageNameProblems...)
 	}
 
-	newCoverImageName, newCoverImageNameProblems := entity.NewImage(coverImageName, coverImageExtension, coverImageSize)
+	newCoverImageName, newCoverImageNameProblems := entity.NewImage(coverImageName, coverImageExtension)
 	if len(newCoverImageNameProblems) > 0 {
 		problemsDetails = append(problemsDetails, newCoverImageNameProblems...)
 	}

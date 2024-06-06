@@ -46,10 +46,9 @@ func TestUpdateListUseCase_Execute(t *testing.T) {
 	movies = append(movies, *movie_2)
 	movies = append(movies, *movie_3)
 	imageType := "jpeg"
-	size := int64(50000)
 
-	image_1, _ := entity.NewImage(ulid.Make().String(), imageType, size)
-	image_2, _ := entity.NewImage(ulid.Make().String(), imageType, size)
+	image_1, _ := entity.NewImage(ulid.Make().String(), imageType)
+	image_2, _ := entity.NewImage(ulid.Make().String(), imageType)
 
 	file1, myError := os.Open("/home/guilherme/Workspace/youchoose/image.jpeg")
 	if myError != nil {
