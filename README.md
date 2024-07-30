@@ -1,6 +1,6 @@
 # IMDb Web Scraping Service
 
-Este projeto é um serviço de web scraping desenvolvido em Go, destinado a extrair informações de filmes do site IMDb. O serviço utiliza as bibliotecas `Colly` e `GoQuery` para realizar o scraping e manipulação dos dados.
+Este projeto é um serviço de web scraping desenvolvido em Go, com o objetivo principal de fornecer uma interface onde os usuários possam votar em filmes, criar listas de filmes para votação, votar em filmes específicos e em listas de filmes. O serviço utiliza as bibliotecas Colly e GoQuery para realizar o scraping e manipulação dos dados extraídos do site IMDb.
 
 ## Funcionalidades
 
